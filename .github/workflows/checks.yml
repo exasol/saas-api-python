@@ -99,3 +99,9 @@ jobs:
 
       - name: Run Tests
         run: poetry run nox -s coverage -- -- --db-version ${{ matrix.exasol-version }}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: .coverage
+          path: .coverage
