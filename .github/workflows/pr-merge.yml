@@ -10,12 +10,12 @@ jobs:
 
   ci-job:
     name: Checks
-    uses: workflows/checks.yml@0.6.2
+    uses: workflows/checks.yml
 
   publish-docs:
     name: Publish Documentation
-    uses: workflows/gh-pages.yml@0.6.2
+    uses: workflows/gh-pages.yml
 
   metrics:
     needs: [ ci-job ]
-    uses: workflows/report.yml@0.6.2
+    uses: workflows/report.yml
