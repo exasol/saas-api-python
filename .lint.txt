@@ -1,0 +1,8 @@
+************* Module version
+version.py:2:0: C0301: Line too long (90/88) (line-too-long)
+version.py:6:0: C0301: Line too long (101/88) (line-too-long)
+version.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+
+------------------------------------------------------------------
+Your code has been rated at 8.42/10 (previous run: 7.37/10, +1.05)
+
