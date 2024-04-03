@@ -10,12 +10,12 @@ jobs:
 
   ci-job:
     name: Checks
-    uses: workflows/checks.yml
+    uses: ./.github/workflows/checks.yml
 
   publish-docs:
     name: Publish Documentation
-    uses: workflows/gh-pages.yml
+    uses: ./.github/workflows/gh-pages.yml
 
   metrics:
     needs: [ ci-job ]
-    uses: workflows/report.yml
+    uses: ./.github/workflows/report.yml
