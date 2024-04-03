@@ -1,2 +1,4 @@
+""" doc Integration tests """
+
 def test_placeholder():
-    pass
+    """ doc """
