@@ -33,6 +33,10 @@ jobs:
         run: |
           cp .coverage/.coverage ../
           cp .lint.txt/.lint.txt ../
+          pwd
+          ls -l ..
+          pwd
+          ls -l
 
       - name: Generate Report
         run: poetry run nox -s report -- -- --format json | tee metrics.json
