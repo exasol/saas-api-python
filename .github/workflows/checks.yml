@@ -78,6 +78,12 @@ jobs:
       - name: Run Tests
         run: poetry run nox -s type-check
 
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: .lint.txt
+          path: .lint.txt
+
   tests-job:
     name: Tests (Python-${{ matrix.python-version }}, Exasol-${{ matrix.exasol-version}})
     needs: [build-documentation-job, lint-job, type-check-job]
