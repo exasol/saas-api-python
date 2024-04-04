@@ -28,10 +28,10 @@ jobs:
     steps:
       - name: SCM Checkout
         uses: actions/checkout@v3
-      
+
       - name: Setup Python & Poetry Environment
         uses: exasol/python-toolbox/.github/actions/python-environment@0.8.0
-      
+
       - name: Build Documentation
         run: |
           poetry run python -m nox -s build-docs
@@ -57,7 +57,7 @@ jobs:
       - name: Run Tests
         run: poetry run nox -s lint
 
-    - name: Upload Artifacts
+      - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: .lint.txt
