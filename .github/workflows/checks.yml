@@ -26,15 +26,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: SCM Checkout
-        uses: actions/checkout@v3
+    - name: SCM Checkout
+      uses: actions/checkout@v3
 
-      - name: Setup Python & Poetry Environment
-        uses: exasol/python-toolbox/.github/actions/python-environment@0.8.0
+    - name: Setup Python & Poetry Environment
+      uses: exasol/python-toolbox/.github/actions/python-environment@0.8.0
 
-      - name: Build Documentation
-        run: |
-          poetry run python -m nox -s build-docs
+    - name: Build Documentation
+      run: |
+        poetry run python -m nox -s build-docs
 
   lint-job:
     name: Linting (Python-${{ matrix.python-version }})
@@ -57,6 +57,12 @@ jobs:
       - name: Run Tests
         run: poetry run nox -s lint
 
+    - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: .lint.txt
+          path: .lint.txt
+
   type-check-job:
     name: Type Checking (Python-${{ matrix.python-version }})
     needs: [version-check-job]
@@ -78,14 +84,6 @@ jobs:
       - name: Run Tests
         run: poetry run nox -s type-check
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: Lint result and Coverage
-          path: |
-            .lint.txt
-            .coverage
-
   tests-job:
     name: Tests (Python-${{ matrix.python-version }}, Exasol-${{ matrix.exasol-version}})
     needs: [build-documentation-job, lint-job, type-check-job]
@@ -105,7 +103,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Run Tests
+      - name: Calculate Test Coverage
         run: poetry run nox -s coverage -- -- --db-version ${{ matrix.exasol-version }}
 
       - name: Upload Artifacts
