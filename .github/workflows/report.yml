@@ -31,8 +31,8 @@ jobs:
       - name: Copy Artifacts into Root Folder
         # working-directory: ./artifacts
         run: |
-          cp ./artifacts/.coverage/.coverage .
-          cp ./artifacts/.lint.txt/.lint.txt .
+          cp ./artifacts/.coverage/.coverage ./
+          cp ./artifacts/.lint.txt/.lint.txt ./
           echo listing folder artifacts"
           ls -Ral artifacts
           echo listing folder .

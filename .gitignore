@@ -1,2 +1,4 @@
 .html-documentation
 /__pycache__
+/metrics.json
+TAGS
