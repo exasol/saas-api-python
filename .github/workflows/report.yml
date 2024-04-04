@@ -33,7 +33,7 @@ jobs:
         run: |
           cp ./artifacts/.coverage/.coverage ./
           cp ./artifacts/.lint.txt/.lint.txt ./
-          echo listing folder artifacts"
+          echo "listing folder artifacts"
           ls -Ral artifacts
           echo listing folder .
           ls -al
