@@ -7,3 +7,8 @@ This is the initial release of the Exasol SaaS API for Python enabling Python ap
 ## Changes
 
 n/a
+
+
+## Feature
+
+* #6: Added Nox task for generating the API
