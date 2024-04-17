@@ -1,10 +1,9 @@
-""" noxfile """
 import nox
 from nox import Session
 from noxconfig import PROJECT_CONFIG
 
 # imports all nox task provided by the toolbox
-from exasol.toolbox.nox.tasks import check # pylint: disable=unused-import
+from exasol.toolbox.nox.tasks import *
 
 # default actions to be run if nothing is explicitly specified with the -s option
 nox.options.sessions = ["fix"]
