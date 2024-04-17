@@ -21,11 +21,6 @@ poetry run nox generate-api
 If you want to retrieve the JSON definition for the API model from a different
 source then just edit file `noxfile.py`.
 
-Candidates
-* https://cloud.exasol.com/openapi.json
-* https://cloud-staging.exasol.com/openapi.json
-* https://cloud-staging.exasol.com/internal-api.json
-
 ### Read JSON definition From a Local File
 
 Use CLI option `--path` to read the JSON definition from a local file instead of a URL:
