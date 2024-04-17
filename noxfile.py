@@ -1,6 +1,7 @@
 import nox
 from nox import Session
 from noxconfig import PROJECT_CONFIG
+from exasol.saas.client import SAAS_HOST
 
 # imports all nox task provided by the toolbox
 from exasol.toolbox.nox.tasks import *
@@ -18,7 +19,7 @@ def generate_api(session: Session):
     session.run(
         "openapi-python-client",
         "update",
-        "--url", "https://cloud.exasol.com/openapi.json",
+        "--url", f"{SAAS_HOST}/openapi.json",
         "--config", "openapi_config.yml",
     )
     session.run("isort", "-q", "exasol/saas/client/openapi")
