@@ -11,3 +11,7 @@ n/a
 ## Refactoring
 
 * #10: Add pre-commit hook
+
+## Feature
+
+* #6: Added Nox task for generating the API
