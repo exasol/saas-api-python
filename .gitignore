@@ -1,5 +1,5 @@
 .html-documentation
-/__pycache__
+__pycache__
 /metrics.json
 /.lint.txt
 /.lint.json
