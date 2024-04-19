@@ -8,6 +8,9 @@ This is the initial release of the Exasol SaaS API for Python enabling Python ap
 
 n/a
 
+## Refactoring
+
+* #10: Add pre-commit hook
 
 ## Feature
 

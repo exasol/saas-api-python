@@ -75,6 +75,10 @@ ignore = [
     "version.py",
     "noxconfig.py",
 ]
+ignore-paths = [
+    ".*/exasol/saas/client/openapi/.*",
+]
+
 
 [[tool.mypy.overrides]]
 module = [
