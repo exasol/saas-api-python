@@ -5,6 +5,9 @@ on:
     branches-ignore:
       - "github-pages/*"
       - "gh-pages/*"
+  pull_request:
+    # check results of former push could be outdated
+    types: [opened, reopened]
   workflow_dispatch:
   schedule:
     # “At 4 am on every day.” (https://crontab.guru)
