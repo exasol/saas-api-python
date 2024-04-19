@@ -24,7 +24,7 @@ In order to regenerate the model layer please use the following command line:
 poetry run nox generate-api
 ```
 
-### Change the Source URL of API Model JSON Definition
+### Change the Source URL of the API Model JSON Definition
 
 If you want to retrieve the JSON definition for the API model from a different source then just edit file `noxfile.py`.
 
