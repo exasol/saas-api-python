@@ -27,13 +27,13 @@ jobs:
       - name: Run Nox Task check-api-outdated
         run: poetry run nox -s check-api-outdated
 
-      - name: Report Failure Status to Slack channel
+      - name: Report Failure Status to Slack Channel
         if: ${{ failure() }}
         uses: ravsamhq/notify-slack-action@v2
         with:
           status: ${{ job.status }}
           token: ${{ github.token }}
-          notification_title: "Check if generated OpenAPI is outdated in {repo} has {status_message}"
+          notification_title: "Generated OpenAPI seems to be outdated."
           message_format: "{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>"
           notify_when: "failure,cancelled,warnings,skipped"
         env:
