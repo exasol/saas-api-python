@@ -4,8 +4,7 @@
 
 saas-api-python includes a file `.pre-commit-config.yaml`.
 
-The following command installs the pre-commit hooks, see also [framework pre-commmit](https://pre-commit.com/) and Git
-documentation on [Customizing Git Git Hooks](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks):
+The following command installs the pre-commit hooks, see also [framework pre-commmit](https://pre-commit.com/) and Git documentation on [Customizing Git Git Hooks](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks):
 
 ```shell
 poetry run pre-commit install
@@ -15,13 +14,9 @@ When the hooks are installed, then git will run each of the hooks on the resp. s
 
 ## Generate the API Model
 
-The model layer of this API has been generated from the OpenAPI specification
-in JSON format of the SaaS API https://cloud.exasol.com/openapi.json using
-[openapi-python-client](https://github.com/openapi-generators/openapi-python-client).
+The model layer of this API has been generated from the OpenAPI specification in JSON format of the SaaS API https://cloud.exasol.com/openapi.json using [openapi-python-client](https://github.com/openapi-generators/openapi-python-client).
 
-See also
-[API Documentation](https://docs.exasol.com/saas/administration/rest_api/rest_api.htm)
-and [Swagger UI](https://cloud.exasol.com/openapi/index.html).
+See also [API Documentation](https://docs.exasol.com/saas/administration/rest_api/rest_api.htm) and [Swagger UI](https://cloud.exasol.com/openapi/index.html).
 
 In order to regenerate the model layer please use the following command line:
 
@@ -29,10 +24,9 @@ In order to regenerate the model layer please use the following command line:
 poetry run nox generate-api
 ```
 
-### Change the Source URL of API Model JSON Definition
+### Change the Source URL of the API Model JSON Definition
 
-If you want to retrieve the JSON definition for the API model from a different
-source then just edit file `noxfile.py`.
+If you want to retrieve the JSON definition for the API model from a different source then just edit file `noxfile.py`.
 
 ### Read JSON definition From a Local File
 

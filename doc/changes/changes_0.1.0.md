@@ -15,3 +15,4 @@ n/a
 ## Feature
 
 * #6: Added Nox task for generating the API
+* #8: Add CI task to check if the generated API is outdated

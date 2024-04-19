@@ -83,11 +83,13 @@ ignore-paths = [
 [[tool.mypy.overrides]]
 module = [
     "exasol.toolbox.nox.tasks",
+    "exasol.saas.client.openapi.*",
     "test.conftest.*",
     "test.*",
     ]
 ignore_errors = true
 ignore_missing_imports = true
+
 
 [tool.pylint.format]
 max-line-length = 88
