@@ -1,0 +1,28 @@
+name: Check if OpenAPI is Outdated
+
+on:
+  workflow_dispatch:
+  schedule:
+    # “At 4 am on every day.” (https://crontab.guru)
+    - cron: "0 4 * * *"
+
+
+jobs:
+
+ check-api-outdated:
+    name: Check if OpenAPI Generated From JSON is Outdated
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+
+    steps:
+      - name: SCM Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Python & Poetry Environment
+        uses: exasol/python-toolbox/.github/actions/python-environment@0.8.0
+        with:
+          python-version: "3.10"
+
+      - name: Run Nox Task check-api-outdated
+        run: poetry run nox -s check-api-outdated
