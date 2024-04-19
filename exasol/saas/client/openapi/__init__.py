@@ -1,4 +1,11 @@
-"""
-openapi-python-client will replace all files and folders in this directory
-recursively.
-"""
+
+""" A client library for accessing Exasol SaaS REST-API """
+from .client import (
+    AuthenticatedClient,
+    Client,
+)
+
+__all__ = (
+    "AuthenticatedClient",
+    "Client",
+)
