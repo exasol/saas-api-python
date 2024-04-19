@@ -1,6 +1,14 @@
 name: Check if OpenAPI is Outdated
 
 on:
+  push:
+    branches-ignore:
+      - "github-pages/*"
+      - "gh-pages/*"
+      - "main"
+      - "master"
+  pull_request:
+    types: [opened, reopened]
   workflow_dispatch:
   schedule:
     # “At 4 am on every day.” (https://crontab.guru)
