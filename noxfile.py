@@ -21,5 +21,15 @@ def generate_api(session: Session):
         "update",
         "--url", f"{SAAS_HOST}/openapi.json",
         "--config", "openapi_config.yml",
+        silent=True,
     )
     session.run("isort", "-q", "exasol/saas/client/openapi")
+
+
+@nox.session(name="check-api-outdated", python=False)
+def check_api_outdated(session: Session):
+    """
+    Generate API and run git diff to verify if API is out-dated.
+    """
+    generate_api(session)
+    session.run("git", "diff", "--exit-code")
