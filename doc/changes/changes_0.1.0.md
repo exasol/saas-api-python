@@ -1,4 +1,4 @@
-# Saas API Python 0.1.0, released <TBD>
+# Saas API Python 0.1.0, released 2024-04-22
 
 ## Summary
 
