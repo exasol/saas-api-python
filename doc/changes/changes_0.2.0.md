@@ -6,4 +6,4 @@ This release adds a design document.
 
 ## Documentation
 
-* #2: Added Design Document
+* #2: Added design document
