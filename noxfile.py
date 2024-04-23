@@ -23,7 +23,7 @@ def generate_api(session: Session):
     https://docs.github.com/en/actions/learn-github-actions/variables.
     #default-environment-variables.
     """
-    silent = "CI" in os.environ
+    silent = "CI" not in os.environ
     session.run(
         "openapi-python-client",
         "update",

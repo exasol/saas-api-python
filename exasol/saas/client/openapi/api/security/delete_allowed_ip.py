@@ -23,7 +23,7 @@ from ...types import (
 
 def _get_kwargs(
     account_id: str,
-    id: str,
+    allowlist_ip_id: str,
 
 ) -> Dict[str, Any]:
     
@@ -34,7 +34,7 @@ def _get_kwargs(
 
     _kwargs: Dict[str, Any] = {
         "method": "delete",
-        "url": "/api/v1/accounts/{account_id}/security/allowlist_ip/{id}".format(account_id=account_id,id=id,),
+        "url": "/api/v1/accounts/{account_id}/security/allowlist_ip/{allowlist_ip_id}".format(account_id=account_id,allowlist_ip_id=allowlist_ip_id,),
     }
 
 
@@ -61,18 +61,15 @@ def _build_response(*, client: Union[AuthenticatedClient, Client], response: htt
 
 def sync_detailed(
     account_id: str,
-    id: str,
+    allowlist_ip_id: str,
     *,
     client: AuthenticatedClient,
 
 ) -> Response[Any]:
-    """ Delete security rule (CIDR)
-
-     Delete security rule (CIDR). No access to database possible after deletion from CIDR
-
+    """ 
     Args:
         account_id (str):
-        id (str):
+        allowlist_ip_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -85,7 +82,7 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         account_id=account_id,
-id=id,
+allowlist_ip_id=allowlist_ip_id,
 
     )
 
@@ -98,18 +95,15 @@ id=id,
 
 async def asyncio_detailed(
     account_id: str,
-    id: str,
+    allowlist_ip_id: str,
     *,
     client: AuthenticatedClient,
 
 ) -> Response[Any]:
-    """ Delete security rule (CIDR)
-
-     Delete security rule (CIDR). No access to database possible after deletion from CIDR
-
+    """ 
     Args:
         account_id (str):
-        id (str):
+        allowlist_ip_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -122,7 +116,7 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         account_id=account_id,
-id=id,
+allowlist_ip_id=allowlist_ip_id,
 
     )
 

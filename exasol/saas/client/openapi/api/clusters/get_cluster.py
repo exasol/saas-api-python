@@ -73,10 +73,7 @@ def sync_detailed(
     client: AuthenticatedClient,
 
 ) -> Response[Cluster]:
-    """ Get cluster
-
-     Get cluster
-
+    """ 
     Args:
         account_id (str):
         database_id (str):
@@ -112,10 +109,7 @@ def sync(
     client: AuthenticatedClient,
 
 ) -> Optional[Cluster]:
-    """ Get cluster
-
-     Get cluster
-
+    """ 
     Args:
         account_id (str):
         database_id (str):
@@ -146,10 +140,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
 
 ) -> Response[Cluster]:
-    """ Get cluster
-
-     Get cluster
-
+    """ 
     Args:
         account_id (str):
         database_id (str):
@@ -185,10 +176,7 @@ async def asyncio(
     client: AuthenticatedClient,
 
 ) -> Optional[Cluster]:
-    """ Get cluster
-
-     Get cluster
-
+    """ 
     Args:
         account_id (str):
         database_id (str):

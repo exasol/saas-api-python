@@ -66,10 +66,7 @@ def sync_detailed(
     client: AuthenticatedClient,
 
 ) -> Response[Any]:
-    """ Remove user
-
-     Remove user from account
-
+    """ 
     Args:
         account_id (str):
         user_id (str):
@@ -103,10 +100,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
 
 ) -> Response[Any]:
-    """ Remove user
-
-     Remove user from account
-
+    """ 
     Args:
         account_id (str):
         user_id (str):

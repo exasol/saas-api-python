@@ -68,10 +68,7 @@ def sync_detailed(
     client: AuthenticatedClient,
 
 ) -> Response[Any]:
-    """ Delete folder
-
-     Delete folder from database
-
+    """ 
     Args:
         account_id (str):
         database_id (str):
@@ -108,10 +105,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
 
 ) -> Response[Any]:
-    """ Delete folder
-
-     Delete folder from database
-
+    """ 
     Args:
         account_id (str):
         database_id (str):

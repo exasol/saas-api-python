@@ -26,11 +26,11 @@ if TYPE_CHECKING:
 
 
 
-T = TypeVar("T", bound="Connections")
+T = TypeVar("T", bound="ClusterConnection")
 
 
 @_attrs_define
-class Connections:
+class ClusterConnection:
     """ 
         Attributes:
             dns (str):
@@ -90,7 +90,7 @@ class Connections:
 
         db_username = d.pop("dbUsername")
 
-        connections = cls(
+        cluster_connection = cls(
             dns=dns,
             port=port,
             jdbc=jdbc,
@@ -98,5 +98,5 @@ class Connections:
             db_username=db_username,
         )
 
-        return connections
+        return cluster_connection
 

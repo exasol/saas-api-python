@@ -80,10 +80,7 @@ def sync_detailed(
     body: CreateDatabase,
 
 ) -> Response[Database]:
-    """ Create database
-
-     Create a new database
-
+    """ 
     Args:
         account_id (str):
         body (CreateDatabase):
@@ -116,10 +113,7 @@ def sync(
     body: CreateDatabase,
 
 ) -> Optional[Database]:
-    """ Create database
-
-     Create a new database
-
+    """ 
     Args:
         account_id (str):
         body (CreateDatabase):
@@ -147,10 +141,7 @@ async def asyncio_detailed(
     body: CreateDatabase,
 
 ) -> Response[Database]:
-    """ Create database
-
-     Create a new database
-
+    """ 
     Args:
         account_id (str):
         body (CreateDatabase):
@@ -183,10 +174,7 @@ async def asyncio(
     body: CreateDatabase,
 
 ) -> Optional[Database]:
-    """ Create database
-
-     Create a new database
-
+    """ 
     Args:
         account_id (str):
         body (CreateDatabase):

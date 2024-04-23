@@ -15,7 +15,7 @@ from ...client import (
     AuthenticatedClient,
     Client,
 )
-from ...models.region import Region
+from ...models.extension_instance import ExtensionInstance
 from ...types import (
     UNSET,
     Response,
@@ -23,7 +23,10 @@ from ...types import (
 
 
 def _get_kwargs(
-    platform: str,
+    account_id: str,
+    database_id: str,
+    extension_id: str,
+    extension_version: str,
 
 ) -> Dict[str, Any]:
     
@@ -34,19 +37,19 @@ def _get_kwargs(
 
     _kwargs: Dict[str, Any] = {
         "method": "get",
-        "url": "/api/v1/platforms/{platform}/regions".format(platform=platform,),
+        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/extensions/{extension_id}/{extension_version}/instances".format(account_id=account_id,database_id=database_id,extension_id=extension_id,extension_version=extension_version,),
     }
 
 
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[List['Region']]:
+def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[List['ExtensionInstance']]:
     if response.status_code == HTTPStatus.OK:
         response_200 = []
         _response_200 = response.json()
         for response_200_item_data in (_response_200):
-            response_200_item = Region.from_dict(response_200_item_data)
+            response_200_item = ExtensionInstance.from_dict(response_200_item_data)
 
 
 
@@ -59,7 +62,7 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[List['Region']]:
+def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[List['ExtensionInstance']]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -69,26 +72,35 @@ def _build_response(*, client: Union[AuthenticatedClient, Client], response: htt
 
 
 def sync_detailed(
-    platform: str,
+    account_id: str,
+    database_id: str,
+    extension_id: str,
+    extension_version: str,
     *,
     client: AuthenticatedClient,
 
-) -> Response[List['Region']]:
+) -> Response[List['ExtensionInstance']]:
     """ 
     Args:
-        platform (str):
+        account_id (str):
+        database_id (str):
+        extension_id (str):
+        extension_version (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[List['Region']]
+        Response[List['ExtensionInstance']]
      """
 
 
     kwargs = _get_kwargs(
-        platform=platform,
+        account_id=account_id,
+database_id=database_id,
+extension_id=extension_id,
+extension_version=extension_version,
 
     )
 
@@ -99,51 +111,69 @@ def sync_detailed(
     return _build_response(client=client, response=response)
 
 def sync(
-    platform: str,
+    account_id: str,
+    database_id: str,
+    extension_id: str,
+    extension_version: str,
     *,
     client: AuthenticatedClient,
 
-) -> Optional[List['Region']]:
+) -> Optional[List['ExtensionInstance']]:
     """ 
     Args:
-        platform (str):
+        account_id (str):
+        database_id (str):
+        extension_id (str):
+        extension_version (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        List['Region']
+        List['ExtensionInstance']
      """
 
 
     return sync_detailed(
-        platform=platform,
+        account_id=account_id,
+database_id=database_id,
+extension_id=extension_id,
+extension_version=extension_version,
 client=client,
 
     ).parsed
 
 async def asyncio_detailed(
-    platform: str,
+    account_id: str,
+    database_id: str,
+    extension_id: str,
+    extension_version: str,
     *,
     client: AuthenticatedClient,
 
-) -> Response[List['Region']]:
+) -> Response[List['ExtensionInstance']]:
     """ 
     Args:
-        platform (str):
+        account_id (str):
+        database_id (str):
+        extension_id (str):
+        extension_version (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[List['Region']]
+        Response[List['ExtensionInstance']]
      """
 
 
     kwargs = _get_kwargs(
-        platform=platform,
+        account_id=account_id,
+database_id=database_id,
+extension_id=extension_id,
+extension_version=extension_version,
 
     )
 
@@ -154,26 +184,35 @@ async def asyncio_detailed(
     return _build_response(client=client, response=response)
 
 async def asyncio(
-    platform: str,
+    account_id: str,
+    database_id: str,
+    extension_id: str,
+    extension_version: str,
     *,
     client: AuthenticatedClient,
 
-) -> Optional[List['Region']]:
+) -> Optional[List['ExtensionInstance']]:
     """ 
     Args:
-        platform (str):
+        account_id (str):
+        database_id (str):
+        extension_id (str):
+        extension_version (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        List['Region']
+        List['ExtensionInstance']
      """
 
 
     return (await asyncio_detailed(
-        platform=platform,
+        account_id=account_id,
+database_id=database_id,
+extension_id=extension_id,
+extension_version=extension_version,
 client=client,
 
     )).parsed

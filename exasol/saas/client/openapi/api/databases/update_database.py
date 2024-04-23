@@ -77,10 +77,7 @@ def sync_detailed(
     body: UpdateDatabase,
 
 ) -> Response[Any]:
-    """ Update database
-
-     Update database
-
+    """ 
     Args:
         account_id (str):
         database_id (str):
@@ -117,10 +114,7 @@ async def asyncio_detailed(
     body: UpdateDatabase,
 
 ) -> Response[Any]:
-    """ Update database
-
-     Update database
-
+    """ 
     Args:
         account_id (str):
         database_id (str):

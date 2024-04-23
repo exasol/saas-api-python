@@ -66,11 +66,7 @@ def sync_detailed(
     client: AuthenticatedClient,
 
 ) -> Response[Any]:
-    """ Start database
-
-     Start database
-    If database is from type main, workers will be also started
-
+    """ 
     Args:
         account_id (str):
         database_id (str):
@@ -104,11 +100,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
 
 ) -> Response[Any]:
-    """ Start database
-
-     Start database
-    If database is from type main, workers will be also started
-
+    """ 
     Args:
         account_id (str):
         database_id (str):

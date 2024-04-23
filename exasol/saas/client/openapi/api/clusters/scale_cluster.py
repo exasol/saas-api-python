@@ -79,10 +79,7 @@ def sync_detailed(
     body: ScaleCluster,
 
 ) -> Response[Any]:
-    """ Scale cluster
-
-     Scale cluster
-
+    """ 
     Args:
         account_id (str):
         database_id (str):
@@ -122,10 +119,7 @@ async def asyncio_detailed(
     body: ScaleCluster,
 
 ) -> Response[Any]:
-    """ Scale cluster
-
-     Scale cluster
-
+    """ 
     Args:
         account_id (str):
         database_id (str):
