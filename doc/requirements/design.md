@@ -11,7 +11,7 @@ We prefer a generated API interface as
 
 The following generators have been considered
 * O1) https://github.com/openapi-generators/openapi-python-client (python based)
-* O2) https://github.com/OpenAPITools/openapi-generator (used by SaaS, but java based)
+* O2) https://github.com/OpenAPITools/openapi-generator (java based)
 * O3) https://github.com/swagger-api/swagger-codegen (java based)
 
 The developers decided to use (O1) [openapi-python-client](https://github.com/openapi-generators/openapi-python-client) with the following rationale:
