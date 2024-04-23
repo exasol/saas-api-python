@@ -80,10 +80,7 @@ def sync_detailed(
     body: CreateAllowedIP,
 
 ) -> Response[AllowedIP]:
-    """ Add security rule (CIDR)
-
-     Add security rule to allow access from CIDR
-
+    """ 
     Args:
         account_id (str):
         body (CreateAllowedIP):
@@ -116,10 +113,7 @@ def sync(
     body: CreateAllowedIP,
 
 ) -> Optional[AllowedIP]:
-    """ Add security rule (CIDR)
-
-     Add security rule to allow access from CIDR
-
+    """ 
     Args:
         account_id (str):
         body (CreateAllowedIP):
@@ -147,10 +141,7 @@ async def asyncio_detailed(
     body: CreateAllowedIP,
 
 ) -> Response[AllowedIP]:
-    """ Add security rule (CIDR)
-
-     Add security rule to allow access from CIDR
-
+    """ 
     Args:
         account_id (str):
         body (CreateAllowedIP):
@@ -183,10 +174,7 @@ async def asyncio(
     body: CreateAllowedIP,
 
 ) -> Optional[AllowedIP]:
-    """ Add security rule (CIDR)
-
-     Add security rule to allow access from CIDR
-
+    """ 
     Args:
         account_id (str):
         body (CreateAllowedIP):

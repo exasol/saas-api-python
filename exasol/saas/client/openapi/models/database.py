@@ -25,8 +25,8 @@ from ..types import (
 )
 
 if TYPE_CHECKING:
-  from ..models.cluster_overview import ClusterOverview
-  from ..models.integrations import Integrations
+  from ..models.database_clusters import DatabaseClusters
+  from ..models.database_integrations_item import DatabaseIntegrationsItem
 
 
 
@@ -42,12 +42,12 @@ class Database:
             status (Status):
             id (str):
             name (str):
-            clusters (ClusterOverview):
+            clusters (DatabaseClusters):
             provider (str):
             region (str):
             created_at (datetime.datetime):
             created_by (str):
-            integrations (Union[Unset, List['Integrations']]):
+            integrations (Union[Unset, List['DatabaseIntegrationsItem']]):
             deleted_by (Union[Unset, str]):
             deleted_at (Union[Unset, datetime.datetime]):
      """
@@ -55,19 +55,20 @@ class Database:
     status: Status
     id: str
     name: str
-    clusters: 'ClusterOverview'
+    clusters: 'DatabaseClusters'
     provider: str
     region: str
     created_at: datetime.datetime
     created_by: str
-    integrations: Union[Unset, List['Integrations']] = UNSET
+    integrations: Union[Unset, List['DatabaseIntegrationsItem']] = UNSET
     deleted_by: Union[Unset, str] = UNSET
     deleted_at: Union[Unset, datetime.datetime] = UNSET
+    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
 
     def to_dict(self) -> Dict[str, Any]:
-        from ..models.cluster_overview import ClusterOverview
-        from ..models.integrations import Integrations
+        from ..models.database_clusters import DatabaseClusters
+        from ..models.database_integrations_item import DatabaseIntegrationsItem
         status = self.status.value
 
         id = self.id
@@ -103,6 +104,7 @@ class Database:
 
 
         field_dict: Dict[str, Any] = {}
+        field_dict.update(self.additional_properties)
         field_dict.update({
             "status": status,
             "id": id,
@@ -126,8 +128,8 @@ class Database:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.cluster_overview import ClusterOverview
-        from ..models.integrations import Integrations
+        from ..models.database_clusters import DatabaseClusters
+        from ..models.database_integrations_item import DatabaseIntegrationsItem
         d = src_dict.copy()
         status = Status(d.pop("status"))
 
@@ -138,7 +140,7 @@ class Database:
 
         name = d.pop("name")
 
-        clusters = ClusterOverview.from_dict(d.pop("clusters"))
+        clusters = DatabaseClusters.from_dict(d.pop("clusters"))
 
 
 
@@ -157,7 +159,7 @@ class Database:
         integrations = []
         _integrations = d.pop("integrations", UNSET)
         for integrations_item_data in (_integrations or []):
-            integrations_item = Integrations.from_dict(integrations_item_data)
+            integrations_item = DatabaseIntegrationsItem.from_dict(integrations_item_data)
 
 
 
@@ -190,5 +192,21 @@ class Database:
             deleted_at=deleted_at,
         )
 
+        database.additional_properties = d
         return database
 
+    @property
+    def additional_keys(self) -> List[str]:
+        return list(self.additional_properties.keys())
+
+    def __getitem__(self, key: str) -> Any:
+        return self.additional_properties[key]
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        self.additional_properties[key] = value
+
+    def __delitem__(self, key: str) -> None:
+        del self.additional_properties[key]
+
+    def __contains__(self, key: str) -> bool:
+        return key in self.additional_properties

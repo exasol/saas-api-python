@@ -79,11 +79,7 @@ def sync_detailed(
     body: UpdateCluster,
 
 ) -> Response[Any]:
-    """ Update cluster
-
-     Update the cluster with the specified ID.
-     Only metadata can be changed. To scale the cluster size, use the scale cluster endpoint.
-
+    """ 
     Args:
         account_id (str):
         database_id (str):
@@ -123,11 +119,7 @@ async def asyncio_detailed(
     body: UpdateCluster,
 
 ) -> Response[Any]:
-    """ Update cluster
-
-     Update the cluster with the specified ID.
-     Only metadata can be changed. To scale the cluster size, use the scale cluster endpoint.
-
+    """ 
     Args:
         account_id (str):
         database_id (str):

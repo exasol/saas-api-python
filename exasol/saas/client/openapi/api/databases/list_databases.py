@@ -74,10 +74,7 @@ def sync_detailed(
     client: AuthenticatedClient,
 
 ) -> Response[List['Database']]:
-    """ List databases
-
-     List databases
-
+    """ 
     Args:
         account_id (str):
 
@@ -107,10 +104,7 @@ def sync(
     client: AuthenticatedClient,
 
 ) -> Optional[List['Database']]:
-    """ List databases
-
-     List databases
-
+    """ 
     Args:
         account_id (str):
 
@@ -135,10 +129,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
 
 ) -> Response[List['Database']]:
-    """ List databases
-
-     List databases
-
+    """ 
     Args:
         account_id (str):
 
@@ -168,10 +159,7 @@ async def asyncio(
     client: AuthenticatedClient,
 
 ) -> Optional[List['Database']]:
-    """ List databases
-
-     List databases
-
+    """ 
     Args:
         account_id (str):
 

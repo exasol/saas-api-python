@@ -15,6 +15,7 @@ from ...client import (
     AuthenticatedClient,
     Client,
 )
+from ...models.user import User
 from ...types import (
     UNSET,
     Response,
@@ -23,8 +24,7 @@ from ...types import (
 
 def _get_kwargs(
     account_id: str,
-    database_id: str,
-    cluster_id: str,
+    user_id: str,
 
 ) -> Dict[str, Any]:
     
@@ -34,24 +34,28 @@ def _get_kwargs(
     
 
     _kwargs: Dict[str, Any] = {
-        "method": "put",
-        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/clusters/{cluster_id}/stop".format(account_id=account_id,database_id=database_id,cluster_id=cluster_id,),
+        "method": "get",
+        "url": "/api/v1/internal/accounts/{account_id}/users/{user_id}".format(account_id=account_id,user_id=user_id,),
     }
 
 
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[Any]:
-    if response.status_code == HTTPStatus.NO_CONTENT:
-        return None
+def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[User]:
+    if response.status_code == HTTPStatus.OK:
+        response_200 = User.from_dict(response.json())
+
+
+
+        return response_200
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
     else:
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[Any]:
+def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[User]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -62,31 +66,28 @@ def _build_response(*, client: Union[AuthenticatedClient, Client], response: htt
 
 def sync_detailed(
     account_id: str,
-    database_id: str,
-    cluster_id: str,
+    user_id: str,
     *,
     client: AuthenticatedClient,
 
-) -> Response[Any]:
+) -> Response[User]:
     """ 
     Args:
         account_id (str):
-        database_id (str):
-        cluster_id (str):
+        user_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any]
+        Response[User]
      """
 
 
     kwargs = _get_kwargs(
         account_id=account_id,
-database_id=database_id,
-cluster_id=cluster_id,
+user_id=user_id,
 
     )
 
@@ -96,34 +97,58 @@ cluster_id=cluster_id,
 
     return _build_response(client=client, response=response)
 
-
-async def asyncio_detailed(
+def sync(
     account_id: str,
-    database_id: str,
-    cluster_id: str,
+    user_id: str,
     *,
     client: AuthenticatedClient,
 
-) -> Response[Any]:
+) -> Optional[User]:
     """ 
     Args:
         account_id (str):
-        database_id (str):
-        cluster_id (str):
+        user_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any]
+        User
+     """
+
+
+    return sync_detailed(
+        account_id=account_id,
+user_id=user_id,
+client=client,
+
+    ).parsed
+
+async def asyncio_detailed(
+    account_id: str,
+    user_id: str,
+    *,
+    client: AuthenticatedClient,
+
+) -> Response[User]:
+    """ 
+    Args:
+        account_id (str):
+        user_id (str):
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Response[User]
      """
 
 
     kwargs = _get_kwargs(
         account_id=account_id,
-database_id=database_id,
-cluster_id=cluster_id,
+user_id=user_id,
 
     )
 
@@ -133,3 +158,30 @@ cluster_id=cluster_id,
 
     return _build_response(client=client, response=response)
 
+async def asyncio(
+    account_id: str,
+    user_id: str,
+    *,
+    client: AuthenticatedClient,
+
+) -> Optional[User]:
+    """ 
+    Args:
+        account_id (str):
+        user_id (str):
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        User
+     """
+
+
+    return (await asyncio_detailed(
+        account_id=account_id,
+user_id=user_id,
+client=client,
+
+    )).parsed

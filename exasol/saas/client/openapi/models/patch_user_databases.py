@@ -3,11 +3,13 @@ from typing import (
     Any,
     BinaryIO,
     Dict,
+    List,
     Optional,
     TextIO,
     Tuple,
     Type,
     TypeVar,
+    cast,
 )
 
 from attrs import define as _attrs_define
@@ -18,31 +20,39 @@ from ..types import (
     Unset,
 )
 
-T = TypeVar("T", bound="ClusterOverview")
+T = TypeVar("T", bound="PatchUserDatabases")
 
 
 @_attrs_define
-class ClusterOverview:
+class PatchUserDatabases:
     """ 
         Attributes:
-            total (int):
-            running (int):
+            delete (List[str]):
+            add (List[str]):
      """
 
-    total: int
-    running: int
+    delete: List[str]
+    add: List[str]
 
 
     def to_dict(self) -> Dict[str, Any]:
-        total = self.total
+        delete = self.delete
 
-        running = self.running
+
+
+
+
+        add = self.add
+
+
+
+
 
 
         field_dict: Dict[str, Any] = {}
         field_dict.update({
-            "total": total,
-            "running": running,
+            "delete": delete,
+            "add": add,
         })
 
         return field_dict
@@ -52,14 +62,16 @@ class ClusterOverview:
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         d = src_dict.copy()
-        total = d.pop("total")
+        delete = cast(List[str], d.pop("delete"))
 
-        running = d.pop("running")
 
-        cluster_overview = cls(
-            total=total,
-            running=running,
+        add = cast(List[str], d.pop("add"))
+
+
+        patch_user_databases = cls(
+            delete=delete,
+            add=add,
         )
 
-        return cluster_overview
+        return patch_user_databases
 

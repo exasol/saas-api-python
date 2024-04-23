@@ -15,7 +15,8 @@ from ...client import (
     AuthenticatedClient,
     Client,
 )
-from ...models.upload_file import UploadFile
+from ...models.create_extension_instance import CreateExtensionInstance
+from ...models.extension_instance import ExtensionInstance
 from ...types import (
     UNSET,
     Response,
@@ -25,10 +26,14 @@ from ...types import (
 def _get_kwargs(
     account_id: str,
     database_id: str,
-    key: str,
+    extension_id: str,
+    extension_version: str,
+    *,
+    body: CreateExtensionInstance,
 
 ) -> Dict[str, Any]:
-    
+    headers: Dict[str, Any] = {}
+
 
     
 
@@ -36,16 +41,22 @@ def _get_kwargs(
 
     _kwargs: Dict[str, Any] = {
         "method": "post",
-        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/files/{key}".format(account_id=account_id,database_id=database_id,key=key,),
+        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/extensions/{extension_id}/{extension_version}/instances".format(account_id=account_id,database_id=database_id,extension_id=extension_id,extension_version=extension_version,),
     }
 
+    _body = body.to_dict()
 
+
+    _kwargs["json"] = _body
+    headers["Content-Type"] = "application/json"
+
+    _kwargs["headers"] = headers
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[UploadFile]:
+def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[ExtensionInstance]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = UploadFile.from_dict(response.json())
+        response_200 = ExtensionInstance.from_dict(response.json())
 
 
 
@@ -56,7 +67,7 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[UploadFile]:
+def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[ExtensionInstance]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -68,30 +79,36 @@ def _build_response(*, client: Union[AuthenticatedClient, Client], response: htt
 def sync_detailed(
     account_id: str,
     database_id: str,
-    key: str,
+    extension_id: str,
+    extension_version: str,
     *,
     client: AuthenticatedClient,
+    body: CreateExtensionInstance,
 
-) -> Response[UploadFile]:
+) -> Response[ExtensionInstance]:
     """ 
     Args:
         account_id (str):
         database_id (str):
-        key (str):
+        extension_id (str):
+        extension_version (str):
+        body (CreateExtensionInstance):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[UploadFile]
+        Response[ExtensionInstance]
      """
 
 
     kwargs = _get_kwargs(
         account_id=account_id,
 database_id=database_id,
-key=key,
+extension_id=extension_id,
+extension_version=extension_version,
+body=body,
 
     )
 
@@ -104,61 +121,73 @@ key=key,
 def sync(
     account_id: str,
     database_id: str,
-    key: str,
+    extension_id: str,
+    extension_version: str,
     *,
     client: AuthenticatedClient,
+    body: CreateExtensionInstance,
 
-) -> Optional[UploadFile]:
+) -> Optional[ExtensionInstance]:
     """ 
     Args:
         account_id (str):
         database_id (str):
-        key (str):
+        extension_id (str):
+        extension_version (str):
+        body (CreateExtensionInstance):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        UploadFile
+        ExtensionInstance
      """
 
 
     return sync_detailed(
         account_id=account_id,
 database_id=database_id,
-key=key,
+extension_id=extension_id,
+extension_version=extension_version,
 client=client,
+body=body,
 
     ).parsed
 
 async def asyncio_detailed(
     account_id: str,
     database_id: str,
-    key: str,
+    extension_id: str,
+    extension_version: str,
     *,
     client: AuthenticatedClient,
+    body: CreateExtensionInstance,
 
-) -> Response[UploadFile]:
+) -> Response[ExtensionInstance]:
     """ 
     Args:
         account_id (str):
         database_id (str):
-        key (str):
+        extension_id (str):
+        extension_version (str):
+        body (CreateExtensionInstance):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[UploadFile]
+        Response[ExtensionInstance]
      """
 
 
     kwargs = _get_kwargs(
         account_id=account_id,
 database_id=database_id,
-key=key,
+extension_id=extension_id,
+extension_version=extension_version,
+body=body,
 
     )
 
@@ -171,30 +200,36 @@ key=key,
 async def asyncio(
     account_id: str,
     database_id: str,
-    key: str,
+    extension_id: str,
+    extension_version: str,
     *,
     client: AuthenticatedClient,
+    body: CreateExtensionInstance,
 
-) -> Optional[UploadFile]:
+) -> Optional[ExtensionInstance]:
     """ 
     Args:
         account_id (str):
         database_id (str):
-        key (str):
+        extension_id (str):
+        extension_version (str):
+        body (CreateExtensionInstance):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        UploadFile
+        ExtensionInstance
      """
 
 
     return (await asyncio_detailed(
         account_id=account_id,
 database_id=database_id,
-key=key,
+extension_id=extension_id,
+extension_version=extension_version,
 client=client,
+body=body,
 
     )).parsed

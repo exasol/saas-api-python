@@ -8,7 +8,6 @@ from typing import (
     Tuple,
     Type,
     TypeVar,
-    Union,
 )
 
 from attrs import define as _attrs_define
@@ -19,38 +18,32 @@ from ..types import (
     Unset,
 )
 
-T = TypeVar("T", bound="Integrations")
+T = TypeVar("T", bound="ExtensionParameterValue")
 
 
 @_attrs_define
-class Integrations:
+class ExtensionParameterValue:
     """ 
         Attributes:
             id (str):
-            name (str):
-            url (Union[Unset, str]):
+            value (str):
      """
 
     id: str
-    name: str
-    url: Union[Unset, str] = UNSET
+    value: str
 
 
     def to_dict(self) -> Dict[str, Any]:
         id = self.id
 
-        name = self.name
-
-        url = self.url
+        value = self.value
 
 
         field_dict: Dict[str, Any] = {}
         field_dict.update({
             "id": id,
-            "name": name,
+            "value": value,
         })
-        if url is not UNSET:
-            field_dict["url"] = url
 
         return field_dict
 
@@ -61,15 +54,12 @@ class Integrations:
         d = src_dict.copy()
         id = d.pop("id")
 
-        name = d.pop("name")
+        value = d.pop("value")
 
-        url = d.pop("url", UNSET)
-
-        integrations = cls(
+        extension_parameter_value = cls(
             id=id,
-            name=name,
-            url=url,
+            value=value,
         )
 
-        return integrations
+        return extension_parameter_value
 

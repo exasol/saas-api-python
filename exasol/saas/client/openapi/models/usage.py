@@ -21,25 +21,25 @@ from ..types import (
 )
 
 if TYPE_CHECKING:
-  from ..models.usage_database import UsageDatabase
+  from ..models.usage_additional_property_item import UsageAdditionalPropertyItem
 
 
 
 
 
-T = TypeVar("T", bound="GetUsageResponse200")
+T = TypeVar("T", bound="Usage")
 
 
 @_attrs_define
-class GetUsageResponse200:
+class Usage:
     """ 
      """
 
-    additional_properties: Dict[str, List['UsageDatabase']] = _attrs_field(init=False, factory=dict)
+    additional_properties: Dict[str, List['UsageAdditionalPropertyItem']] = _attrs_field(init=False, factory=dict)
 
 
     def to_dict(self) -> Dict[str, Any]:
-        from ..models.usage_database import UsageDatabase
+        from ..models.usage_additional_property_item import UsageAdditionalPropertyItem
         
         field_dict: Dict[str, Any] = {}
         for prop_name, prop in self.additional_properties.items():
@@ -58,9 +58,9 @@ class GetUsageResponse200:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.usage_database import UsageDatabase
+        from ..models.usage_additional_property_item import UsageAdditionalPropertyItem
         d = src_dict.copy()
-        get_usage_response_200 = cls(
+        usage = cls(
         )
 
 
@@ -69,7 +69,7 @@ class GetUsageResponse200:
             additional_property = []
             _additional_property = prop_dict
             for additional_property_item_data in (_additional_property):
-                additional_property_item = UsageDatabase.from_dict(additional_property_item_data)
+                additional_property_item = UsageAdditionalPropertyItem.from_dict(additional_property_item_data)
 
 
 
@@ -77,17 +77,17 @@ class GetUsageResponse200:
 
             additional_properties[prop_name] = additional_property
 
-        get_usage_response_200.additional_properties = additional_properties
-        return get_usage_response_200
+        usage.additional_properties = additional_properties
+        return usage
 
     @property
     def additional_keys(self) -> List[str]:
         return list(self.additional_properties.keys())
 
-    def __getitem__(self, key: str) -> List['UsageDatabase']:
+    def __getitem__(self, key: str) -> List['UsageAdditionalPropertyItem']:
         return self.additional_properties[key]
 
-    def __setitem__(self, key: str, value: List['UsageDatabase']) -> None:
+    def __setitem__(self, key: str, value: List['UsageAdditionalPropertyItem']) -> None:
         self.additional_properties[key] = value
 
     def __delitem__(self, key: str) -> None:

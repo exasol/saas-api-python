@@ -66,10 +66,7 @@ def sync_detailed(
     client: AuthenticatedClient,
 
 ) -> Response[Any]:
-    """ Delete database
-
-     Delete the database and all cluster
-
+    """ 
     Args:
         account_id (str):
         database_id (str):
@@ -103,10 +100,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
 
 ) -> Response[Any]:
-    """ Delete database
-
-     Delete the database and all cluster
-
+    """ 
     Args:
         account_id (str):
         database_id (str):

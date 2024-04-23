@@ -3,13 +3,11 @@ from typing import (
     Any,
     BinaryIO,
     Dict,
-    List,
     Optional,
     TextIO,
     Tuple,
     Type,
     TypeVar,
-    cast,
 )
 
 from attrs import define as _attrs_define
@@ -20,39 +18,31 @@ from ..types import (
     Unset,
 )
 
-T = TypeVar("T", bound="PatchDatabases")
+T = TypeVar("T", bound="ExtensionInstance")
 
 
 @_attrs_define
-class PatchDatabases:
+class ExtensionInstance:
     """ 
         Attributes:
-            delete (List[str]):
-            add (List[str]):
+            id (str):
+            name (str):
      """
 
-    delete: List[str]
-    add: List[str]
+    id: str
+    name: str
 
 
     def to_dict(self) -> Dict[str, Any]:
-        delete = self.delete
+        id = self.id
 
-
-
-
-
-        add = self.add
-
-
-
-
+        name = self.name
 
 
         field_dict: Dict[str, Any] = {}
         field_dict.update({
-            "delete": delete,
-            "add": add,
+            "id": id,
+            "name": name,
         })
 
         return field_dict
@@ -62,16 +52,14 @@ class PatchDatabases:
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         d = src_dict.copy()
-        delete = cast(List[str], d.pop("delete"))
+        id = d.pop("id")
 
+        name = d.pop("name")
 
-        add = cast(List[str], d.pop("add"))
-
-
-        patch_databases = cls(
-            delete=delete,
-            add=add,
+        extension_instance = cls(
+            id=id,
+            name=name,
         )
 
-        return patch_databases
+        return extension_instance
 

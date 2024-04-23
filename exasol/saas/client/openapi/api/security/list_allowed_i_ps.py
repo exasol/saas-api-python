@@ -74,10 +74,7 @@ def sync_detailed(
     client: AuthenticatedClient,
 
 ) -> Response[List['AllowedIP']]:
-    """ List security rules (CIDR)
-
-     List security rules (CIDR)
-
+    """ 
     Args:
         account_id (str):
 
@@ -107,10 +104,7 @@ def sync(
     client: AuthenticatedClient,
 
 ) -> Optional[List['AllowedIP']]:
-    """ List security rules (CIDR)
-
-     List security rules (CIDR)
-
+    """ 
     Args:
         account_id (str):
 
@@ -135,10 +129,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
 
 ) -> Response[List['AllowedIP']]:
-    """ List security rules (CIDR)
-
-     List security rules (CIDR)
-
+    """ 
     Args:
         account_id (str):
 
@@ -168,10 +159,7 @@ async def asyncio(
     client: AuthenticatedClient,
 
 ) -> Optional[List['AllowedIP']]:
-    """ List security rules (CIDR)
-
-     List security rules (CIDR)
-
+    """ 
     Args:
         account_id (str):
 

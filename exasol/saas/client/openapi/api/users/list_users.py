@@ -15,7 +15,7 @@ from ...client import (
     AuthenticatedClient,
     Client,
 )
-from ...models.profile import Profile
+from ...models.user import User
 from ...types import (
     UNSET,
     Response,
@@ -57,12 +57,12 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[List['Profile']]:
+def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[List['User']]:
     if response.status_code == HTTPStatus.OK:
         response_200 = []
         _response_200 = response.json()
         for response_200_item_data in (_response_200):
-            response_200_item = Profile.from_dict(response_200_item_data)
+            response_200_item = User.from_dict(response_200_item_data)
 
 
 
@@ -75,7 +75,7 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[List['Profile']]:
+def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[List['User']]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -92,11 +92,8 @@ def sync_detailed(
     next_: Union[Unset, int] = UNSET,
     limit: Union[Unset, int] = UNSET,
 
-) -> Response[List['Profile']]:
-    """ List users
-
-     List users for account
-
+) -> Response[List['User']]:
+    """ 
     Args:
         account_id (str):
         filter_ (Union[Unset, str]):
@@ -108,7 +105,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[List['Profile']]
+        Response[List['User']]
      """
 
 
@@ -134,11 +131,8 @@ def sync(
     next_: Union[Unset, int] = UNSET,
     limit: Union[Unset, int] = UNSET,
 
-) -> Optional[List['Profile']]:
-    """ List users
-
-     List users for account
-
+) -> Optional[List['User']]:
+    """ 
     Args:
         account_id (str):
         filter_ (Union[Unset, str]):
@@ -150,7 +144,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        List['Profile']
+        List['User']
      """
 
 
@@ -171,11 +165,8 @@ async def asyncio_detailed(
     next_: Union[Unset, int] = UNSET,
     limit: Union[Unset, int] = UNSET,
 
-) -> Response[List['Profile']]:
-    """ List users
-
-     List users for account
-
+) -> Response[List['User']]:
+    """ 
     Args:
         account_id (str):
         filter_ (Union[Unset, str]):
@@ -187,7 +178,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[List['Profile']]
+        Response[List['User']]
      """
 
 
@@ -213,11 +204,8 @@ async def asyncio(
     next_: Union[Unset, int] = UNSET,
     limit: Union[Unset, int] = UNSET,
 
-) -> Optional[List['Profile']]:
-    """ List users
-
-     List users for account
-
+) -> Optional[List['User']]:
+    """ 
     Args:
         account_id (str):
         filter_ (Union[Unset, str]):
@@ -229,7 +217,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        List['Profile']
+        List['User']
      """
 
 

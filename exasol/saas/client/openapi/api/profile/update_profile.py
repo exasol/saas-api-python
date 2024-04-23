@@ -73,10 +73,7 @@ def sync_detailed(
     body: UpdateProfile,
 
 ) -> Response[Any]:
-    """ Update user profile
-
-     Set first and last name of a user profile
-
+    """ 
     Args:
         body (UpdateProfile):
 
@@ -107,10 +104,7 @@ async def asyncio_detailed(
     body: UpdateProfile,
 
 ) -> Response[Any]:
-    """ Update user profile
-
-     Set first and last name of a user profile
-
+    """ 
     Args:
         body (UpdateProfile):
 

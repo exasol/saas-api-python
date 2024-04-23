@@ -74,10 +74,7 @@ def sync_detailed(
     client: AuthenticatedClient,
 
 ) -> Response[List['ClusterSize']]:
-    """ Get cluster sizes for platform
-
-     Get available cluster sizes for platform
-
+    """ 
     Args:
         platform (str):
 
@@ -107,10 +104,7 @@ def sync(
     client: AuthenticatedClient,
 
 ) -> Optional[List['ClusterSize']]:
-    """ Get cluster sizes for platform
-
-     Get available cluster sizes for platform
-
+    """ 
     Args:
         platform (str):
 
@@ -135,10 +129,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
 
 ) -> Response[List['ClusterSize']]:
-    """ Get cluster sizes for platform
-
-     Get available cluster sizes for platform
-
+    """ 
     Args:
         platform (str):
 
@@ -168,10 +159,7 @@ async def asyncio(
     client: AuthenticatedClient,
 
 ) -> Optional[List['ClusterSize']]:
-    """ Get cluster sizes for platform
-
-     Get available cluster sizes for platform
-
+    """ 
     Args:
         platform (str):
 
