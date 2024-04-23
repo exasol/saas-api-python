@@ -24,7 +24,7 @@ from ...types import (
 
 def _get_kwargs(
     account_id: str,
-    id: str,
+    allowlist_ip_id: str,
     *,
     body: UpdateAllowedIP,
 
@@ -38,7 +38,7 @@ def _get_kwargs(
 
     _kwargs: Dict[str, Any] = {
         "method": "put",
-        "url": "/api/v1/accounts/{account_id}/security/allowlist_ip/{id}".format(account_id=account_id,id=id,),
+        "url": "/api/v1/accounts/{account_id}/security/allowlist_ip/{allowlist_ip_id}".format(account_id=account_id,allowlist_ip_id=allowlist_ip_id,),
     }
 
     _body = body.to_dict()
@@ -71,19 +71,16 @@ def _build_response(*, client: Union[AuthenticatedClient, Client], response: htt
 
 def sync_detailed(
     account_id: str,
-    id: str,
+    allowlist_ip_id: str,
     *,
     client: AuthenticatedClient,
     body: UpdateAllowedIP,
 
 ) -> Response[Any]:
-    """ Update security rule (CIDR)
-
-     Update security rule (CIDR)
-
+    """ 
     Args:
         account_id (str):
-        id (str):
+        allowlist_ip_id (str):
         body (UpdateAllowedIP):
 
     Raises:
@@ -97,7 +94,7 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         account_id=account_id,
-id=id,
+allowlist_ip_id=allowlist_ip_id,
 body=body,
 
     )
@@ -111,19 +108,16 @@ body=body,
 
 async def asyncio_detailed(
     account_id: str,
-    id: str,
+    allowlist_ip_id: str,
     *,
     client: AuthenticatedClient,
     body: UpdateAllowedIP,
 
 ) -> Response[Any]:
-    """ Update security rule (CIDR)
-
-     Update security rule (CIDR)
-
+    """ 
     Args:
         account_id (str):
-        id (str):
+        allowlist_ip_id (str):
         body (UpdateAllowedIP):
 
     Raises:
@@ -137,7 +131,7 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         account_id=account_id,
-id=id,
+allowlist_ip_id=allowlist_ip_id,
 body=body,
 
     )

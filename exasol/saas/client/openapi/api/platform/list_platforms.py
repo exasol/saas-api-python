@@ -72,10 +72,7 @@ def sync_detailed(
     client: AuthenticatedClient,
 
 ) -> Response[List['Platform']]:
-    """ List platforms
-
-     Get available platforms
-
+    """ 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
@@ -100,10 +97,7 @@ def sync(
     client: AuthenticatedClient,
 
 ) -> Optional[List['Platform']]:
-    """ List platforms
-
-     Get available platforms
-
+    """ 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
@@ -123,10 +117,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
 
 ) -> Response[List['Platform']]:
-    """ List platforms
-
-     Get available platforms
-
+    """ 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
@@ -151,10 +142,7 @@ async def asyncio(
     client: AuthenticatedClient,
 
 ) -> Optional[List['Platform']]:
-    """ List platforms
-
-     Get available platforms
-
+    """ 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.

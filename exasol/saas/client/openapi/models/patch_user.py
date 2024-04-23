@@ -21,7 +21,7 @@ from ..types import (
 )
 
 if TYPE_CHECKING:
-  from ..models.patch_databases import PatchDatabases
+  from ..models.patch_user_databases import PatchUserDatabases
 
 
 
@@ -35,17 +35,17 @@ class PatchUser:
     """ 
         Attributes:
             role_id (Union[Unset, str]):
-            databases (Union[Unset, PatchDatabases]):
+            databases (Union[Unset, PatchUserDatabases]):
             db_username (Union[Unset, str]):
      """
 
     role_id: Union[Unset, str] = UNSET
-    databases: Union[Unset, 'PatchDatabases'] = UNSET
+    databases: Union[Unset, 'PatchUserDatabases'] = UNSET
     db_username: Union[Unset, str] = UNSET
 
 
     def to_dict(self) -> Dict[str, Any]:
-        from ..models.patch_databases import PatchDatabases
+        from ..models.patch_user_databases import PatchUserDatabases
         role_id = self.role_id
 
         databases: Union[Unset, Dict[str, Any]] = UNSET
@@ -71,16 +71,16 @@ class PatchUser:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.patch_databases import PatchDatabases
+        from ..models.patch_user_databases import PatchUserDatabases
         d = src_dict.copy()
         role_id = d.pop("roleID", UNSET)
 
         _databases = d.pop("databases", UNSET)
-        databases: Union[Unset, PatchDatabases]
+        databases: Union[Unset, PatchUserDatabases]
         if isinstance(_databases,  Unset):
             databases = UNSET
         else:
-            databases = PatchDatabases.from_dict(_databases)
+            databases = PatchUserDatabases.from_dict(_databases)
 
 
 

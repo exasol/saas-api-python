@@ -82,10 +82,7 @@ def sync_detailed(
     body: CreateCluster,
 
 ) -> Response[Cluster]:
-    """ Create cluster
-
-     Create a new cluster
-
+    """ 
     Args:
         account_id (str):
         database_id (str):
@@ -121,10 +118,7 @@ def sync(
     body: CreateCluster,
 
 ) -> Optional[Cluster]:
-    """ Create cluster
-
-     Create a new cluster
-
+    """ 
     Args:
         account_id (str):
         database_id (str):
@@ -155,10 +149,7 @@ async def asyncio_detailed(
     body: CreateCluster,
 
 ) -> Response[Cluster]:
-    """ Create cluster
-
-     Create a new cluster
-
+    """ 
     Args:
         account_id (str):
         database_id (str):
@@ -194,10 +185,7 @@ async def asyncio(
     body: CreateCluster,
 
 ) -> Optional[Cluster]:
-    """ Create cluster
-
-     Create a new cluster
-
+    """ 
     Args:
         account_id (str):
         database_id (str):

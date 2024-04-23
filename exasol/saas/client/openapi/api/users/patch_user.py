@@ -77,10 +77,7 @@ def sync_detailed(
     body: PatchUser,
 
 ) -> Response[Any]:
-    """ Patch user
-
-     Patch user
-
+    """ 
     Args:
         account_id (str):
         user_id (str):
@@ -117,10 +114,7 @@ async def asyncio_detailed(
     body: PatchUser,
 
 ) -> Response[Any]:
-    """ Patch user
-
-     Patch user
-
+    """ 
     Args:
         account_id (str):
         user_id (str):

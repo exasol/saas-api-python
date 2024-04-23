@@ -15,8 +15,8 @@ from ...client import (
     AuthenticatedClient,
     Client,
 )
-from ...models.get_usage_response_200 import GetUsageResponse200
 from ...models.get_usage_type import GetUsageType
+from ...models.usage import Usage
 from ...types import (
     UNSET,
     Response,
@@ -27,7 +27,7 @@ from ...types import (
 def _get_kwargs(
     account_id: str,
     *,
-    year_month: str,
+    year_month: Union[Unset, str] = UNSET,
     type: Union[Unset, GetUsageType] = UNSET,
 
 ) -> Dict[str, Any]:
@@ -59,9 +59,9 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[GetUsageResponse200]:
+def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[Usage]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = GetUsageResponse200.from_dict(response.json())
+        response_200 = Usage.from_dict(response.json())
 
 
 
@@ -72,7 +72,7 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[GetUsageResponse200]:
+def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[Usage]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -85,17 +85,14 @@ def sync_detailed(
     account_id: str,
     *,
     client: AuthenticatedClient,
-    year_month: str,
+    year_month: Union[Unset, str] = UNSET,
     type: Union[Unset, GetUsageType] = UNSET,
 
-) -> Response[GetUsageResponse200]:
-    """ Get usage
-
-     Show usage for one month
-
+) -> Response[Usage]:
+    """ 
     Args:
         account_id (str):
-        year_month (str):
+        year_month (Union[Unset, str]):
         type (Union[Unset, GetUsageType]):
 
     Raises:
@@ -103,7 +100,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[GetUsageResponse200]
+        Response[Usage]
      """
 
 
@@ -124,17 +121,14 @@ def sync(
     account_id: str,
     *,
     client: AuthenticatedClient,
-    year_month: str,
+    year_month: Union[Unset, str] = UNSET,
     type: Union[Unset, GetUsageType] = UNSET,
 
-) -> Optional[GetUsageResponse200]:
-    """ Get usage
-
-     Show usage for one month
-
+) -> Optional[Usage]:
+    """ 
     Args:
         account_id (str):
-        year_month (str):
+        year_month (Union[Unset, str]):
         type (Union[Unset, GetUsageType]):
 
     Raises:
@@ -142,7 +136,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        GetUsageResponse200
+        Usage
      """
 
 
@@ -158,17 +152,14 @@ async def asyncio_detailed(
     account_id: str,
     *,
     client: AuthenticatedClient,
-    year_month: str,
+    year_month: Union[Unset, str] = UNSET,
     type: Union[Unset, GetUsageType] = UNSET,
 
-) -> Response[GetUsageResponse200]:
-    """ Get usage
-
-     Show usage for one month
-
+) -> Response[Usage]:
+    """ 
     Args:
         account_id (str):
-        year_month (str):
+        year_month (Union[Unset, str]):
         type (Union[Unset, GetUsageType]):
 
     Raises:
@@ -176,7 +167,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[GetUsageResponse200]
+        Response[Usage]
      """
 
 
@@ -197,17 +188,14 @@ async def asyncio(
     account_id: str,
     *,
     client: AuthenticatedClient,
-    year_month: str,
+    year_month: Union[Unset, str] = UNSET,
     type: Union[Unset, GetUsageType] = UNSET,
 
-) -> Optional[GetUsageResponse200]:
-    """ Get usage
-
-     Show usage for one month
-
+) -> Optional[Usage]:
+    """ 
     Args:
         account_id (str):
-        year_month (str):
+        year_month (Union[Unset, str]):
         type (Union[Unset, GetUsageType]):
 
     Raises:
@@ -215,7 +203,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        GetUsageResponse200
+        Usage
      """
 
 

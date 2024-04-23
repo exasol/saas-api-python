@@ -15,7 +15,7 @@ from ...client import (
     AuthenticatedClient,
     Client,
 )
-from ...models.connections import Connections
+from ...models.cluster_connection import ClusterConnection
 from ...types import (
     UNSET,
     Response,
@@ -43,9 +43,9 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[Connections]:
+def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[ClusterConnection]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = Connections.from_dict(response.json())
+        response_200 = ClusterConnection.from_dict(response.json())
 
 
 
@@ -56,7 +56,7 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[Connections]:
+def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[ClusterConnection]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -72,11 +72,8 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
 
-) -> Response[Connections]:
-    """ Get connection information
-
-     Get connection information
-
+) -> Response[ClusterConnection]:
+    """ 
     Args:
         account_id (str):
         database_id (str):
@@ -87,7 +84,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Connections]
+        Response[ClusterConnection]
      """
 
 
@@ -111,11 +108,8 @@ def sync(
     *,
     client: AuthenticatedClient,
 
-) -> Optional[Connections]:
-    """ Get connection information
-
-     Get connection information
-
+) -> Optional[ClusterConnection]:
+    """ 
     Args:
         account_id (str):
         database_id (str):
@@ -126,7 +120,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Connections
+        ClusterConnection
      """
 
 
@@ -145,11 +139,8 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
 
-) -> Response[Connections]:
-    """ Get connection information
-
-     Get connection information
-
+) -> Response[ClusterConnection]:
+    """ 
     Args:
         account_id (str):
         database_id (str):
@@ -160,7 +151,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Connections]
+        Response[ClusterConnection]
      """
 
 
@@ -184,11 +175,8 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
 
-) -> Optional[Connections]:
-    """ Get connection information
-
-     Get connection information
-
+) -> Optional[ClusterConnection]:
+    """ 
     Args:
         account_id (str):
         database_id (str):
@@ -199,7 +187,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Connections
+        ClusterConnection
      """
 
 

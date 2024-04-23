@@ -32,11 +32,11 @@ if TYPE_CHECKING:
 
 
 
-T = TypeVar("T", bound="Profile")
+T = TypeVar("T", bound="User")
 
 
 @_attrs_define
-class Profile:
+class User:
     """ 
         Attributes:
             email (str):
@@ -179,7 +179,7 @@ class Profile:
 
         db_username = d.pop("dbUsername", UNSET)
 
-        profile = cls(
+        user = cls(
             email=email,
             id=id,
             created_at=created_at,
@@ -193,5 +193,5 @@ class Profile:
             db_username=db_username,
         )
 
-        return profile
+        return user
 

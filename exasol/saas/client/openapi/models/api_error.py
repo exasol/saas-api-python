@@ -1,4 +1,3 @@
-import datetime
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -10,80 +9,78 @@ from typing import (
     Type,
     TypeVar,
     Union,
-    cast,
 )
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 from ..types import (
     UNSET,
     Unset,
 )
 
-if TYPE_CHECKING:
-  from ..models.api_error_causes import APIErrorCauses
-
-
-
-
-
-T = TypeVar("T", bound="APIError")
+T = TypeVar("T", bound="ApiError")
 
 
 @_attrs_define
-class APIError:
+class ApiError:
     """ 
         Attributes:
-            code (int):
+            status (float):
             message (str):
-            causes (Union[Unset, APIErrorCauses]):
-            request_id (Union[Unset, str]):
-            timestamp (Union[Unset, datetime.datetime]):
-            api_id (Union[Unset, str]):
+            request_id (str):
+            path (str):
+            method (str):
+            log_id (str):
+            handler (str):
+            timestamp (str):
+            causes (Union[Unset, Any]):
      """
 
-    code: int
+    status: float
     message: str
-    causes: Union[Unset, 'APIErrorCauses'] = UNSET
-    request_id: Union[Unset, str] = UNSET
-    timestamp: Union[Unset, datetime.datetime] = UNSET
-    api_id: Union[Unset, str] = UNSET
+    request_id: str
+    path: str
+    method: str
+    log_id: str
+    handler: str
+    timestamp: str
+    causes: Union[Unset, Any] = UNSET
 
 
     def to_dict(self) -> Dict[str, Any]:
-        from ..models.api_error_causes import APIErrorCauses
-        code = self.code
+        status = self.status
 
         message = self.message
 
-        causes: Union[Unset, Dict[str, Any]] = UNSET
-        if not isinstance(self.causes, Unset):
-            causes = self.causes.to_dict()
-
         request_id = self.request_id
 
-        timestamp: Union[Unset, str] = UNSET
-        if not isinstance(self.timestamp, Unset):
-            timestamp = self.timestamp.isoformat()
+        path = self.path
 
-        api_id = self.api_id
+        method = self.method
+
+        log_id = self.log_id
+
+        handler = self.handler
+
+        timestamp = self.timestamp
+
+        causes = self.causes
 
 
         field_dict: Dict[str, Any] = {}
         field_dict.update({
-            "code": code,
+            "status": status,
             "message": message,
+            "requestId": request_id,
+            "path": path,
+            "method": method,
+            "logId": log_id,
+            "handler": handler,
+            "timestamp": timestamp,
         })
         if causes is not UNSET:
             field_dict["causes"] = causes
-        if request_id is not UNSET:
-            field_dict["requestID"] = request_id
-        if timestamp is not UNSET:
-            field_dict["timestamp"] = timestamp
-        if api_id is not UNSET:
-            field_dict["apiID"] = api_id
 
         return field_dict
 
@@ -91,43 +88,35 @@ class APIError:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.api_error_causes import APIErrorCauses
         d = src_dict.copy()
-        code = d.pop("code")
+        status = d.pop("status")
 
         message = d.pop("message")
 
-        _causes = d.pop("causes", UNSET)
-        causes: Union[Unset, APIErrorCauses]
-        if isinstance(_causes,  Unset):
-            causes = UNSET
-        else:
-            causes = APIErrorCauses.from_dict(_causes)
+        request_id = d.pop("requestId")
 
+        path = d.pop("path")
 
+        method = d.pop("method")
 
+        log_id = d.pop("logId")
 
-        request_id = d.pop("requestID", UNSET)
+        handler = d.pop("handler")
 
-        _timestamp = d.pop("timestamp", UNSET)
-        timestamp: Union[Unset, datetime.datetime]
-        if isinstance(_timestamp,  Unset):
-            timestamp = UNSET
-        else:
-            timestamp = isoparse(_timestamp)
+        timestamp = d.pop("timestamp")
 
-
-
-
-        api_id = d.pop("apiID", UNSET)
+        causes = d.pop("causes", UNSET)
 
         api_error = cls(
-            code=code,
+            status=status,
             message=message,
-            causes=causes,
             request_id=request_id,
+            path=path,
+            method=method,
+            log_id=log_id,
+            handler=handler,
             timestamp=timestamp,
-            api_id=api_id,
+            causes=causes,
         )
 
         return api_error

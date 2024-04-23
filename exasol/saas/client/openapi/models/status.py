@@ -8,11 +8,13 @@ class Status(str, Enum):
     ERROR = "error"
     MAINTENANCE = "maintenance"
     RUNNING = "running"
+    SCALING = "scaling"
     STARTING = "starting"
     STOPPED = "stopped"
     STOPPING = "stopping"
     TOCREATE = "tocreate"
     TODELETE = "todelete"
+    TOSCALE = "toscale"
     TOSTART = "tostart"
     TOSTOP = "tostop"
 

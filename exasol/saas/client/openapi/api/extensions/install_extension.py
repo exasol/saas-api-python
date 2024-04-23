@@ -24,7 +24,8 @@ from ...types import (
 def _get_kwargs(
     account_id: str,
     database_id: str,
-    cluster_id: str,
+    extension_id: str,
+    extension_version: str,
 
 ) -> Dict[str, Any]:
     
@@ -35,7 +36,7 @@ def _get_kwargs(
 
     _kwargs: Dict[str, Any] = {
         "method": "put",
-        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/clusters/{cluster_id}/stop".format(account_id=account_id,database_id=database_id,cluster_id=cluster_id,),
+        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/extensions/{extension_id}/{extension_version}/install".format(account_id=account_id,database_id=database_id,extension_id=extension_id,extension_version=extension_version,),
     }
 
 
@@ -63,7 +64,8 @@ def _build_response(*, client: Union[AuthenticatedClient, Client], response: htt
 def sync_detailed(
     account_id: str,
     database_id: str,
-    cluster_id: str,
+    extension_id: str,
+    extension_version: str,
     *,
     client: AuthenticatedClient,
 
@@ -72,7 +74,8 @@ def sync_detailed(
     Args:
         account_id (str):
         database_id (str):
-        cluster_id (str):
+        extension_id (str):
+        extension_version (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -86,7 +89,8 @@ def sync_detailed(
     kwargs = _get_kwargs(
         account_id=account_id,
 database_id=database_id,
-cluster_id=cluster_id,
+extension_id=extension_id,
+extension_version=extension_version,
 
     )
 
@@ -100,7 +104,8 @@ cluster_id=cluster_id,
 async def asyncio_detailed(
     account_id: str,
     database_id: str,
-    cluster_id: str,
+    extension_id: str,
+    extension_version: str,
     *,
     client: AuthenticatedClient,
 
@@ -109,7 +114,8 @@ async def asyncio_detailed(
     Args:
         account_id (str):
         database_id (str):
-        cluster_id (str):
+        extension_id (str):
+        extension_version (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -123,7 +129,8 @@ async def asyncio_detailed(
     kwargs = _get_kwargs(
         account_id=account_id,
 database_id=database_id,
-cluster_id=cluster_id,
+extension_id=extension_id,
+extension_version=extension_version,
 
     )
 

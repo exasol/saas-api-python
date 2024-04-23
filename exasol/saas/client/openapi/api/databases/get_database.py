@@ -71,10 +71,7 @@ def sync_detailed(
     client: AuthenticatedClient,
 
 ) -> Response[Database]:
-    """ Get database
-
-     Get the database
-
+    """ 
     Args:
         account_id (str):
         database_id (str):
@@ -107,10 +104,7 @@ def sync(
     client: AuthenticatedClient,
 
 ) -> Optional[Database]:
-    """ Get database
-
-     Get the database
-
+    """ 
     Args:
         account_id (str):
         database_id (str):
@@ -138,10 +132,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
 
 ) -> Response[Database]:
-    """ Get database
-
-     Get the database
-
+    """ 
     Args:
         account_id (str):
         database_id (str):
@@ -174,10 +165,7 @@ async def asyncio(
     client: AuthenticatedClient,
 
 ) -> Optional[Database]:
-    """ Get database
-
-     Get the database
-
+    """ 
     Args:
         account_id (str):
         database_id (str):

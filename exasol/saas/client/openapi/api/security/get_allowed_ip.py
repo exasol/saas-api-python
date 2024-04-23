@@ -24,7 +24,7 @@ from ...types import (
 
 def _get_kwargs(
     account_id: str,
-    id: str,
+    allowlist_ip_id: str,
 
 ) -> Dict[str, Any]:
     
@@ -35,7 +35,7 @@ def _get_kwargs(
 
     _kwargs: Dict[str, Any] = {
         "method": "get",
-        "url": "/api/v1/accounts/{account_id}/security/allowlist_ip/{id}".format(account_id=account_id,id=id,),
+        "url": "/api/v1/accounts/{account_id}/security/allowlist_ip/{allowlist_ip_id}".format(account_id=account_id,allowlist_ip_id=allowlist_ip_id,),
     }
 
 
@@ -66,18 +66,15 @@ def _build_response(*, client: Union[AuthenticatedClient, Client], response: htt
 
 def sync_detailed(
     account_id: str,
-    id: str,
+    allowlist_ip_id: str,
     *,
     client: AuthenticatedClient,
 
 ) -> Response[AllowedIP]:
-    """ Get security rule (CIDR)
-
-     Get security rule (CIDR)
-
+    """ 
     Args:
         account_id (str):
-        id (str):
+        allowlist_ip_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -90,7 +87,7 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         account_id=account_id,
-id=id,
+allowlist_ip_id=allowlist_ip_id,
 
     )
 
@@ -102,18 +99,15 @@ id=id,
 
 def sync(
     account_id: str,
-    id: str,
+    allowlist_ip_id: str,
     *,
     client: AuthenticatedClient,
 
 ) -> Optional[AllowedIP]:
-    """ Get security rule (CIDR)
-
-     Get security rule (CIDR)
-
+    """ 
     Args:
         account_id (str):
-        id (str):
+        allowlist_ip_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -126,25 +120,22 @@ def sync(
 
     return sync_detailed(
         account_id=account_id,
-id=id,
+allowlist_ip_id=allowlist_ip_id,
 client=client,
 
     ).parsed
 
 async def asyncio_detailed(
     account_id: str,
-    id: str,
+    allowlist_ip_id: str,
     *,
     client: AuthenticatedClient,
 
 ) -> Response[AllowedIP]:
-    """ Get security rule (CIDR)
-
-     Get security rule (CIDR)
-
+    """ 
     Args:
         account_id (str):
-        id (str):
+        allowlist_ip_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -157,7 +148,7 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         account_id=account_id,
-id=id,
+allowlist_ip_id=allowlist_ip_id,
 
     )
 
@@ -169,18 +160,15 @@ id=id,
 
 async def asyncio(
     account_id: str,
-    id: str,
+    allowlist_ip_id: str,
     *,
     client: AuthenticatedClient,
 
 ) -> Optional[AllowedIP]:
-    """ Get security rule (CIDR)
-
-     Get security rule (CIDR)
-
+    """ 
     Args:
         account_id (str):
-        id (str):
+        allowlist_ip_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -193,7 +181,7 @@ async def asyncio(
 
     return (await asyncio_detailed(
         account_id=account_id,
-id=id,
+allowlist_ip_id=allowlist_ip_id,
 client=client,
 
     )).parsed
