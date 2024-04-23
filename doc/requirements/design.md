@@ -2,7 +2,7 @@
 
 ## Design decision: Generated API Interface
 
-This design document prefers a generated API interface as
+We prefer a generated API interface as
 * It includes the complete API without additional overhead.
 * It allows to update the generated code with low effort.
 * It allows to check if the current client is outdated in an automated way,
