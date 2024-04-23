@@ -2,7 +2,7 @@
 
 ## Summary
 
-This release adds a design document.
+This release updates the API and adds a design document.
 
 ## Features
 
