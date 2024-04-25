@@ -68,6 +68,7 @@ def test_database_lifecycle(saas_access, saas_database):
     - list_databases does not include the deleted database anymore
     """
     access = saas_access
+    print(f'{os.environ["SAAS_HOST"]}')
 
     def listed_ids():
         dbs = list_databases.sync(access.account_id, client=access.client)
