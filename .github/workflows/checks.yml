@@ -12,7 +12,7 @@ jobs:
       - name: Check Environment Variables
         run: |
           echo "SAAS_HOST = $SAAS_HOST, A = $A, B = $B"
-          echo "$B" > abc.txt
+          echo "B = $B" > abc.txt
           cat abc.txt
         env:
           SAAS_HOST: '${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}'
