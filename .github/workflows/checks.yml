@@ -10,14 +10,14 @@ jobs:
 
     steps:
       - name: Check Environment Variables
-        run: |
-          echo "SAAS_HOST = $SAAS_HOST, A = $A, B = $B"
-          echo "B = $B" > abc.txt
-          cat abc.txt
         env:
           SAAS_HOST: '${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}'
           A: 42
           B: ${{ secrets.BBB }}
+        run: |
+          echo "SAAS_HOST = $SAAS_HOST, A = $A, B = $B"
+          echo "B = $B" > abc.txt
+          cat abc.txt
 
       - name: SCM Checkout
         uses: actions/checkout@v3
@@ -115,12 +115,13 @@ jobs:
 
       - name: Run Tests and Calculate Coverage
         # if: ${{ hashFiles('.coverage') != '' }}
-        run: poetry run nox -s coverage -- --
-        # --db-version ${{ matrix.exasol-version }}
         env:
-          SAAS_HOST:       '${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}'
+          # SAAS_HOST:       '${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}'
+          SAAS_HOST:       'https://cloud-staging.exasol.com'
           SAAS_ACCOUNT_ID: '${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}'
           SAAS_PAT:        '${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}'
+        run: poetry run nox -s coverage -- --
+        # --db-version ${{ matrix.exasol-version }}
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
