@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: Check Environment Variables
-        run: echo "SAAS_HOST = $SAAS_HOST, A = $A"
+        run: echo "SAAS_HOST = $SAAS_HOST, A = $A, B = $B"
         env:
           SAAS_HOST: '${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}'
           A: 42
