@@ -9,6 +9,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check Environment Variables
+        run: echo "SAAS_HOST = $SAAS_HOST, A = $A"
+        env:
+          SAAS_HOST: '${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}'
+          A: 42
+
       - name: SCM Checkout
         uses: actions/checkout@v3
         with:
@@ -105,7 +111,8 @@ jobs:
 
       - name: Run Tests and Calculate Coverage
         # if: ${{ hashFiles('.coverage') != '' }}
-        run: poetry run nox -s coverage -- -- --db-version ${{ matrix.exasol-version }}
+        run: poetry run nox -s coverage -- --
+        # --db-version ${{ matrix.exasol-version }}
         env:
           SAAS_HOST: '${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}'
           SAAS_ACCOUNT_ID: '${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}'
