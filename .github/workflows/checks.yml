@@ -104,7 +104,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Calculate Test Coverage
-        if: ${{ hashFiles('.coverage') != '' }}
+        # if: ${{ hashFiles('.coverage') != '' }}
         run: poetry run nox -s coverage -- -- --db-version ${{ matrix.exasol-version }}
 
       - name: Upload Artifacts
