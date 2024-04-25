@@ -106,6 +106,10 @@ jobs:
       - name: Calculate Test Coverage
         # if: ${{ hashFiles('.coverage') != '' }}
         run: poetry run nox -s coverage -- -- --db-version ${{ matrix.exasol-version }}
+        secrets:
+          SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
+          SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
+          SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
