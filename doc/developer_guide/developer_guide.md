@@ -35,3 +35,14 @@ Use CLI option `--path` to read the JSON definition from a local file instead of
 ```python
 "--path", "/path/to/openapi.json",
 ```
+
+## Run Tests
+
+Executing the integration tests requires the following environment variables to be set:
+
+| Variable          | Description                                           |
+|-------------------|-------------------------------------------------------|
+| `SAAS_HOST`       | Host to use for requests to REST API                  |
+| `SAAS_ACCOUNT_ID` | ID of the Exasol SAAS account to be used by the tests |
+| `SAAS_PAT`        | Personal access token to access the SAAS API          |
+
