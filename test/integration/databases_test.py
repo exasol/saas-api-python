@@ -1,7 +1,7 @@
 import pytest
 
 from api_testee import OpenApiTestee
-
+from exasol.saas.client import openapi
 
 @pytest.fixture
 def api_testee():
