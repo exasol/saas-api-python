@@ -19,6 +19,7 @@ jobs:
           echo "B = $B" > abc.txt
           cat abc.txt
           ls -l abc.txt
+          env
 
       - name: SCM Checkout
         uses: actions/checkout@v3
