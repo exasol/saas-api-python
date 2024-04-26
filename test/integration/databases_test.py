@@ -26,6 +26,7 @@ def saas_access():
         openapi.AuthenticatedClient(
             base_url=os.environ["SAAS_HOST"],
             token=os.environ["SAAS_PAT"],
+            raise_on_unexpected_status = True,
         ),
         os.environ["SAAS_ACCOUNT_ID"],
     )
