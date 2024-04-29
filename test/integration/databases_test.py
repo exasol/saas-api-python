@@ -1,10 +1,10 @@
 from exasol.saas.client import openapi
 
 
-def test_lifecycle(api_testee):
+def test_lifecycle(api_access):
     """
     This integration test uses the database created and provided by pytest
-    fixture ``saas_database`` to verify
+    context ``OpenApiAccess.database()`` to verify
 
     - initial status and number of clusters of the created database
     - list_databases includes the new database
@@ -12,7 +12,7 @@ def test_lifecycle(api_testee):
     - list_databases does not include the deleted database anymore
     """
 
-    testee = api_testee
+    testee = api_access
     with testee.database(ignore_delete_failure=True) as db:
         # verify state and clusters of created database
         assert db.status == openapi.models.Status.TOCREATE and \

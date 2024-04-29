@@ -1,5 +1,5 @@
-def test_lifecycle(api_testee):
-    testee = api_testee
+def test_lifecycle(api_access):
+    testee = api_access
     with testee.allowed_ip(ignore_delete_failure=True) as ip:
         # verify allowed ip is listed
         assert ip.id in testee.list_allowed_ip_ids()
