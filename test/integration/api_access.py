@@ -42,7 +42,7 @@ class _OpenApiAccess:
         self._client = client
         self._account_id = account_id
 
-    def create_database(self, cluster_size: str = "XS") -> openapi.models.create_database.CreateDatabase:
+    def create_database(self, cluster_size: str = "XS") -> openapi.models.database.Database:
         cluster_spec = openapi.models.CreateCluster(
             name="my-cluster",
             size=cluster_size,
