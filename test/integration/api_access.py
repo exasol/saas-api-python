@@ -87,3 +87,47 @@ class _OpenApiAccess:
         finally:
             if not keep and db:
                 self.delete_database(db.id, ignore_delete_failure)
+
+    def list_allowed_ip_ids(self) -> Iterable[openapi.models.allowed_ip.AllowedIP]:
+        ips = list_allowed_i_ps.sync(
+            self._account_id,
+            client=self._client,
+        )
+        return (x.id for x in ips)
+
+    def add_allowed_ip(self, cidr_ip: str = "0.0.0.0/0") -> openapi.models.allowed_ip.AllowedIP:
+        """
+        Suggested values for cidr_ip:
+        * 185.17.207.78/32
+        * 0.0.0.0/0 = all ipv4
+        * ::/0 = all ipv6
+        """
+        rule = openapi.models.create_allowed_ip.CreateAllowedIP(
+            name=f"pytest-{timestamp()}",
+            cidr_ip=cidr_ip,
+        )
+        return add_allowed_ip.sync(
+            self._account_id,
+            client=self._client,
+            body=rule,
+        )
+
+    def delete_allowed_ip(self, id: str, ignore_failures=False):
+        with self._ignore_failures(ignore_failures) as client:
+            return delete_allowed_ip.sync_detailed(
+                self._account_id, id, client=client)
+
+    @contextmanager
+    def allowed_ip(
+            self,
+            cidr_ip: str = "0.0.0.0/0",
+            keep: bool = False,
+            ignore_delete_failure: bool = False,
+    ):
+        ip = None
+        try:
+            ip = self.add_allowed_ip(cidr_ip)
+            yield ip
+        finally:
+            if not keep and ip:
+                self.delete_allowed_ip(ip.id, ignore_delete_failure)
