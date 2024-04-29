@@ -1,8 +1,8 @@
 import pytest
 import os
 
+from exasol.saas.client import openapi
 from api_access import create_saas_client, _OpenApiAccess
-
 
 @pytest.fixture(scope="session")
 def saas_host() -> str:
