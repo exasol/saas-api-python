@@ -4,7 +4,7 @@ from exasol.saas.client import openapi
 def test_lifecycle(api_access):
     """
     This integration test uses the database created and provided by pytest
-    context ``OpenApiAccess.database()`` to verify
+    context ``_OpenApiAccess.database()`` to verify
 
     - initial status and number of clusters of the created database
     - list_databases includes the new database

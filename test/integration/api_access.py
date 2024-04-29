@@ -31,7 +31,13 @@ def create_saas_client(
     )
 
 
-class OpenApiAccess:
+class _OpenApiAccess:
+    """
+    This class is meant to be used only in the context of the API
+    generator repository while integration tests in other repositories are
+    planned to only use fixture ``saas_database_id()``.
+    """
+
     def __init__(self, client: openapi.Client, account_id: str):
         self._client = client
         self._account_id = account_id
