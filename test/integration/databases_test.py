@@ -1,11 +1,4 @@
-import pytest
-
-from api_testee import OpenApiTestee
 from exasol.saas.client import openapi
-
-@pytest.fixture
-def api_testee():
-    return OpenApiTestee()
 
 
 def test_lifecycle(api_testee):

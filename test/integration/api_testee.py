@@ -9,6 +9,11 @@ from exasol.saas.client.openapi.api.databases import (
     delete_database,
     list_databases,
 )
+from exasol.saas.client.openapi.api.security import (
+    list_allowed_i_ps,
+    add_allowed_ip,
+    delete_allowed_ip,
+)
 
 
 def timestamp() -> str:
@@ -28,7 +33,14 @@ class OpenApiTestee:
             raise_on_unexpected_status = raise_on_unexpected_status,
         )
 
-    def create_database(self):
+    def _get_client(self, ignore_failures: bool = False):
+        return (
+            OpenApiTestee.create_client(False)
+            if ignore_failures
+            else self._client
+        )
+
+    def create_database(self) -> openapi.models.create_database.CreateDatabase:
         cluster_spec = openapi.models.CreateCluster(
             name="my-cluster",
             size="XS",
@@ -44,11 +56,11 @@ class OpenApiTestee:
             )
         )
 
-    def delete_database(self, database_id: str, client=None):
-        delete_database.sync_detailed(
+    def delete_database(self, database_id: str, ignore_failures=False):
+        return delete_database.sync_detailed(
             self._account_id,
             database_id,
-            client=(client or self._client),
+            client=self._get_client(ignore_failures),
         )
 
     def list_database_ids(self) -> Iterable[str]:
@@ -66,9 +78,49 @@ class OpenApiTestee:
             yield db
         finally:
             if not keep:
-                client = (
-                    OpenApiTestee.create_client(False)
-                    if ignore_delete_failure
-                    else None
-                )
-                self.delete_database(db.id, client)
+                self.delete_database( db.id, ignore_delete_failure)
+
+    def list_allowed_ip_ids(self) -> Iterable[openapi.models.allowed_ip.AllowedIP]:
+        ips = list_allowed_i_ps.sync(
+            self._account_id,
+            client=self._client,
+        )
+        return (x.id for x in ips)
+
+    def add_allowed_ip(self, cidr_ip: str = "0.0.0.0/0") -> openapi.models.allowed_ip.AllowedIP:
+        """
+        Suggested values for cidr_ip:
+        * 185.17.207.78/32
+        * 0.0.0.0/0 = all ipv4
+        * ::/0 = all ipv6
+        """
+        rule = openapi.models.create_allowed_ip.CreateAllowedIP(
+            name=f"pytest-{timestamp()}",
+            cidr_ip=cidr_ip,
+        )
+        return add_allowed_ip.sync(
+            self._account_id,
+            client=self._client,
+            body=rule,
+        )
+
+    def delete_allowed_ip(self, id: str, ignore_failures=False):
+        return delete_allowed_ip.sync_detailed(
+            self._account_id,
+            id,
+            client=self._get_client(ignore_failures),
+        )
+
+    @contextmanager
+    def allowed_ip(
+            self,
+            cidr_ip: str = "0.0.0.0/0",
+            keep: bool = False,
+            ignore_delete_failure: bool = False,
+    ):
+        try:
+            ip = self.add_allowed_ip(cidr_ip)
+            yield ip
+        finally:
+            if not keep:
+                self.delete_allowed_ip(id, ignore_delete_failure)
