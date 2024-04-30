@@ -38,7 +38,7 @@ Use CLI option `--path` to read the JSON definition from a local file instead of
 
 ### Generate file `pyproject.toml`
 
-openapi-python-client reads the JSON specification of the SaaS API and generates a python client.  The generated client code requires transitive dependencies, though, which need to be added to file `pyproject.toml` to make them evailable for dependents of SAPIPY.
+openapi-python-client reads the JSON specification of the SaaS API and generates a python client. The generated client code requires transitive dependencies, though, which need to be added to file `pyproject.toml` to make them available for dependents of SAPIPY.
 
 The easiest way is to make openapi-python-client create a dedicated file `pyproject.toml` and copy the transitive dependencies from there to SAPIPY's file `pyproject.toml`.
 
