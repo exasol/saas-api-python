@@ -11,4 +11,4 @@ This release adds integration tests for the most important calls to SaaS API.
 
 ## Feature
 
-* #14: Added fixture waiting unti SaaS database is running
+* #14: Added fixture waiting until SaaS database is running
