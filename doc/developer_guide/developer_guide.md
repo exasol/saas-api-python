@@ -36,6 +36,26 @@ Use CLI option `--path` to read the JSON definition from a local file instead of
 "--path", "/path/to/openapi.json",
 ```
 
+### Generate file `pyproject.toml`
+
+openapi-python-client reads the JSON specification of the SaaS API and generates a python client.  The generated client code requires transitive dependencies, though, which need to be added to file `pyproject.toml` to make them evailable for dependents of SAPIPY.
+
+The easiest way is to make openapi-python-client create a dedicated file `pyproject.toml` and copy the transitive dependencies from there to SAPIPY's file `pyproject.toml`.
+
+In order to create file `pyproject.toml`
+* In file `noxfile.py` you need to replace mode `update` by `generate`
+* Additionally in file `openapi_config.yml` you need to specify a non-existing top-level directory as `name` and a package that does not contain slashes, e.g.
+
+```yaml
+project_name_override: "generate"
+package_name_override: saas.client.openapi
+post_hooks: []
+```
+
+After generating the API,
+* Copy the dependencies from file `generate/pyproject.toml` and
+* Remove directory `generate`.
+
 ## Run Tests
 
 Executing the integration tests requires the following environment variables to be set:
