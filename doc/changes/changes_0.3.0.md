@@ -8,3 +8,4 @@ This release adds integration tests for the most important calls to SaaS API.
 
 * #21: Added integration test for operation "create database"
 * #23: Added integration test for operation "add IP to whitelist"
+* #25: Fixed transitive dependencies required by generated API client
