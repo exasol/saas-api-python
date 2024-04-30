@@ -1,22 +1,34 @@
 from typing import Iterable
 from contextlib import contextmanager
-from datetime import datetime
+from datetime import datetime, timedelta
+from tenacity.wait import wait_fixed
+from tenacity.stop import stop_after_delay
 
 from exasol.saas.client import openapi
+from exasol.saas.client.openapi.models.status import Status
 from exasol.saas.client.openapi.api.databases import (
     create_database,
     delete_database,
     list_databases,
+    get_database,
 )
 from exasol.saas.client.openapi.api.security import (
     list_allowed_i_ps,
     add_allowed_ip,
     delete_allowed_ip,
 )
+from tenacity import retry, TryAgain
 
 
 def timestamp() -> str:
     return f'{datetime.now().timestamp():.0f}'
+
+
+class DatabaseStartupFailure(Exception):
+    """
+    If a SaaS database instance during startup reports a status other than
+    transitional or successful.
+    """
 
 
 def create_saas_client(
@@ -87,6 +99,40 @@ class _OpenApiAccess:
         finally:
             if not keep and db:
                 self.delete_database(db.id, ignore_delete_failure)
+
+    def get_database(self, database_id: str):
+        return get_database.sync(
+            self._account_id,
+            database_id,
+            client=self._client,
+        )
+
+    def wait_until_running(
+            self,
+            database_id: str,
+            timeout: timedelta = timedelta(minutes=30),
+            interval: timedelta = timedelta(minutes=2),
+    ) -> str:
+        transitional = [
+            Status.TOCREATE,
+            Status.CREATING,
+            Status.SCALING,
+        ]
+        success = [
+            Status.RUNNING,
+        ]
+
+        @retry(wait=wait_fixed(interval), stop=stop_after_delay(timeout))
+        def poll_status():
+            db = self.get_database(database_id)
+            if db.status in transitional:
+                print(f'status = {db.status}')
+                raise TryAgain
+            return db.status
+
+        if poll_status() not in success:
+            raise DatabaseStartupFailure()
+
 
     def list_allowed_ip_ids(self) -> Iterable[openapi.models.allowed_ip.AllowedIP]:
         ips = list_allowed_i_ps.sync(

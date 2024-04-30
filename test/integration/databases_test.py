@@ -1,4 +1,7 @@
+import pytest
 from exasol.saas.client import openapi
+from tenacity import RetryError
+from datetime import timedelta
 
 
 def test_lifecycle(api_access):
@@ -24,3 +27,14 @@ def test_lifecycle(api_access):
         # delete database and verify database is not listed anymore
         testee.delete_database(db.id)
         assert db.id not in testee.list_database_ids()
+
+
+def test_poll(api_access):
+    with api_access.database() as db:
+        print(f'{db.status}')
+        with pytest.raises(RetryError):
+            api_access.wait_until_running(
+                db.id,
+                timeout=timedelta(seconds=3),
+                interval=timedelta(seconds=1),
+            )

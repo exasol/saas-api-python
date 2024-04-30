@@ -33,3 +33,10 @@ def saas_database(api_access) -> openapi.models.database.Database:
     """
     with api_access.database() as db:
         yield db
+
+
+@pytest.fixture(scope="session")
+def operational_saas_database_id(api_access) -> str:
+    with api_access.database() as db:
+        api_access.wait_until_running(db.id)
+        yield db
