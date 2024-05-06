@@ -1,4 +1,5 @@
 import getpass
+import logging
 
 from typing import Iterable
 from contextlib import contextmanager
@@ -20,6 +21,10 @@ from exasol.saas.client.openapi.api.security import (
     delete_allowed_ip,
 )
 from tenacity import retry, TryAgain
+
+
+LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.INFO)
 
 
 def _timestamp_name() -> str:
@@ -102,7 +107,16 @@ class _OpenApiAccess:
             yield db
         finally:
             if db and not keep:
+                LOG.info(
+                    f"deleting database {db.name},"
+                    f" ignore_delete_failure = {ignore_delete_failure}"
+                )
                 self.delete_database(db.id, ignore_delete_failure)
+                LOG.info(f"deleted database successully")
+            elif not db:
+                LOG.warning("cannot delete db None")
+            else:
+                LOG.info(f"keeping database {db.name} as keep = {keep}")
 
     def get_database(self, database_id: str) -> openapi.models.database.Database:
         return get_database.sync(
