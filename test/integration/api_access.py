@@ -100,7 +100,7 @@ class _OpenApiAccess:
             if not keep and db:
                 self.delete_database(db.id, ignore_delete_failure)
 
-    def get_database(self, database_id: str) -> -> openapi.models.database.Database:
+    def get_database(self, database_id: str) -> openapi.models.database.Database:
         return get_database.sync(
             self._account_id,
             database_id,
