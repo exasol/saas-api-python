@@ -27,7 +27,7 @@ def timestamp() -> str:
 class DatabaseStartupFailure(Exception):
     """
     If a SaaS database instance during startup reports a status other than
-    transitional or successful.
+    successful.
     """
 
 
@@ -100,7 +100,7 @@ class _OpenApiAccess:
             if not keep and db:
                 self.delete_database(db.id, ignore_delete_failure)
 
-    def get_database(self, database_id: str):
+    def get_database(self, database_id: str) -> -> openapi.models.database.Database:
         return get_database.sync(
             self._account_id,
             database_id,
@@ -113,11 +113,6 @@ class _OpenApiAccess:
             timeout: timedelta = timedelta(minutes=30),
             interval: timedelta = timedelta(minutes=2),
     ) -> str:
-        transitional = [
-            Status.TOCREATE,
-            Status.CREATING,
-            Status.SCALING,
-        ]
         success = [
             Status.RUNNING,
         ]
@@ -125,7 +120,7 @@ class _OpenApiAccess:
         @retry(wait=wait_fixed(interval), stop=stop_after_delay(timeout))
         def poll_status():
             db = self.get_database(database_id)
-            if db.status in transitional:
+            if db.status not in success:
                 print(f'status = {db.status}')
                 raise TryAgain
             return db.status
