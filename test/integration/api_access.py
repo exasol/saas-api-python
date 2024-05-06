@@ -1,3 +1,4 @@
+import os
 from typing import Iterable
 from contextlib import contextmanager
 from datetime import datetime, timedelta
@@ -20,8 +21,10 @@ from exasol.saas.client.openapi.api.security import (
 from tenacity import retry, TryAgain
 
 
-def timestamp() -> str:
-    return f'{datetime.now().timestamp():.0f}'
+def _timestamp_name() -> str:
+    username = os.login()
+    timstamp = f'{datetime.now().timestamp():.0f}'
+    return f"{username}-pytest-{timestamp}"
 
 
 class DatabaseStartupFailure(Exception):
@@ -63,7 +66,7 @@ class _OpenApiAccess:
             self._account_id,
             client=self._client,
             body=openapi.models.CreateDatabase(
-                name=f"pytest-{timestamp()}",
+                name=_timestamp_name(),
                 initial_cluster=cluster_spec,
                 provider="aws",
                 region='us-east-1',
@@ -144,7 +147,7 @@ class _OpenApiAccess:
         * ::/0 = all ipv6
         """
         rule = openapi.models.create_allowed_ip.CreateAllowedIP(
-            name=f"pytest-{timestamp()}",
+            name=_timestamp_name(),
             cidr_ip=cidr_ip,
         )
         return add_allowed_ip.sync(
