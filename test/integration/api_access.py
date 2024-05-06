@@ -1,4 +1,4 @@
-import os
+import getpass
 
 from typing import Iterable
 from contextlib import contextmanager
@@ -23,7 +23,7 @@ from tenacity import retry, TryAgain
 
 
 def _timestamp_name() -> str:
-    username = os.getlogin()
+    username = getpass.getuser()
     timestamp = f'{datetime.now().timestamp():.0f}'
     return f"{username}-pytest-{timestamp}"
 
