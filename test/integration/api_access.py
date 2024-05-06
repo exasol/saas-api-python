@@ -1,4 +1,5 @@
 import os
+
 from typing import Iterable
 from contextlib import contextmanager
 from datetime import datetime, timedelta
@@ -22,7 +23,7 @@ from tenacity import retry, TryAgain
 
 
 def _timestamp_name() -> str:
-    username = os.login()
+    username = os.getlogin()
     timstamp = f'{datetime.now().timestamp():.0f}'
     return f"{username}-pytest-{timestamp}"
 
@@ -100,7 +101,7 @@ class _OpenApiAccess:
             db = self.create_database()
             yield db
         finally:
-            if not keep and db:
+            if db and not keep:
                 self.delete_database(db.id, ignore_delete_failure)
 
     def get_database(self, database_id: str) -> openapi.models.database.Database:
@@ -173,5 +174,5 @@ class _OpenApiAccess:
             ip = self.add_allowed_ip(cidr_ip)
             yield ip
         finally:
-            if not keep and ip:
+            if ip and not keep:
                 self.delete_allowed_ip(ip.id, ignore_delete_failure)
