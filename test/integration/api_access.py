@@ -24,7 +24,7 @@ from tenacity import retry, TryAgain
 
 def _timestamp_name() -> str:
     username = os.getlogin()
-    timstamp = f'{datetime.now().timestamp():.0f}'
+    timestamp = f'{datetime.now().timestamp():.0f}'
     return f"{username}-pytest-{timestamp}"
 
 
