@@ -1,7 +1,8 @@
 import pytest
+
 from exasol.saas.client import openapi
 from tenacity import RetryError
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 
 def test_lifecycle(api_access):
@@ -17,6 +18,7 @@ def test_lifecycle(api_access):
 
     testee = api_access
     with testee.database(ignore_delete_failure=True) as db:
+        start = datetime.now()
         # verify state and clusters of created database
         assert db.status == openapi.models.Status.TOCREATE and \
             db.clusters.total == 1
@@ -25,6 +27,7 @@ def test_lifecycle(api_access):
         assert db.id in testee.list_database_ids()
 
         # delete database and verify database is not listed anymore
+        testee.wait_for_delete_clearance(start)
         testee.delete_database(db.id)
         assert db.id not in testee.list_database_ids()
 

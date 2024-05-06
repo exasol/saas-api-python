@@ -1,5 +1,6 @@
 import getpass
 import logging
+import time
 
 from typing import Iterable
 from contextlib import contextmanager
@@ -25,6 +26,14 @@ from tenacity import retry, TryAgain
 
 LOG = logging.getLogger(__name__)
 LOG.setLevel(logging.INFO)
+
+
+# For auto-stopping idle database clusters
+MINIMUM_IDLE_TIME = timedelta(minutes=15)
+
+
+# If deleting a database too early, then logging and accounting could be invalid.
+MINIMUM_LIFETIME = timedelta(seconds=30)
 
 
 def _timestamp_name() -> str:
@@ -67,6 +76,10 @@ class _OpenApiAccess:
         cluster_spec = openapi.models.CreateCluster(
             name="my-cluster",
             size=cluster_size,
+            auto_stop=openapi.models.AutoStop(
+                enabled=True,
+                idle_time=int(MINIMUM_IDLE_TIME.seconds / 60),
+            ),
         )
         return create_database.sync(
             self._account_id,
@@ -102,21 +115,23 @@ class _OpenApiAccess:
             ignore_delete_failure: bool = False,
     ):
         db = None
+        start = datetime.now()
         try:
             db = self.create_database()
             yield db
+            self.wait_for_delete_clearance(start)
         finally:
             if db and not keep:
-                LOG.info(
-                    f"deleting database {db.name},"
-                    f" ignore_delete_failure = {ignore_delete_failure}"
-                )
-                self.delete_database(db.id, ignore_delete_failure)
-                LOG.info(f"deleted database successully")
+                LOG.info(f"Deleting database {db.name}")
+                response = self.delete_database(db.id, ignore_delete_failure)
+                if response.status_code == 200:
+                    LOG.info(f"Successfully deleted database {db.name}.")
+                else:
+                    LOG.info(f"Ignoring status code {response.status_code}.")
             elif not db:
-                LOG.warning("cannot delete db None")
+                LOG.warning("Cannot delete db None")
             else:
-                LOG.info(f"keeping database {db.name} as keep = {keep}")
+                LOG.info(f"Keeping database {db.name} as keep = {keep}")
 
     def get_database(self, database_id: str) -> openapi.models.database.Database:
         return get_database.sync(
@@ -153,6 +168,14 @@ class _OpenApiAccess:
             client=self._client,
         )
         return (x.id for x in ips)
+
+    def wait_for_delete_clearance(self, start: datetime.time):
+        lifetime = datetime.now() - start
+        if lifetime < MINIMUM_LIFETIME:
+            wait = MINIMUM_LIFETIME - lifetime
+            LOG.info(f"Waiting {int(wait.seconds)} seconds"
+                     " before deleting the database.")
+            time.sleep(wait.seconds)
 
     def add_allowed_ip(self, cidr_ip: str = "0.0.0.0/0") -> openapi.models.allowed_ip.AllowedIP:
         """
