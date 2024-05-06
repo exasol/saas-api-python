@@ -25,7 +25,7 @@ from tenacity import retry, TryAgain
 def _timestamp_name() -> str:
     username = getpass.getuser()
     timestamp = f'{datetime.now().timestamp():.0f}'
-    return f"{username}-pytest-{timestamp}"
+    return f"{username}-{timestamp}"
 
 
 class DatabaseStartupFailure(Exception):
