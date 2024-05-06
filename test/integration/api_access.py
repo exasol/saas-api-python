@@ -81,11 +81,13 @@ class _OpenApiAccess:
                 idle_time=int(MINIMUM_IDLE_TIME.seconds / 60),
             ),
         )
+        db_name = _timestamp_name()
+        LOG.info(f"Creating database {db_name}")
         return create_database.sync(
             self._account_id,
             client=self._client,
             body=openapi.models.CreateDatabase(
-                name=_timestamp_name(),
+                name=db_name,
                 initial_cluster=cluster_spec,
                 provider="aws",
                 region='us-east-1',
