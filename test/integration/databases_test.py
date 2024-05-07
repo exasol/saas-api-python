@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from api_access import wait_for_delete_clearance
 
 
-def test_lifecycle(api_access):
+def test_lifecycle(api_access, database_name):
     """
     This integration test uses the database created and provided by pytest
     context ``_OpenApiAccess.database()`` to verify
@@ -19,7 +19,7 @@ def test_lifecycle(api_access):
     """
 
     testee = api_access
-    with testee.database(ignore_delete_failure=True) as db:
+    with testee.database(database_name, ignore_delete_failure=True) as db:
         start = datetime.now()
         # verify state and clusters of created database
         assert db.status in PROMISING_STATES and \
@@ -34,8 +34,8 @@ def test_lifecycle(api_access):
         assert db.id not in testee.list_database_ids()
 
 
-def test_poll(api_access):
-    with api_access.database() as db:
+def test_poll(api_access, database_name):
+    with api_access.database(database_name) as db:
         print(f'{db.status}')
         with pytest.raises(RetryError):
             api_access.wait_until_running(

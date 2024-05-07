@@ -31,10 +31,14 @@ LOG = logging.getLogger(__name__)
 LOG.setLevel(logging.INFO)
 
 
-def _timestamp_name() -> str:
-    username = getpass.getuser()
+def timestamp_name(project_short_tag: str | None) -> str:
+    """
+    project_short_tag: Abbreviation of your project
+    """
     timestamp = f'{datetime.now().timestamp():.0f}'
-    return f"{username}-{timestamp}"
+    owner = project_short_tag or getpass.getuser()
+    candidate = f"{timestamp}-{owner}"
+    return candidate[:Limits.MAX_DATABASE_NAME_LENGTH]
 
 
 def wait_for_delete_clearance(start: datetime.time):
@@ -78,7 +82,7 @@ class _OpenApiAccess:
 
     def create_database(
             self,
-            name: str | None,
+            name: str,
             cluster_size: str = "XS",
             region: str = "eu-central-1",
     ) -> openapi.models.database.Database:
@@ -93,13 +97,12 @@ class _OpenApiAccess:
                 idle_time=minutes(Limits.AUTOSTOP_MIN_IDLE_TIME),
             ),
         )
-        db_name = name or _timestamp_name()
-        LOG.info(f"Creating database {db_name}")
+        LOG.info(f"Creating database {name}")
         return create_database.sync(
             self._account_id,
             client=self._client,
             body=openapi.models.CreateDatabase(
-                name=db_name,
+                name=name,
                 initial_cluster=cluster_spec,
                 provider="aws",
                 region=region,
@@ -125,7 +128,7 @@ class _OpenApiAccess:
     @contextmanager
     def database(
             self,
-            name: str = None,
+            name: str,
             keep: bool = False,
             ignore_delete_failure: bool = False,
     ):
@@ -192,7 +195,7 @@ class _OpenApiAccess:
         * ::/0 = all ipv6
         """
         rule = openapi.models.create_allowed_ip.CreateAllowedIP(
-            name=_timestamp_name(),
+            name=timestamp_name(),
             cidr_ip=cidr_ip,
         )
         return add_allowed_ip.sync(

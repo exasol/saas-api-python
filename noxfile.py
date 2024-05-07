@@ -1,5 +1,7 @@
 import os
 import nox
+
+from pathlib import Path
 from nox import Session
 from noxconfig import PROJECT_CONFIG
 from exasol.saas.client import SAAS_HOST
@@ -41,3 +43,20 @@ def check_api_outdated(session: Session):
     """
     generate_api(session)
     session.run("git", "diff", "--exit-code")
+
+
+@nox.session(name="get-project-short-tag", python=False)
+def get_project_short_tag(session: Session):
+    config_file = Path("error_code_config.yml")
+    content = config_file.read_text()
+    header = False
+    for line in content.splitlines():
+        line = line.strip()
+        if header:
+            print(line.strip().replace(":", ""))
+            return
+        if line.startswith("error-tags:"):
+            header = True
+    raise RuntimeError(
+        f"Could not read project short tag from file {config_file}"
+    )

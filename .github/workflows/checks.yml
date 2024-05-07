@@ -110,7 +110,9 @@ jobs:
           SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
           SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
           PYTEST_ADDOPTS: -o log_cli=true -o log_cli_level=INFO
-        run: poetry run nox -s coverage -- --
+        run: |
+          export PROJECT_SHORT_TAG=$(poetry run nox -s get-project-short-tag)
+          poetry run nox -s coverage -- --
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
