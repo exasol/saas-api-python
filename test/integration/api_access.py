@@ -77,7 +77,12 @@ class _OpenApiAccess:
         self._client = client
         self._account_id = account_id
 
-    def create_database(self, cluster_size: str = "XS") -> openapi.models.database.Database:
+    def create_database(
+            self,
+            name: str | None,
+            cluster_size: str = "XS",
+            region: str = "eu-central-1",
+    ) -> openapi.models.database.Database:
         def minutes(x: timedelta) -> int:
             return x.seconds // 60
 
@@ -89,7 +94,7 @@ class _OpenApiAccess:
                 idle_time=minutes(MINIMUM_IDLE_TIME),
             ),
         )
-        db_name = _timestamp_name()
+        db_name = name or _timestamp_name()
         LOG.info(f"Creating database {db_name}")
         return create_database.sync(
             self._account_id,
@@ -98,7 +103,7 @@ class _OpenApiAccess:
                 name=db_name,
                 initial_cluster=cluster_spec,
                 provider="aws",
-                region='us-east-1',
+                region=region,
             )
         )
 
@@ -121,13 +126,14 @@ class _OpenApiAccess:
     @contextmanager
     def database(
             self,
+            name: str = None,
             keep: bool = False,
             ignore_delete_failure: bool = False,
     ):
         db = None
         start = datetime.now()
         try:
-            db = self.create_database()
+            db = self.create_database(name)
             yield db
             wait_for_delete_clearance(start)
         finally:
