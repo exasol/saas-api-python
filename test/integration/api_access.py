@@ -10,7 +10,7 @@ from tenacity.stop import stop_after_delay
 
 from exasol.saas.client import (
     openapi,
-    DATABASE_LIMITS,
+    Limits,
 )
 from exasol.saas.client.openapi.models.status import Status
 from exasol.saas.client.openapi.api.databases import (
