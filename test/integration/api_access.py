@@ -78,12 +78,15 @@ class _OpenApiAccess:
         self._account_id = account_id
 
     def create_database(self, cluster_size: str = "XS") -> openapi.models.database.Database:
+        def minutes(x: timedelta) -> int:
+            return x.seconds // 60
+
         cluster_spec = openapi.models.CreateCluster(
             name="my-cluster",
             size=cluster_size,
             auto_stop=openapi.models.AutoStop(
                 enabled=True,
-                idle_time=int(MINIMUM_IDLE_TIME.seconds / 60),
+                idle_time=minutes(MINIMUM_IDLE_TIME),
             ),
         )
         db_name = _timestamp_name()
