@@ -3,6 +3,7 @@ Package openapi contains the API generated from the JSON definition.
 """
 
 from dataclasses import dataclass
+from typing import Final
 from datetime import datetime, timedelta
 from exasol.saas.client.openapi.models.status import Status
 
@@ -18,18 +19,14 @@ PROMISING_STATES = [
 ]
 
 
-@dataclass
 class Limits:
     """
     Constants for Exasol SaaS databases.
     """
-    max_database_name_length: int = 20
-    max_cluster_name_length: int = 40
-    autostop_min_idle_time: datetime.time = timedelta(minutes=15)
-    autostop_max_idle_time: datetime.time = timedelta(minutes=10000)
-    autostop_default_idle_time: datetime.time = timedelta(minutes=120)
+    MAX_DATABASE_NAME_LENGTH: Final[int] = 20
+    MAX_CLUSTER_NAME_LENGTH: Final[int] = 40
+    AUTOSTOP_MIN_IDLE_TIME: Final[timedelta] = timedelta(minutes=15)
+    AUTOSTOP_MAX_IDLE_TIME: Final[timedelta] = timedelta(minutes=10000)
+    AUTOSTOP_DEFAULT_IDLE_TIME: Final[timedelta] = timedelta(minutes=120)
     # If deleting a database too early, then logging and accounting could be invalid.
-    min_database_lifetime: datetime.time = timedelta(seconds=30)
-
-
-DATABASE_LIMITS = Limits()
+    MIN_DATABASE_LIFETIME: Final[timedelta] = timedelta(seconds=30)

@@ -38,13 +38,13 @@ def timestamp_name(project_short_tag: str | None) -> str:
     timestamp = f'{datetime.now().timestamp():.0f}'
     owner = project_short_tag or getpass.getuser()
     candidate = f"{timestamp}-{owner}"
-    return candidate[:DATABASE_LIMITS.max_database_name_length]
+    return candidate[:Limits.MAX_DATABASE_NAME_LENGTH]
 
 
 def wait_for_delete_clearance(start: datetime.time):
     lifetime = datetime.now() - start
-    if lifetime < DATABASE_LIMITS.min_database_lifetime:
-        wait = DATABASE_LIMITS.min_database_lifetime - lifetime
+    if lifetime < Limits.MIN_DATABASE_LIFETIME:
+        wait = Limits.MIN_DATABASE_LIFETIME - lifetime
         LOG.info(f"Waiting {int(wait.seconds)} seconds"
                  " before deleting the database.")
         time.sleep(wait.seconds)
@@ -94,7 +94,7 @@ class _OpenApiAccess:
             size=cluster_size,
             auto_stop=openapi.models.AutoStop(
                 enabled=True,
-                idle_time=minutes(DATABASE_LIMITS.autostop_min_idle_time),
+                idle_time=minutes(Limits.AUTOSTOP_MIN_IDLE_TIME),
             ),
         )
         LOG.info(f"Creating database {name}")
