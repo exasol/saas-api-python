@@ -20,10 +20,16 @@ PROMISING_STATES = [
 
 @dataclass
 class Limits:
-    MAX_DATABASE_NAME_LENGTH: int = 20
-    MAX_CLUSTER_NAME_LENGTH: int = 40
-    AUTOSTOP_MIN_IDLE_TIME: datetime.time = timedelta(minutes=15)
-    AUTOSTOP_MAX_IDLE_TIME: datetime.time = timedelta(minutes=10000)
-    AUTOSTOP_DEFAULT_IDLE_TIME: datetime.time = timedelta(minutes=120)
+    """
+    Constants for Exasol SaaS databases.
+    """
+    max_database_name_length: int = 20
+    max_cluster_name_length: int = 40
+    autostop_min_idle_time: datetime.time = timedelta(minutes=15)
+    autostop_max_idle_time: datetime.time = timedelta(minutes=10000)
+    autostop_default_idle_time: datetime.time = timedelta(minutes=120)
     # If deleting a database too early, then logging and accounting could be invalid.
-    MIN_DATABASE_LIFETIME: datetime.time = timedelta(seconds=30)
+    min_database_lifetime: datetime.time = timedelta(seconds=30)
+
+
+DATABASE_LIMITS = Limits()
