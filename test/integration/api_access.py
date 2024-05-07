@@ -8,7 +8,11 @@ from datetime import datetime, timedelta
 from tenacity.wait import wait_fixed
 from tenacity.stop import stop_after_delay
 
-from exasol.saas.client import openapi
+from exasol.saas.client import (
+    openapi,
+    MINIMUM_IDLE_TIME,
+    MINIMUM_LIFETIME,
+)
 from exasol.saas.client.openapi.models.status import Status
 from exasol.saas.client.openapi.api.databases import (
     create_database,
@@ -28,18 +32,19 @@ LOG = logging.getLogger(__name__)
 LOG.setLevel(logging.INFO)
 
 
-# For auto-stopping idle database clusters
-MINIMUM_IDLE_TIME = timedelta(minutes=15)
-
-
-# If deleting a database too early, then logging and accounting could be invalid.
-MINIMUM_LIFETIME = timedelta(seconds=30)
-
-
 def _timestamp_name() -> str:
     username = getpass.getuser()
     timestamp = f'{datetime.now().timestamp():.0f}'
     return f"{username}-{timestamp}"
+
+
+def wait_for_delete_clearance(start: datetime.time):
+    lifetime = datetime.now() - start
+    if lifetime < MINIMUM_LIFETIME:
+        wait = MINIMUM_LIFETIME - lifetime
+        LOG.info(f"Waiting {int(wait.seconds)} seconds"
+                 " before deleting the database.")
+        time.sleep(wait.seconds)
 
 
 class DatabaseStartupFailure(Exception):
@@ -121,7 +126,7 @@ class _OpenApiAccess:
         try:
             db = self.create_database()
             yield db
-            self.wait_for_delete_clearance(start)
+            wait_for_delete_clearance(start)
         finally:
             if db and not keep:
                 LOG.info(f"Deleting database {db.name}")
@@ -129,7 +134,7 @@ class _OpenApiAccess:
                 if response.status_code == 200:
                     LOG.info(f"Successfully deleted database {db.name}.")
                 else:
-                    LOG.info(f"Ignoring status code {response.status_code}.")
+                    LOG.warning(f"Ignoring status code {response.status_code}.")
             elif not db:
                 LOG.warning("Cannot delete db None")
             else:
@@ -170,14 +175,6 @@ class _OpenApiAccess:
             client=self._client,
         )
         return (x.id for x in ips)
-
-    def wait_for_delete_clearance(self, start: datetime.time):
-        lifetime = datetime.now() - start
-        if lifetime < MINIMUM_LIFETIME:
-            wait = MINIMUM_LIFETIME - lifetime
-            LOG.info(f"Waiting {int(wait.seconds)} seconds"
-                     " before deleting the database.")
-            time.sleep(wait.seconds)
 
     def add_allowed_ip(self, cidr_ip: str = "0.0.0.0/0") -> openapi.models.allowed_ip.AllowedIP:
         """
