@@ -10,8 +10,7 @@ from tenacity.stop import stop_after_delay
 
 from exasol.saas.client import (
     openapi,
-    MINIMUM_IDLE_TIME,
-    MINIMUM_LIFETIME,
+    Limits,
 )
 from exasol.saas.client.openapi.models.status import Status
 from exasol.saas.client.openapi.api.databases import (
@@ -40,8 +39,8 @@ def _timestamp_name() -> str:
 
 def wait_for_delete_clearance(start: datetime.time):
     lifetime = datetime.now() - start
-    if lifetime < MINIMUM_LIFETIME:
-        wait = MINIMUM_LIFETIME - lifetime
+    if lifetime < Limits.MIN_DATABASE_LIFETIME:
+        wait = Limits.MIN_DATABASE_LIFETIME - lifetime
         LOG.info(f"Waiting {int(wait.seconds)} seconds"
                  " before deleting the database.")
         time.sleep(wait.seconds)
@@ -91,7 +90,7 @@ class _OpenApiAccess:
             size=cluster_size,
             auto_stop=openapi.models.AutoStop(
                 enabled=True,
-                idle_time=minutes(MINIMUM_IDLE_TIME),
+                idle_time=minutes(Limits.AUTOSTOP_MIN_IDLE_TIME),
             ),
         )
         db_name = name or _timestamp_name()

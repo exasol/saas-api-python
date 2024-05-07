@@ -2,17 +2,12 @@
 Package openapi contains the API generated from the JSON definition.
 """
 
-from datetime import timedelta
+from dataclasses import dataclass
+from datetime import datetime, timedelta
 from exasol.saas.client.openapi.models.status import Status
 
 
 SAAS_HOST = "https://cloud.exasol.com"
-
-# For auto-stopping idle database clusters
-MINIMUM_IDLE_TIME = timedelta(minutes=15)
-
-# If deleting a database too early, then logging and accounting could be invalid.
-MINIMUM_LIFETIME = timedelta(seconds=30)
 
 PROMISING_STATES = [
     Status.CREATING,
@@ -21,3 +16,14 @@ PROMISING_STATES = [
     Status.TOCREATE,
     Status.TOSTART,
 ]
+
+
+@dataclass
+class Limits:
+    MAX_DATABASE_NAME_LENGTH: int = 20
+    MAX_CLUSTER_NAME_LENGTH: int = 40
+    AUTOSTOP_MIN_IDLE_TIME: datetime.time = timedelta(minutes=15)
+    AUTOSTOP_MAX_IDLE_TIME: datetime.time = timedelta(minutes=10000)
+    AUTOSTOP_DEFAULT_IDLE_TIME: datetime.time = timedelta(minutes=120)
+    # If deleting a database too early, then logging and accounting could be invalid.
+    MIN_DATABASE_LIFETIME: datetime.time = timedelta(seconds=30)
