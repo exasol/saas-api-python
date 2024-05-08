@@ -43,8 +43,8 @@ openapi-python-client reads the JSON specification of the SaaS API and generates
 The easiest way is to make openapi-python-client create a dedicated file `pyproject.toml` and copy the transitive dependencies from there to SAPIPY's file `pyproject.toml`.
 
 In order to create file `pyproject.toml`
-* In file `noxfile.py` you need to replace mode `update` by `generate`
-* Additionally in file `openapi_config.yml` you need to specify a non-existing top-level directory as `name` and a package that does not contain slashes, e.g.
+* In file `noxfile.py`, function `generate_api` you need to replace mode `update` by `generate`.
+* Additionally, in file `openapi_config.yml` you need to specify a non-existing top-level directory as `project_name_override` and a package that does not contain slashes, e.g.
 
 ```yaml
 project_name_override: "generate"

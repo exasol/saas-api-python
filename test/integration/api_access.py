@@ -1,22 +1,60 @@
+import getpass
+import logging
+import time
+
 from typing import Iterable
 from contextlib import contextmanager
-from datetime import datetime
+from datetime import datetime, timedelta
+from tenacity.wait import wait_fixed
+from tenacity.stop import stop_after_delay
 
-from exasol.saas.client import openapi
+from exasol.saas.client import (
+    openapi,
+    Limits,
+)
+from exasol.saas.client.openapi.models.status import Status
 from exasol.saas.client.openapi.api.databases import (
     create_database,
     delete_database,
     list_databases,
+    get_database,
 )
 from exasol.saas.client.openapi.api.security import (
     list_allowed_i_ps,
     add_allowed_ip,
     delete_allowed_ip,
 )
+from tenacity import retry, TryAgain
 
 
-def timestamp() -> str:
-    return f'{datetime.now().timestamp():.0f}'
+LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.INFO)
+
+
+def timestamp_name(project_short_tag: str | None = None) -> str:
+    """
+    project_short_tag: Abbreviation of your project
+    """
+    timestamp = f'{datetime.now().timestamp():.0f}'
+    owner = getpass.getuser()
+    candidate = f"{timestamp}{project_short_tag or ''}-{owner}"
+    return candidate[:Limits.MAX_DATABASE_NAME_LENGTH]
+
+
+def wait_for_delete_clearance(start: datetime.time):
+    lifetime = datetime.now() - start
+    if lifetime < Limits.MIN_DATABASE_LIFETIME:
+        wait = Limits.MIN_DATABASE_LIFETIME - lifetime
+        LOG.info(f"Waiting {int(wait.seconds)} seconds"
+                 " before deleting the database.")
+        time.sleep(wait.seconds)
+
+
+class DatabaseStartupFailure(Exception):
+    """
+    If a SaaS database instance during startup reports a status other than
+    successful.
+    """
 
 
 def create_saas_client(
@@ -42,19 +80,32 @@ class _OpenApiAccess:
         self._client = client
         self._account_id = account_id
 
-    def create_database(self, cluster_size: str = "XS") -> openapi.models.database.Database:
+    def create_database(
+            self,
+            name: str,
+            cluster_size: str = "XS",
+            region: str = "eu-central-1",
+    ) -> openapi.models.database.Database:
+        def minutes(x: timedelta) -> int:
+            return x.seconds // 60
+
         cluster_spec = openapi.models.CreateCluster(
             name="my-cluster",
             size=cluster_size,
+            auto_stop=openapi.models.AutoStop(
+                enabled=True,
+                idle_time=minutes(Limits.AUTOSTOP_MIN_IDLE_TIME),
+            ),
         )
+        LOG.info(f"Creating database {name}")
         return create_database.sync(
             self._account_id,
             client=self._client,
             body=openapi.models.CreateDatabase(
-                name=f"pytest-{timestamp()}",
+                name=name,
                 initial_cluster=cluster_spec,
                 provider="aws",
-                region='us-east-1',
+                region=region,
             )
         )
 
@@ -77,16 +128,57 @@ class _OpenApiAccess:
     @contextmanager
     def database(
             self,
+            name: str,
             keep: bool = False,
             ignore_delete_failure: bool = False,
     ):
         db = None
+        start = datetime.now()
         try:
-            db = self.create_database()
+            db = self.create_database(name)
             yield db
+            wait_for_delete_clearance(start)
         finally:
-            if not keep and db:
-                self.delete_database(db.id, ignore_delete_failure)
+            if db and not keep:
+                LOG.info(f"Deleting database {db.name}")
+                response = self.delete_database(db.id, ignore_delete_failure)
+                if response.status_code == 200:
+                    LOG.info(f"Successfully deleted database {db.name}.")
+                else:
+                    LOG.warning(f"Ignoring status code {response.status_code}.")
+            elif not db:
+                LOG.warning("Cannot delete db None")
+            else:
+                LOG.info(f"Keeping database {db.name} as keep = {keep}")
+
+    def get_database(self, database_id: str) -> openapi.models.database.Database:
+        return get_database.sync(
+            self._account_id,
+            database_id,
+            client=self._client,
+        )
+
+    def wait_until_running(
+            self,
+            database_id: str,
+            timeout: timedelta = timedelta(minutes=30),
+            interval: timedelta = timedelta(minutes=2),
+    ) -> str:
+        success = [
+            Status.RUNNING,
+        ]
+
+        @retry(wait=wait_fixed(interval), stop=stop_after_delay(timeout))
+        def poll_status():
+            db = self.get_database(database_id)
+            if db.status not in success:
+                print(f'status = {db.status}')
+                raise TryAgain
+            return db.status
+
+        if poll_status() not in success:
+            raise DatabaseStartupFailure()
+
 
     def list_allowed_ip_ids(self) -> Iterable[openapi.models.allowed_ip.AllowedIP]:
         ips = list_allowed_i_ps.sync(
@@ -103,7 +195,7 @@ class _OpenApiAccess:
         * ::/0 = all ipv6
         """
         rule = openapi.models.create_allowed_ip.CreateAllowedIP(
-            name=f"pytest-{timestamp()}",
+            name=timestamp_name(),
             cidr_ip=cidr_ip,
         )
         return add_allowed_ip.sync(
@@ -129,5 +221,5 @@ class _OpenApiAccess:
             ip = self.add_allowed_ip(cidr_ip)
             yield ip
         finally:
-            if not keep and ip:
+            if ip and not keep:
                 self.delete_allowed_ip(ip.id, ignore_delete_failure)
