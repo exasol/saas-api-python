@@ -36,8 +36,8 @@ def timestamp_name(project_short_tag: str | None = None) -> str:
     project_short_tag: Abbreviation of your project
     """
     timestamp = f'{datetime.now().timestamp():.0f}'
-    owner = project_short_tag or getpass.getuser()
-    candidate = f"{timestamp}-{owner}"
+    owner = getpass.getuser()
+    candidate = f"{timestamp}{project_short_tag or ''}-{owner}"
     return candidate[:Limits.MAX_DATABASE_NAME_LENGTH]
 
 
