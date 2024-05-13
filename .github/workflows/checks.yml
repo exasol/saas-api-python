@@ -111,7 +111,6 @@ jobs:
           SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
           PYTEST_ADDOPTS: -o log_cli=true -o log_cli_level=INFO
         run: |
-          poetry run nox -s check-secrets
           export PROJECT_SHORT_TAG=$(poetry run nox -s get-project-short-tag)
           poetry run nox -s coverage -- --
 
