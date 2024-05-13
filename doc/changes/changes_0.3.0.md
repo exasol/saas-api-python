@@ -13,3 +13,7 @@ This release adds integration tests for the most important calls to SaaS API.
 
 * #14: Added fixture waiting until SaaS database is running
 * #25: Fixed transitive dependencies required by generated API client
+
+## Bug
+
+* #28: Renamed pypi package from `saas-api` to `exasol-saas-api`
