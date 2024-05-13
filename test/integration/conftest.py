@@ -9,19 +9,27 @@ from api_access import (
     timestamp_name,
 )
 
+
+def _env(var: str) -> str:
+    result = os.environ.get(var)
+    if result:
+        return result
+    raise RuntimeError(f"Environment variable {var} is empty.")
+
+
 @pytest.fixture(scope="session")
 def saas_host() -> str:
-    return os.environ["SAAS_HOST"]
+    return _env("SAAS_HOST")
 
 
 @pytest.fixture(scope="session")
 def saas_pat() -> str:
-    return os.environ["SAAS_PAT"]
+    return _env("SAAS_PAT")
 
 
 @pytest.fixture(scope="session")
 def saas_account_id() -> str:
-    return os.environ["SAAS_ACCOUNT_ID"]
+    return _env("SAAS_ACCOUNT_ID")
 
 
 @pytest.fixture(scope="session")
