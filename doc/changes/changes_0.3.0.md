@@ -2,7 +2,9 @@
 
 ## Summary
 
-This release adds integration tests for the most important calls to SaaS API.
+This release renamed the package published on pypi from `saas-api` to `exasol-saas-api`. The old package has been removed to avoid confusion.
+
+Additionally, this release adds integration tests for the most important calls to SaaS API.
 
 ## Refactorings
 
