@@ -12,8 +12,9 @@ from api_access import (
 
 def _env(var: str) -> str:
     result = os.environ.get(var)
-    if not result:
-        raise RuntimeError(f"Environment variable {var} is empty.")
+    if result:
+        return result
+    raise RuntimeError(f"Environment variable {var} is empty.")
 
 
 @pytest.fixture(scope="session")

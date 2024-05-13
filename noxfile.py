@@ -1,6 +1,5 @@
 import os
 import nox
-import sys
 
 from pathlib import Path
 from nox import Session
