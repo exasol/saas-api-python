@@ -16,4 +16,4 @@ This release adds integration tests for the most important calls to SaaS API.
 
 ## Bugfixes
 
-* #34: Fixed handling secrets to CI/CD build
+* #34: Fixed handling secrets in CI/CD build
