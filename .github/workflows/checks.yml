@@ -15,6 +15,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Verify Secrets
+        env:
+          SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
+          SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
+          SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
+        run: |
+          test -n "$SAAS_HOST" || echo environment variable \$SAAS_HOST is unset
+          test -n "$SAAS_ACCOUNT_ID" || echo environment variable \$SAAS_ACCOUNT_ID is unset
+          test -n "$SAAS_PAT" || echo environment variable \$SAAS_PAT is unset
+
       - name: Setup Python & Poetry Environment
         uses: exasol/python-toolbox/.github/actions/python-environment@0.8.0
 
