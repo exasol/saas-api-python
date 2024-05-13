@@ -139,17 +139,18 @@ class _OpenApiAccess:
             yield db
             wait_for_delete_clearance(start)
         finally:
+            db_repr = f"{db.name} with ID {db.id}"
             if db and not keep:
-                LOG.info(f"Deleting database {db.name}")
+                LOG.info(f"Deleting database {db_repr}")
                 response = self.delete_database(db.id, ignore_delete_failure)
                 if response.status_code == 200:
-                    LOG.info(f"Successfully deleted database {db.name}.")
+                    LOG.info(f"Successfully deleted database {db_repr}.")
                 else:
                     LOG.warning(f"Ignoring status code {response.status_code}.")
             elif not db:
                 LOG.warning("Cannot delete db None")
             else:
-                LOG.info(f"Keeping database {db.name} as keep = {keep}")
+                LOG.info(f"Keeping database {db_repr} as keep = {keep}")
 
     def get_database(self, database_id: str) -> openapi.models.database.Database:
         return get_database.sync(
