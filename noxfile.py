@@ -72,9 +72,8 @@ def check_secrets(session: Session):
     ]
     if not empty:
         return
-    empty = ", ".join(empty)
     print(
-        f"The following environment variables are empty: {empty}.",
+        f"The following environment variables are empty: {', '.join(empty)}.",
         file=sys.stderr
     )
     sys.exit(1)
