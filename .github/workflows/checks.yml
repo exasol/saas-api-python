@@ -111,9 +111,7 @@ jobs:
           SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
           PYTEST_ADDOPTS: -o log_cli=true -o log_cli_level=INFO
         run: |
-          test "$SAAS_HOST" -a "$SAAS_ACCOUNT_ID" -a "$SAAS_PAT" \
-          || echo "Please ensure environment variables are set:" \
-          '$SAAS_HOST, SAAS_PAT, $SAAS_ACCOUNT_ID'
+          poetry run nox -s check-secrets
           export PROJECT_SHORT_TAG=$(poetry run nox -s get-project-short-tag)
           poetry run nox -s coverage -- --
 

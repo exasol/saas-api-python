@@ -1,5 +1,6 @@
 import os
 import nox
+import sys
 
 from pathlib import Path
 from nox import Session
@@ -60,3 +61,20 @@ def get_project_short_tag(session: Session):
     raise RuntimeError(
         f"Could not read project short tag from file {config_file}"
     )
+
+
+@nox.session(name="check-secrets", python=False)
+def check_secrets(session: Session):
+    empty = [
+        var
+        for var in ["SAAS_HOST", "SAAS_PAT", "SAAS_ACCOUNT_ID"]
+        if not os.environ.get(var)
+    ]
+    if not empty:
+        return
+    empty = ", ".join(empty)
+    print(
+        f"The following environment variables are empty: {empty}.",
+        file=sys.stderr
+    )
+    sys.exit(1)
