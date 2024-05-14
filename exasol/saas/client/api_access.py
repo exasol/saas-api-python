@@ -69,7 +69,7 @@ def create_saas_client(
     )
 
 
-class _OpenApiAccess:
+class OpenApiAccess:
     """
     This class is meant to be used only in the context of the API
     generator repository while integration tests in other repositories are
