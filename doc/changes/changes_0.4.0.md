@@ -6,4 +6,4 @@ tbd
 
 ## Refactorings
 
-* #37: Moved class OpenApiAccess to package exasol/saas/client
+* #37: Moved file `api_access.py` to package `exasol/saas/client`
