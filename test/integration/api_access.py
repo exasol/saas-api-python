@@ -2,7 +2,7 @@ import getpass
 import logging
 import time
 
-from typing import Iterable
+from typing import Iterable, List, Optional
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 from tenacity.wait import wait_fixed
@@ -18,6 +18,10 @@ from exasol.saas.client.openapi.api.databases import (
     delete_database,
     list_databases,
     get_database,
+)
+from exasol.saas.client.openapi.api.clusters import (
+    get_cluster_connection,
+    list_clusters,
 )
 from exasol.saas.client.openapi.api.security import (
     list_allowed_i_ps,
@@ -85,7 +89,7 @@ class _OpenApiAccess:
             name: str,
             cluster_size: str = "XS",
             region: str = "eu-central-1",
-    ) -> openapi.models.database.Database:
+    ) -> openapi.models.Database:
         def minutes(x: timedelta) -> int:
             return x.seconds // 60
 
@@ -152,7 +156,7 @@ class _OpenApiAccess:
             else:
                 LOG.info(f"Keeping database {db_repr} as keep = {keep}")
 
-    def get_database(self, database_id: str) -> openapi.models.database.Database:
+    def get_database(self, database_id: str) -> openapi.models.Database:
         return get_database.sync(
             self._account_id,
             database_id,
@@ -181,21 +185,43 @@ class _OpenApiAccess:
             raise DatabaseStartupFailure()
 
 
-    def list_allowed_ip_ids(self) -> Iterable[openapi.models.allowed_ip.AllowedIP]:
+    def clusters(
+            self,
+            database_id: str,
+    ) -> Optional[List[openapi.models.Cluster]]:
+        return list_clusters.sync(
+            self._account_id,
+            database_id,
+            client=self._client,
+        )
+
+    def connect(
+            self,
+            database_id: str,
+            cluster_id: str,
+    ) -> Optional[openapi.models.ClusterConnection]:
+        return get_cluster_connection.sync(
+            self._account_id,
+            database_id,
+            cluster_id,
+            client=self._client,
+        )
+
+    def list_allowed_ip_ids(self) -> Iterable[openapi.models.AllowedIP]:
         ips = list_allowed_i_ps.sync(
             self._account_id,
             client=self._client,
         )
         return (x.id for x in ips)
 
-    def add_allowed_ip(self, cidr_ip: str = "0.0.0.0/0") -> openapi.models.allowed_ip.AllowedIP:
+    def add_allowed_ip(self, cidr_ip: str = "0.0.0.0/0") -> openapi.models.AllowedIP:
         """
         Suggested values for cidr_ip:
         * 185.17.207.78/32
         * 0.0.0.0/0 = all ipv4
         * ::/0 = all ipv6
         """
-        rule = openapi.models.create_allowed_ip.CreateAllowedIP(
+        rule = openapi.models.CreateAllowedIP(
             name=timestamp_name(),
             cidr_ip=cidr_ip,
         )

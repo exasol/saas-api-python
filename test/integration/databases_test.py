@@ -36,10 +36,17 @@ def test_lifecycle(api_access, database_name):
 
 def test_poll(api_access, database_name):
     with api_access.database(database_name) as db:
-        print(f'{db.status}')
         with pytest.raises(RetryError):
             api_access.wait_until_running(
                 db.id,
                 timeout=timedelta(seconds=3),
                 interval=timedelta(seconds=1),
             )
+
+
+def test_connect(api_access, database_name):
+    with api_access.database(database_name) as db:
+        clusters = api_access.clusters(db.id)
+        connection = api_access.connect(db.id, clusters[0].id)
+        assert connection.db_username is not None and \
+            connection.port == 8563
