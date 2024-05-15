@@ -1,8 +1,8 @@
-# Saas API Python 0.4.0, released tbd
+# 0.4.0 - 2024-05-15
 
 ## Summary
 
-tbd
+This release adds a method to get the data for establishing a connection to a SaaS database cluster and moves file `api_access.py` to package `exasol/saas/client`.
 
 ## Refactorings
 

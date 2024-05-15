@@ -10,10 +10,6 @@ jobs:
 
   report:
     name: Generate Status Report
-    # currently report fails with error message
-    # subprocess.CalledProcessError: Command '['coverage', 'json',
-    # '--data-file=.coverage', '-o', '/tmp/tmpm01u0nf3/coverage.json']'
-    # returned non-zero exit status 2.
     if: "contains(github.event.head_commit.message, '[generate-code-metrics-report]')"
     runs-on: ubuntu-latest
     env:
@@ -26,7 +22,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Python & Poetry Environment
-        uses: exasol/python-toolbox/.github/actions/python-environment@0.8.0
+        uses: exasol/python-toolbox/.github/actions/python-environment@0.9.0
 
       - name: Download Artifacts
         uses: actions/download-artifact@v3
@@ -34,15 +30,16 @@ jobs:
           path: ./artifacts
 
       - name: Copy Artifacts into Root Folder
+        working-directory: ./artifacts
         run: |
-          cp ./artifacts/.coverage/.coverage ./
-          cp ./artifacts/.lint.txt/.lint.txt ./
+          cp .coverage/.coverage ../
+          cp .lint.txt/.lint.txt ../
 
       - name: Generate Report
         run: poetry run nox -s report -- -- --format json | tee metrics.json
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: metrics.json
           path: metrics.json
