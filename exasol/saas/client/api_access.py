@@ -91,7 +91,7 @@ class OpenApiAccess:
             name: str,
             cluster_size: str = "XS",
             region: str = "eu-central-1",
-    ) -> openapi.models.Database:
+    ) -> Optional[openapi.models.Database]:
         def minutes(x: timedelta) -> int:
             return x.seconds // 60
 
