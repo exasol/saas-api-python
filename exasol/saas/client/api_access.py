@@ -2,7 +2,7 @@ import getpass
 import logging
 import time
 
-from typing import Iterable, Optional
+from typing import Iterable, List, Optional
 from contextlib import contextmanager
 import datetime as dt
 from datetime import datetime, timedelta
@@ -21,6 +21,10 @@ from exasol.saas.client.openapi.api.databases import (
     delete_database,
     list_databases,
     get_database,
+)
+from exasol.saas.client.openapi.api.clusters import (
+    get_cluster_connection,
+    list_clusters,
 )
 from exasol.saas.client.openapi.api.security import (
     list_allowed_i_ps,
@@ -87,7 +91,7 @@ class OpenApiAccess:
             name: str,
             cluster_size: str = "XS",
             region: str = "eu-central-1",
-    ) -> Optional[openapi.models.database.Database]:
+    ) -> Optional[openapi.models.Database]:
         def minutes(x: timedelta) -> int:
             return x.seconds // 60
 
@@ -186,6 +190,28 @@ class OpenApiAccess:
             raise DatabaseStartupFailure()
 
 
+    def clusters(
+            self,
+            database_id: str,
+    ) -> Optional[List[openapi.models.Cluster]]:
+        return list_clusters.sync(
+            self._account_id,
+            database_id,
+            client=self._client,
+        )
+
+    def get_connection(
+            self,
+            database_id: str,
+            cluster_id: str,
+    ) -> Optional[openapi.models.ClusterConnection]:
+        return get_cluster_connection.sync(
+            self._account_id,
+            database_id,
+            cluster_id,
+            client=self._client,
+        )
+
     def list_allowed_ip_ids(self) -> Iterable[str]:
         ips = list_allowed_i_ps.sync(
             self._account_id,
@@ -203,7 +229,7 @@ class OpenApiAccess:
         * 0.0.0.0/0 = all ipv4
         * ::/0 = all ipv6
         """
-        rule = openapi.models.create_allowed_ip.CreateAllowedIP(
+        rule = openapi.models.CreateAllowedIP(
             name=timestamp_name(),
             cidr_ip=cidr_ip,
         )
