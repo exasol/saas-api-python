@@ -44,9 +44,9 @@ def test_poll(api_access, database_name):
             )
 
 
-def test_connect(api_access, database_name):
+def test_get_connection(api_access, database_name):
     with api_access.database(database_name) as db:
         clusters = api_access.clusters(db.id)
-        connection = api_access.connect(db.id, clusters[0].id)
+        connection = api_access.get_connection(db.id, clusters[0].id)
         assert connection.db_username is not None and \
             connection.port == 8563

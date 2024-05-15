@@ -200,7 +200,7 @@ class OpenApiAccess:
             client=self._client,
         )
 
-    def connect(
+    def get_connection(
             self,
             database_id: str,
             cluster_id: str,
