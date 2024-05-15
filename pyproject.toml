@@ -14,10 +14,10 @@ readme = "README.md"
 license = "MIT"
 
 [tool.poetry.urls]
-"Homepage" = "https://github.io/exasol/saas-api-python"
-"Documentation" = "https://github.io/exasol/saas-api-python"
-"Source" = "https://github.io/exasol/saas-api-python"
-"Issues" = "https://github.io/exasol/saas-api-python/issues"
+"Homepage" = "https://github.com/exasol/saas-api-python"
+"Documentation" = "https://github.com/exasol/saas-api-python"
+"Source" = "https://github.com/exasol/saas-api-python"
+"Issues" = "https://github.com/exasol/saas-api-python/issues"
 
 
 [tool.poetry.dependencies]

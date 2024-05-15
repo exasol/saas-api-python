@@ -6,4 +6,5 @@ tbd
 
 ## Refactorings
 
+* #31: Wrapped connect to cluster
 * #37: Moved file `api_access.py` to package `exasol/saas/client`
