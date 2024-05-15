@@ -2,11 +2,13 @@ import pytest
 import os
 
 from pathlib import Path
-from exasol.saas.client import openapi
-from api_access import (
+from exasol.saas.client import (
+    openapi,
+)
+from exasol.saas.client.api_access import (
     create_saas_client,
-    _OpenApiAccess,
     timestamp_name,
+    OpenApiAccess,
 )
 
 
@@ -33,9 +35,9 @@ def saas_account_id() -> str:
 
 
 @pytest.fixture(scope="session")
-def api_access(saas_host, saas_pat, saas_account_id) -> _OpenApiAccess:
+def api_access(saas_host, saas_pat, saas_account_id) -> OpenApiAccess:
     with create_saas_client(saas_host, saas_pat) as client:
-        yield _OpenApiAccess(client, saas_account_id)
+        yield OpenApiAccess(client, saas_account_id)
 
 
 @pytest.fixture(scope="session")

@@ -4,7 +4,7 @@ from exasol.saas.client import openapi, PROMISING_STATES
 from tenacity import RetryError
 from datetime import datetime, timedelta
 
-from api_access import wait_for_delete_clearance
+from exasol.saas.client.api_access import wait_for_delete_clearance
 
 
 def test_lifecycle(api_access, database_name):

@@ -4,7 +4,10 @@ import time
 
 from typing import Iterable, List, Optional
 from contextlib import contextmanager
+import datetime as dt
 from datetime import datetime, timedelta
+
+from tenacity import retry, TryAgain
 from tenacity.wait import wait_fixed
 from tenacity.stop import stop_after_delay
 
@@ -28,7 +31,6 @@ from exasol.saas.client.openapi.api.security import (
     add_allowed_ip,
     delete_allowed_ip,
 )
-from tenacity import retry, TryAgain
 
 
 LOG = logging.getLogger(__name__)
@@ -45,7 +47,7 @@ def timestamp_name(project_short_tag: str | None = None) -> str:
     return candidate[:Limits.MAX_DATABASE_NAME_LENGTH]
 
 
-def wait_for_delete_clearance(start: datetime.time):
+def wait_for_delete_clearance(start: dt.datetime):
     lifetime = datetime.now() - start
     if lifetime < Limits.MIN_DATABASE_LIFETIME:
         wait = Limits.MIN_DATABASE_LIFETIME - lifetime
@@ -73,14 +75,14 @@ def create_saas_client(
     )
 
 
-class _OpenApiAccess:
+class OpenApiAccess:
     """
     This class is meant to be used only in the context of the API
     generator repository while integration tests in other repositories are
     planned to only use fixture ``saas_database_id()``.
     """
 
-    def __init__(self, client: openapi.Client, account_id: str):
+    def __init__(self, client: openapi.AuthenticatedClient, account_id: str):
         self._client = client
         self._account_id = account_id
 
@@ -93,7 +95,7 @@ class _OpenApiAccess:
         def minutes(x: timedelta) -> int:
             return x.seconds // 60
 
-        cluster_spec = openapi.models.CreateCluster(
+        cluster_spec = openapi.models.CreateDatabaseInitialCluster(
             name="my-cluster",
             size=cluster_size,
             auto_stop=openapi.models.AutoStop(
@@ -126,7 +128,7 @@ class _OpenApiAccess:
                 self._account_id, database_id, client=client)
 
     def list_database_ids(self) -> Iterable[str]:
-        dbs = list_databases.sync(self._account_id, client=self._client)
+        dbs = list_databases.sync(self._account_id, client=self._client) or []
         return (db.id for db in dbs)
 
     @contextmanager
@@ -143,7 +145,7 @@ class _OpenApiAccess:
             yield db
             wait_for_delete_clearance(start)
         finally:
-            db_repr = f"{db.name} with ID {db.id}"
+            db_repr = f"{db.name} with ID {db.id}" if db else None
             if db and not keep:
                 LOG.info(f"Deleting database {db_repr}")
                 response = self.delete_database(db.id, ignore_delete_failure)
@@ -156,7 +158,10 @@ class _OpenApiAccess:
             else:
                 LOG.info(f"Keeping database {db_repr} as keep = {keep}")
 
-    def get_database(self, database_id: str) -> openapi.models.Database:
+    def get_database(
+            self,
+            database_id: str,
+    ) -> Optional[openapi.models.database.Database]:
         return get_database.sync(
             self._account_id,
             database_id,
@@ -168,7 +173,7 @@ class _OpenApiAccess:
             database_id: str,
             timeout: timedelta = timedelta(minutes=30),
             interval: timedelta = timedelta(minutes=2),
-    ) -> str:
+    ):
         success = [
             Status.RUNNING,
         ]
@@ -207,14 +212,17 @@ class _OpenApiAccess:
             client=self._client,
         )
 
-    def list_allowed_ip_ids(self) -> Iterable[openapi.models.AllowedIP]:
+    def list_allowed_ip_ids(self) -> Iterable[str]:
         ips = list_allowed_i_ps.sync(
             self._account_id,
             client=self._client,
-        )
+        ) or []
         return (x.id for x in ips)
 
-    def add_allowed_ip(self, cidr_ip: str = "0.0.0.0/0") -> openapi.models.AllowedIP:
+    def add_allowed_ip(
+            self,
+            cidr_ip: str = "0.0.0.0/0",
+    ) -> Optional[openapi.models.allowed_ip.AllowedIP]:
         """
         Suggested values for cidr_ip:
         * 185.17.207.78/32
