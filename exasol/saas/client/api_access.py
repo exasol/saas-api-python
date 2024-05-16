@@ -1,3 +1,4 @@
+from __future__ import annotations
 import getpass
 import logging
 import time
@@ -37,7 +38,7 @@ LOG = logging.getLogger(__name__)
 LOG.setLevel(logging.INFO)
 
 
-def timestamp_name(project_short_tag: Optional[str] = None) -> str:
+def timestamp_name(project_short_tag: str | None = None) -> str:
     """
     project_short_tag: Abbreviation of your project
     """
