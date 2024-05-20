@@ -62,6 +62,6 @@ def project_short_tag():
     return os.environ.get("PROJECT_SHORT_TAG")
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def database_name(project_short_tag):
     return timestamp_name(project_short_tag)
