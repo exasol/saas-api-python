@@ -87,9 +87,9 @@ def _get_database_id(
     useful for testing.
     """
     dbs = list_databases.sync(account_id, client=client)
-    dbs = list(filter(lambda db: (db.name == database_name and
-                                  db.deleted_at is openapi.UNSET and
-                                  db.deleted_by is openapi.UNSET), dbs))
+    dbs = list(filter(lambda db: (db.name == database_name) and             # type: ignore
+                                 (db.deleted_at is openapi.UNSET) and       # type: ignore
+                                 (db.deleted_by is openapi.UNSET), dbs))    # type: ignore
     if not dbs:
         raise RuntimeError(f'SaaS database {database_name} was not found.')
     return dbs[0].id
@@ -138,11 +138,13 @@ def get_connection_params(
         clusters = list_clusters.sync(account_id,
                                       database_id,
                                       client=client)
-        cluster_id = next(filter(lambda cl: cl.main_cluster, clusters)).id
+        cluster_id = next(filter(lambda cl: cl.main_cluster, clusters)).id  # type: ignore
         connections = get_cluster_connection.sync(account_id,
                                                   database_id,
                                                   cluster_id,
                                                   client=client)
+        if connections is None:
+            raise RuntimeError('Failed to get the SaaS connection data.')
         connection_params = {
             'dsn': f'{connections.dns}:{connections.port}',
             'user': connections.db_username,
