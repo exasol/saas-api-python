@@ -42,6 +42,7 @@ pytest = "^7.1.1"
 pytest-mock = "^3.7.0"
 exasol-toolbox = "^0.9.0"
 openapi-python-client = "^0.19.1"
+pyexasol = ">=0.25.0"
 
 
 [tool.pytest.ini_options]

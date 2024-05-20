@@ -5,7 +5,10 @@ from .client import (
     Client,
 )
 
+from .types import UNSET
+
 __all__ = (
     "AuthenticatedClient",
     "Client",
+    "UNSET",
 )

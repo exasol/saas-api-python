@@ -4,7 +4,8 @@ from exasol.saas.client import openapi, PROMISING_STATES
 from tenacity import RetryError
 from datetime import datetime, timedelta
 
-from exasol.saas.client.api_access import wait_for_delete_clearance
+import pyexasol
+from exasol.saas.client.api_access import wait_for_delete_clearance, get_connection_params
 
 
 def test_lifecycle(api_access, database_name):
@@ -50,3 +51,33 @@ def test_get_connection(api_access, database_name):
         connection = api_access.get_connection(db.id, clusters[0].id)
         assert connection.db_username is not None and \
             connection.port == 8563
+
+
+def test_get_connection_params_with_id(saas_host, saas_pat, saas_account_id,
+                                       operational_saas_database_id):
+    """
+    This integration test checks that opening a pyexasol connection to a SaaS DB with
+    known id and executing a query works.
+    """
+    connection_params = get_connection_params(host=saas_host,
+                                              account_id=saas_account_id,
+                                              pat=saas_pat,
+                                              database_id=operational_saas_database_id)
+    with pyexasol.connect(**connection_params) as pyconn:
+        result = pyconn.execute('SELECT 1;').fetchall()
+        assert result == [(1,)]
+
+
+def test_get_connection_params_with_name(saas_host, saas_pat, saas_account_id,
+                                         operational_saas_database_id, database_name):
+    """
+    This integration test checks that opening a pyexasol connection to a SaaS DB with
+    known name and executing a query works.
+    """
+    connection_params = get_connection_params(host=saas_host,
+                                              account_id=saas_account_id,
+                                              pat=saas_pat,
+                                              database_name=database_name)
+    with pyexasol.connect(**connection_params) as pyconn:
+        result = pyconn.execute('SELECT 1;').fetchall()
+        assert result == [(1,)]
