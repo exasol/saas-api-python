@@ -23,10 +23,6 @@ jobs:
       fail-fast: false
 
     steps:
-      - name: Show Trigger Event
-        run:
-          echo "this workflwo was triggered by event ${{github.event_name}}"
-
       - name: SCM Checkout
         uses: actions/checkout@v3
 
