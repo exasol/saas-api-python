@@ -2,6 +2,6 @@
 
 This release removes slack notifications for events other than schedule.
 
-## Feature
+## Refactoring
 
 * #19: Removed slack notifications for pr and pus
