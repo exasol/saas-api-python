@@ -30,7 +30,7 @@ jobs:
         if: ${{ failure() }}
         run: echo "job failed"
       - name: Report Failure Status to Slack Channel
-        if: ${{ failure() && github.event_name == "schedule" }}
+        if: ${{ failure() && github.event_name == 'schedule' }}
         run: echo "job failed and was triggered by schedule"
 
   check-api-outdated:
