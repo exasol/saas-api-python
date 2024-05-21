@@ -11,27 +11,10 @@ on:
   workflow_dispatch:
   schedule:
     # “At 4 am on every day.” (https://crontab.guru)
-    # - cron: "0 4 * * *"
-    - cron: "* 9-14 * * *"
+    - cron: "0 4 * * *"
 
 
 jobs:
-
-  verify-events:
-    name: Verified Correct Identification of Trigger Events
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-
-    steps:
-      - name: Intentionally failing event
-        run: false
-      - name: Report Failure Status to Slack Channel
-        if: ${{ failure() }}
-        run: echo "job failed"
-      - name: Report Failure Status to Slack Channel
-        if: ${{ failure() && github.event_name == 'schedule' }}
-        run: echo "job failed and was triggered by schedule"
 
   check-api-outdated:
     name: Check if OpenAPI Generated From JSON is Outdated
