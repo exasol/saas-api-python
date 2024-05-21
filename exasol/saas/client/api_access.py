@@ -99,9 +99,8 @@ def get_connection_params(
         host: str,
         account_id: str,
         pat: str,
-        database_id: Optional[str] = None,
-        database_name: Optional[str] = None,
-        cidr_ip: str = "0.0.0.0/0"
+        database_id: str | None = None,
+        database_name: str | None = None,
 ) -> dict[str, Any]:
     """
     Gets the database connection parameters, such as those required by pyexasol:
@@ -120,16 +119,9 @@ def get_connection_params(
         pat:            Personal Access Token.
         database_id:    Database ID, id known.
         database_name:  Database name, in case the id is unknown.
-        cidr_ip:        Client IP address to allow the connection from. By default,
-                        any IP address is allowed.
     """
 
     with create_saas_client(host, pat) as client:
-        ip_rule = openapi.models.CreateAllowedIP(name=timestamp_name('PEC_IP'),
-                                                 cidr_ip=cidr_ip)
-        add_allowed_ip.sync(account_id,
-                            client=client,
-                            body=ip_rule)
         if not database_id:
             if not database_name:
                 raise ValueError(('To get SaaS connection parameters, '
@@ -266,7 +258,6 @@ class OpenApiAccess:
 
         if poll_status() not in success:
             raise DatabaseStartupFailure()
-
 
     def clusters(
             self,

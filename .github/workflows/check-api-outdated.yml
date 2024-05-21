@@ -16,7 +16,7 @@ on:
 
 jobs:
 
- check-api-outdated:
+  check-api-outdated:
     name: Check if OpenAPI Generated From JSON is Outdated
     runs-on: ubuntu-latest
     strategy:
@@ -35,7 +35,7 @@ jobs:
         run: poetry run nox -s check-api-outdated
 
       - name: Report Failure Status to Slack Channel
-        if: ${{ failure() }}
+        if: ${{ failure() && github.event_name == 'schedule' }}
         uses: ravsamhq/notify-slack-action@v2
         with:
           status: ${{ job.status }}

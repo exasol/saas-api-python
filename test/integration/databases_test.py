@@ -54,7 +54,8 @@ def test_get_connection(api_access, database_name):
 
 
 def test_get_connection_params_with_id(saas_host, saas_pat, saas_account_id,
-                                       operational_saas_database_id):
+                                       operational_saas_database_id,
+                                       allow_connection):
     """
     This integration test checks that opening a pyexasol connection to a SaaS DB with
     known id and executing a query works.
@@ -69,7 +70,8 @@ def test_get_connection_params_with_id(saas_host, saas_pat, saas_account_id,
 
 
 def test_get_connection_params_with_name(saas_host, saas_pat, saas_account_id,
-                                         operational_saas_database_id, database_name):
+                                         operational_saas_database_id, database_name,
+                                         allow_connection):
     """
     This integration test checks that opening a pyexasol connection to a SaaS DB with
     known name and executing a query works.

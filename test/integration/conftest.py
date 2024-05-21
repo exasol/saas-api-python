@@ -65,3 +65,13 @@ def project_short_tag():
 @pytest.fixture(scope="session")
 def database_name(project_short_tag):
     return timestamp_name(project_short_tag)
+
+
+@pytest.fixture(scope="session")
+def allow_connection(api_access) -> None:
+    """
+    This fixture allows communication with the SaaS from the ci
+    for the duration of the test.
+    """
+    with api_access.allowed_ip():
+        yield
