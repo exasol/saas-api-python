@@ -32,6 +32,7 @@ from exasol.saas.client.openapi.api.security import (
     add_allowed_ip,
     delete_allowed_ip,
 )
+from exasol.saas.client.openapi.types import UNSET
 
 
 LOG = logging.getLogger(__name__)
@@ -87,9 +88,9 @@ def _get_database_id(
     useful for testing.
     """
     dbs = list_databases.sync(account_id, client=client)
-    dbs = list(filter(lambda db: (db.name == database_name) and             # type: ignore
-                                 (db.deleted_at is openapi.UNSET) and       # type: ignore
-                                 (db.deleted_by is openapi.UNSET), dbs))    # type: ignore
+    dbs = list(filter(lambda db: (db.name == database_name) and         # type: ignore
+                                 (db.deleted_at is UNSET) and           # type: ignore
+                                 (db.deleted_by is UNSET), dbs))        # type: ignore
     if not dbs:
         raise RuntimeError(f'SaaS database {database_name} was not found.')
     return dbs[0].id
