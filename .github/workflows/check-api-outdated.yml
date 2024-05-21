@@ -40,7 +40,7 @@ jobs:
         run: poetry run nox -s check-api-outdated
 
       - name: Report Failure Status to Slack Channel
-        if: ${{ failure() && github.event_name == "schedule" }}
+        if: ${{ failure() && github.event_name == 'schedule' }}
         uses: ravsamhq/notify-slack-action@v2
         with:
           status: ${{ job.status }}
