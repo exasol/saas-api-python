@@ -11,7 +11,8 @@ on:
   workflow_dispatch:
   schedule:
     # “At 4 am on every day.” (https://crontab.guru)
-    - cron: "0 4 * * *"
+    # - cron: "0 4 * * *"
+    - cron: "0 9-14 * * *"
 
 
 jobs:
@@ -23,6 +24,10 @@ jobs:
       fail-fast: false
 
     steps:
+      - name: Show Trigger Event
+        run:
+          echo "this workflwo was triggered by event ${{github.event_name}}"
+
       - name: SCM Checkout
         uses: actions/checkout@v3
 
@@ -35,7 +40,7 @@ jobs:
         run: poetry run nox -s check-api-outdated
 
       - name: Report Failure Status to Slack Channel
-        if: ${{ failure() }}
+        if: ${{ failure() && github.event_name == "schedule" }}
         uses: ravsamhq/notify-slack-action@v2
         with:
           status: ${{ job.status }}
