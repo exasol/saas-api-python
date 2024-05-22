@@ -90,7 +90,7 @@ Nox session `prepare-release` will
 * Commit and push the changes
 * Create a pull request on GitHub
 
-Please note that the creating a pull request on GitHub requires
+Please note that creating a pull request on GitHub requires
 * Executable `gh` to be installed and in your `$PATH` variable
 * You must be authenticated towards GitHub via gh, use `gh auth` for that
 * In case you are using a GitHub token, the token must have permission `org:read`
