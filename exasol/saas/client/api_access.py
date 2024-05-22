@@ -3,7 +3,7 @@ import getpass
 import logging
 import time
 
-from typing import Iterable, List, Optional
+from typing import Iterable, List, Optional, Any
 from contextlib import contextmanager
 import datetime as dt
 from datetime import datetime, timedelta
@@ -32,6 +32,7 @@ from exasol.saas.client.openapi.api.security import (
     add_allowed_ip,
     delete_allowed_ip,
 )
+from exasol.saas.client.openapi.types import UNSET
 
 
 LOG = logging.getLogger(__name__)
@@ -74,6 +75,75 @@ def create_saas_client(
         token=pat,
         raise_on_unexpected_status = raise_on_unexpected_status,
     )
+
+
+def _get_database_id(
+        account_id: str,
+        client: openapi.AuthenticatedClient,
+        database_name: str,
+) -> str:
+    """
+    Finds the database id, given an optional database name. If the name is not
+    provided returns an id of any non-deleted database. The latter option may be
+    useful for testing.
+    """
+    dbs = list_databases.sync(account_id, client=client)
+    dbs = list(filter(lambda db: (db.name == database_name) and         # type: ignore
+                                 (db.deleted_at is UNSET) and           # type: ignore
+                                 (db.deleted_by is UNSET), dbs))        # type: ignore
+    if not dbs:
+        raise RuntimeError(f'SaaS database {database_name} was not found.')
+    return dbs[0].id
+
+
+def get_connection_params(
+        host: str,
+        account_id: str,
+        pat: str,
+        database_id: str | None = None,
+        database_name: str | None = None,
+) -> dict[str, Any]:
+    """
+    Gets the database connection parameters, such as those required by pyexasol:
+    - dns
+    - user
+    - password.
+    Returns the parameters in a dictionary that can be used as kwargs when
+    creating a connection, like in the code below:
+
+    connection_params = get_connection_params(...)
+    connection = pyexasol.connect(**connection_params)
+
+    Args:
+        host:           SaaS service URL.
+        account_id:     User account ID
+        pat:            Personal Access Token.
+        database_id:    Database ID, id known.
+        database_name:  Database name, in case the id is unknown.
+    """
+
+    with create_saas_client(host, pat) as client:
+        if not database_id:
+            if not database_name:
+                raise ValueError(('To get SaaS connection parameters, '
+                                  'either database name or database id must be provided.'))
+            database_id = _get_database_id(account_id, client, database_name=database_name)
+        clusters = list_clusters.sync(account_id,
+                                      database_id,
+                                      client=client)
+        cluster_id = next(filter(lambda cl: cl.main_cluster, clusters)).id  # type: ignore
+        connections = get_cluster_connection.sync(account_id,
+                                                  database_id,
+                                                  cluster_id,
+                                                  client=client)
+        if connections is None:
+            raise RuntimeError('Failed to get the SaaS connection data.')
+        connection_params = {
+            'dsn': f'{connections.dns}:{connections.port}',
+            'user': connections.db_username,
+            'password': pat
+        }
+        return connection_params
 
 
 class OpenApiAccess:
@@ -189,7 +259,6 @@ class OpenApiAccess:
 
         if poll_status() not in success:
             raise DatabaseStartupFailure()
-
 
     def clusters(
             self,

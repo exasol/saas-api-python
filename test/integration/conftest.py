@@ -54,7 +54,7 @@ def saas_database(api_access, database_name) -> openapi.models.database.Database
 def operational_saas_database_id(api_access, database_name) -> str:
     with api_access.database(database_name) as db:
         api_access.wait_until_running(db.id)
-        yield db
+        yield db.id
 
 
 @pytest.fixture(scope="session")
@@ -62,6 +62,16 @@ def project_short_tag():
     return os.environ.get("PROJECT_SHORT_TAG")
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def database_name(project_short_tag):
     return timestamp_name(project_short_tag)
+
+
+@pytest.fixture(scope="session")
+def allow_connection(api_access) -> None:
+    """
+    This fixture allows communication with the SaaS from the ci
+    for the duration of the test.
+    """
+    with api_access.allowed_ip():
+        yield
