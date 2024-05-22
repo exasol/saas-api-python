@@ -52,6 +52,10 @@ testpaths = [
     "test"
 ]
 
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
+
 [tool.coverage.run]
 relative_files = true
 source = [

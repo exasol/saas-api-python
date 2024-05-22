@@ -90,6 +90,14 @@ jobs:
         exasol-version: ["7.1.9"]
 
     steps:
+      - name: Experiment Set GitHub Env
+        if: "! contains(github.event.head_commit.message, '[run-slow-tests]')"
+        run: echo "RUN_SLOW_TESTS=-m not slow" >> $GITHUB_ENV
+
+      - name: Experiment Evaluate GitHub Env
+        if: "! contains(github.event.head_commit.message, '[run-slow-tests]')"
+        run: echo "RUN_SLOW_TESTS = ${{ env.RUN_SLOW_TESTS }}"
+
       - name: SCM Checkout
         uses: actions/checkout@v3
 
@@ -98,12 +106,16 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Evaluate Whether to Run Slow Tests
+        if: "! contains(github.event.head_commit.message, '[run-slow-tests]')"
+        run: echo "RUN_SLOW_TESTS=-m not slow" >> $GITHUB_ENV
+
       - name: Run Tests and Calculate Coverage
         env:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
           SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
           SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
-          PYTEST_ADDOPTS: -o log_cli=true -o log_cli_level=INFO
+          PYTEST_ADDOPTS: -o log_cli=true -o log_cli_level=INFO ${{ env.RUN_SLOW_TESTS }}
         run: |
           export PROJECT_SHORT_TAG=$(poetry run nox -s get-project-short-tag)
           poetry run nox -s coverage -- --
