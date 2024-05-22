@@ -9,14 +9,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Experiment Set GitHub Env
-        if: "! contains(github.event.head_commit.message, '[run-slow-tests]')"
-        run: echo 'RUN_SLOW_TESTS=-m "not slow"' >> $GITHUB_ENV
-
-      - name: Experiment Evaluate GitHub Env
-        if: "! contains(github.event.head_commit.message, '[run-slow-tests]')"
-        run: echo 'RUN_SLOW_TESTS = ${{ env.RUN_SLOW_TESTS }}'
-
       - name: SCM Checkout
         uses: actions/checkout@v3
         with:

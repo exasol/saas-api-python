@@ -58,6 +58,8 @@ After generating the API,
 
 ## Run Tests
 
+### Integration Tests
+
 Executing the integration tests requires the following environment variables to be set:
 
 | Variable          | Description                                           |
@@ -65,6 +67,12 @@ Executing the integration tests requires the following environment variables to 
 | `SAAS_HOST`       | Host to use for requests to REST API                  |
 | `SAAS_ACCOUNT_ID` | ID of the Exasol SAAS account to be used by the tests |
 | `SAAS_PAT`        | Personal access token to access the SAAS API          |
+
+### Slow Tests
+
+Some of the test cases verify connecting to an SaaS database instance and execution will take about 20 minutes.
+
+These test cases are disabled by default and will only be executed when the commit message contains the string `[run-slow-tests]`.
 
 ## Creating a Release
 
