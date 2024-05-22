@@ -66,3 +66,74 @@ Executing the integration tests requires the following environment variables to 
 | `SAAS_ACCOUNT_ID` | ID of the Exasol SAAS account to be used by the tests |
 | `SAAS_PAT`        | Personal access token to access the SAAS API          |
 
+## Creating a Release
+
+### Prepare the Release
+
+There are two scenarios for preparing a release:
+* a) [You already merged your changes to branch `main`](#scenario-a-prepare-a-release-from-branch-main)
+* b) [You have checked out a different branch](#scenario-b-prepare-a-release-from-another-branch)
+
+In both scenarios the SAPIPY relies on Exasol's [python-toolbox](https://github.com/exasol/python-toolbox) for preparing a release.
+
+The invocation depends on your setup:
+* When working in a poetry shell, you need to add one double-dash `--` argument to separate arguments to the nox-session `prepare-release`.
+* When calling `poetry` directly for one-time usage, then you need to add _two_ double-dashes `-- --` to terminate arguments to poetry and nox before arguments to the nox-session.
+
+```shell
+poetry run nox -s prepare-release -- -- <version>
+```
+
+#### Scenario a) Prepare a Release from Branch `main`
+
+Note that this scenario requires all your changes to be merged to branch `main` and no uncommited changes to be present in your local file tree.
+
+Nox session `prepare-release` will
+* Create a branch, e.g. `prepare-release/1.2.3` starting from `main`
+* Checkout this new branch
+* Update the version in files `pyproject.toml` and `version.py`
+* Update changes documentation
+  * Rename file `doc/unreleased.md` to `doc/changes_<version>.md` and add the current date as date of the release
+  * Create a new file `doc/unreleased.md`
+  * Update the file `doc/changelog.md`
+* Commit and push the changes
+* Create a pull request on GitHub
+
+Please note that creating a pull request on GitHub requires
+* Executable `gh` to be installed and in your `$PATH` variable
+* You must be authenticated towards GitHub via gh, use `gh auth` for that
+* In case you are using a GitHub token, the token must have permission `org:read`
+
+##### Manually Create a Pull Request
+
+If you prefer to create the pull request manually or cannot provide one of the prerequisites, you can add command line option `--no-pr`:
+
+```shell
+poetry run nox -s prepare-release -- -- <version> --no-pr
+```
+
+#### Scenario b) Prepare a Release from Another Branch
+
+In case you currently are already working on a branch other than `main`, please ensure to have all changes commited and add command line option `--no-branch`:
+
+```shell
+poetry run nox -s prepare-release -- -- <version> --no-pr --no-branch
+```
+
+### Finalize and Publish the Release
+
+When all workflows triggered by merging the pull request to `main` have succeeded, you can create a new release by
+* Switching to branch `main`
+* Creating a git tag and
+* Pushing it to `origin`
+
+```shell
+TAG="${1}"
+git tag "${TAG}"
+git push origin "${TAG}"
+```
+
+This will trigger additional GitHub workflows
+* Running some checks
+* Creating a GitHub release on https://github.com/exasol/saas-api-python/releases and
+* Publishing the release on [pypi](https://pypi.org/project/exasol-saas-api)

@@ -1,8 +1,12 @@
-# 0.6.0 - 2024-05-21
+# 0.6.0 - 2024-05-22
 
 ## Feature
 
 * #45 Added a helper function to assemble DB connection parameters.
+
+## Documentation
+
+* #50: Described release process in Developer Guide
 
 ## Bugfixes
 
