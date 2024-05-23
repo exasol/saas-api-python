@@ -20,16 +20,6 @@ jobs:
     uses: ./.github/workflows/checks.yml
     secrets: inherit
 
-  slow-tests:
-    if: ${{ false }}
-    needs: [ ci-job ]
-    uses: ./.github/workflows/slow-tests.yml
-    secrets: inherit
-
   metrics:
-    needs: [ slow-tests ]
+    needs: [ ci-job ]
     uses: ./.github/workflows/report.yml
-
-  branch-protection:
-    needs: [ slow-tests ]
-    uses: ./.github/workflows/branch-protection.yml

@@ -22,3 +22,7 @@ jobs:
     with:
       slow-tests: ${{ github.event.label.name == 'slow-tests' }}
       python-version: "3.10"
+
+  branch-protection:
+    needs: [ tests-job ]
+    uses: ./.github/workflows/branch-protection.yml
