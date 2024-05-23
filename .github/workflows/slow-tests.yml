@@ -9,6 +9,14 @@ on:
       - labeled
 
 jobs:
+  eval-label:
+    runs-on: ubuntu-latest
+    steps:
+        - name: Display label
+          run: |
+            echo ${{ github.event.label.name }}
+            echo ${{ github.event.label.name == 'slow-tests' }}
+
   tests-job:
     uses: ./.github/workflows/run-tests.yml
     secrets: inherit
