@@ -1,5 +1,7 @@
 name: Branch Protection
 
+on: workflow_call
+
 # This workflow can be added used to allow merging to branch "main" only if
 # the workflow has been executed successfully.
 
