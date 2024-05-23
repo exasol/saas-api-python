@@ -1,0 +1,9 @@
+name: Branch Protection
+
+# This workflow can be added used to allow merging to branch "main" only if
+# the workflow has been executed successfully.
+
+jobs:
+  protect:
+    name: Protect
+    run: true

@@ -1,4 +1,4 @@
-name: Checks
+name: Run Tests
 
 on:
   workflow_call:
@@ -8,6 +8,7 @@ on:
         default: false
       python-verson:
         type: string
+        # required: true
         default: "3.10"
       exasol-verson:
         type: string

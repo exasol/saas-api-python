@@ -1,0 +1,12 @@
+name: Checks
+
+on: workflow_call
+
+jobs:
+  tests-job:
+    uses: ./.github/workflows/run-tests.yml
+    with:
+      slow-tests: true
+      python-version: "3.10"
+      exasol-version: "7.1.9"
+    secrets: inherit
