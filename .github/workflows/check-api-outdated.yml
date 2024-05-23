@@ -12,9 +12,8 @@ on:
   schedule:
     # “At 4 am on every day.” (https://crontab.guru)
     - cron: "0 4 * * *"
-  pull_request_target:
-    types:
-      - labeled
+  pull_request:
+    types: [ labeled ]
 
 jobs:
   eval-label:
