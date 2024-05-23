@@ -81,22 +81,29 @@ jobs:
   tests-job:
     name: Tests (Python-${{ matrix.python-version }}, Exasol-${{ matrix.exasol-version}})
     # needs: [build-documentation-job, lint-job, type-check-job]
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.10"]
         exasol-version: ["7.1.9"]
-
-    steps:
-      - name: SCM Checkout
-        uses: actions/checkout@v3
-
-      - name: Call workflow run-tests.yml
-        uses: ./.github/workflows/run-tests.yml
+      uses: ./.github/workflows/run-tests.yml
         with:
           python-version: ${{ matrix.python-version }}
           exasol-version: ${{ matrix.exasol-version }}
+        secrets: inherit
+
+#    steps:
+#      - name: SCM Checkout
+#        uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0
+#
+#      - name: Call workflow run-tests.yml
+#        uses: ./.github/workflows/run-tests.yml
+#        with:
+#          python-version: ${{ matrix.python-version }}
+#          exasol-version: ${{ matrix.exasol-version }}
 
 
 #    steps:

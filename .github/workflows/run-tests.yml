@@ -25,7 +25,6 @@ jobs:
         if: ${{ ! inputs.slow-tests }}
         run: echo slow-tests='-m "not slow"' >> "$GITHUB_OUTPUT"
 
-# checkout not required
 #      - name: SCM Checkout
 #        uses: actions/checkout@v3
 #
