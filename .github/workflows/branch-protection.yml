@@ -6,6 +6,8 @@ on: workflow_call
 # the workflow has been executed successfully.
 
 jobs:
-  protect:
+  branch-protection-job:
     name: Protect
-    run: true
+    steps:
+      - name: Protect
+        run: true
