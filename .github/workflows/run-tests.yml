@@ -6,11 +6,11 @@ on:
       slow-tests:
         type: boolean
         default: false
-      python-verson:
+      python-version:
         type: string
         # required: true
         default: "3.10"
-      exasol-verson:
+      exasol-version:
         type: string
         default: "7.1.9"
 
