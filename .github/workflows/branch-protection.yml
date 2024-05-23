@@ -7,7 +7,7 @@ on: workflow_call
 
 jobs:
   branch-protection-job:
-    name: Protect
+    runs-on: ubuntu-latest
     steps:
       - name: Protect
         run: true
