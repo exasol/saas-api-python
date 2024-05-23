@@ -11,7 +11,7 @@ on:
 jobs:
   eval-label:
     runs-on: ubuntu-latest
-    steps:
+    steps: 
         - name: Display label
           run: |
             echo ${{ github.event.label.name }}
