@@ -1,5 +1,7 @@
 name: Checks
 
+# Calls workflow/run-tests.yml without any matrix but including slow tests.
+
 on: workflow_call
 
 jobs:
