@@ -94,7 +94,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           exasol-version: ${{ matrix.exasol-version }}
-        secrets: inherit
 
 
 #    steps:
