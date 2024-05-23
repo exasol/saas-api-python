@@ -89,6 +89,9 @@ jobs:
         exasol-version: ["7.1.9"]
 
     steps:
+      - name: SCM Checkout
+        uses: actions/checkout@v3
+
       - name: Call workflow run-tests.yml
         uses: ./.github/workflows/run-tests.yml
         with:
