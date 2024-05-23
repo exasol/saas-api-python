@@ -20,6 +20,18 @@ jobs:
     uses: ./.github/workflows/checks.yml
     secrets: inherit
 
-  metrics:
+  slow-tests:
     needs: [ ci-job ]
+    uses: ./.github/workflows/slow-tests.yml
+
+  metrics:
+    needs: [ slow-tests ]
     uses: ./.github/workflows/report.yml
+
+  branch-protection:
+    needs: [ slow-tests ]
+    uses: ./.github/workflows/branch-protection.yml
+    # return 0
+    # comment: just to enable separate step without any matrix to set up a
+    # proper branch protection to ensure also slow-tests have been executed
+    # successfully before merging to main branch
