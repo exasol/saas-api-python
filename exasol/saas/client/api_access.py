@@ -83,9 +83,7 @@ def _get_database_id(
         database_name: str,
 ) -> str:
     """
-    Finds the database id, given an optional database name. If the name is not
-    provided returns an id of any non-deleted database. The latter option may be
-    useful for testing.
+    Finds the database id, given the database name.
     """
     dbs = list_databases.sync(account_id, client=client)
     dbs = list(filter(lambda db: (db.name == database_name) and         # type: ignore
@@ -94,6 +92,25 @@ def _get_database_id(
     if not dbs:
         raise RuntimeError(f'SaaS database {database_name} was not found.')
     return dbs[0].id
+
+
+def get_database_id(
+        host: str,
+        account_id: str,
+        pat: str,
+        database_name: str,
+) -> str:
+    """
+    Finds the database id, given the database name.
+
+    Args:
+        host:           SaaS service URL.
+        account_id:     User account ID
+        pat:            Personal Access Token.
+        database_name:  Database name.
+    """
+    with create_saas_client(host, pat) as client:
+        return _get_database_id(account_id, client, database_name)
 
 
 def get_connection_params(
