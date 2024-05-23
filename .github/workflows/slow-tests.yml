@@ -4,15 +4,14 @@ name: Checks
 
 on:
   workflow_call:
-  pull_request_target:
-    types:
-      - labeled
+  pull_request:
+    types: [ labeled ]
 
 jobs:
-  eval-label:
+  display-pr-label:
     runs-on: ubuntu-latest
     steps:
-        - name: Display label
+        - name: Display Pull Request Label
           run: |
             echo ${{ github.event.label.name }}
             echo ${{ github.event.label.name == 'slow-tests' }}
@@ -21,5 +20,5 @@ jobs:
     uses: ./.github/workflows/run-tests.yml
     secrets: inherit
     with:
-      slow-tests: true
+      slow-tests: ${{ github.event.label.name == 'slow-tests' }}
       python-version: "3.10"

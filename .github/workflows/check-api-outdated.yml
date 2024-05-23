@@ -1,55 +1,46 @@
 name: Check if OpenAPI is Outdated
 
 on:
-#  push:
-#    branches-ignore:
-#      - "github-pages/*"
-#      - "gh-pages/*"
+  push:
+    branches-ignore:
+      - "github-pages/*"
+      - "gh-pages/*"
   pull_request:
     # check results of former push could be outdated
-    types: [opened, reopened, labeled]
+    types: [opened, reopened]
   workflow_dispatch:
   schedule:
     # “At 4 am on every day.” (https://crontab.guru)
     - cron: "0 4 * * *"
 
 jobs:
-  eval-label:
-    runs-on: ubuntu-latest
-    steps:
-        - name: Display label
-          run: |
-            echo ${{ github.event.label.name }}
-            echo ${{ github.event.label.name == 'slow-tests' }}
 
-#jobs:
-#
-#  check-api-outdated:
-#    name: Check if OpenAPI Generated From JSON is Outdated
-#    runs-on: ubuntu-latest
-#    strategy:
-#      fail-fast: false
-#
-#    steps:
-#      - name: SCM Checkout
-#        uses: actions/checkout@v3
-#
-#      - name: Setup Python & Poetry Environment
-#        uses: exasol/python-toolbox/.github/actions/python-environment@0.8.0
-#        with:
-#          python-version: "3.10"
-#
-#      - name: Run Nox Task check-api-outdated
-#        run: poetry run nox -s check-api-outdated
-#
-#      - name: Report Failure Status to Slack Channel
-#        if: ${{ failure() && github.event_name == 'schedule' }}
-#        uses: ravsamhq/notify-slack-action@v2
-#        with:
-#          status: ${{ job.status }}
-#          token: ${{ github.token }}
-#          notification_title: "Generated OpenAPI seems to be outdated."
-#          message_format: "{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>"
-#          notify_when: "failure,cancelled,warnings,skipped"
-#        env:
-#          SLACK_WEBHOOK_URL: ${{ secrets.INTEGRATION_TEAM_SLACK_NOTIFICATION_WEBHOOK }}
+  check-api-outdated:
+    name: Check if OpenAPI Generated From JSON is Outdated
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+
+    steps:
+      - name: SCM Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Python & Poetry Environment
+        uses: exasol/python-toolbox/.github/actions/python-environment@0.8.0
+        with:
+          python-version: "3.10"
+
+      - name: Run Nox Task check-api-outdated
+        run: poetry run nox -s check-api-outdated
+
+      - name: Report Failure Status to Slack Channel
+        if: ${{ failure() && github.event_name == 'schedule' }}
+        uses: ravsamhq/notify-slack-action@v2
+        with:
+          status: ${{ job.status }}
+          token: ${{ github.token }}
+          notification_title: "Generated OpenAPI seems to be outdated."
+          message_format: "{emoji} *{workflow}* {status_message} in <{repo_url}|{repo}>"
+          notify_when: "failure,cancelled,warnings,skipped"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.INTEGRATION_TEAM_SLACK_NOTIFICATION_WEBHOOK }}
