@@ -72,7 +72,7 @@ Executing the integration tests requires the following environment variables to 
 
 Some of the test cases verify connecting to a SaaS database instance and execution will take about 20 minutes.
 
-These test cases are disabled by default and will only be executed when the commit message contains the string `[run-slow-tests]`.
+These test cases are disabled by default and will only be executed when your PR has the label `slow-tests`.
 
 ## Creating a Release
 
