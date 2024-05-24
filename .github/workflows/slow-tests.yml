@@ -2,27 +2,21 @@ name: Checks
 
 # Calls workflow/run-tests.yml without any matrix but including slow tests.
 
-on:
-  workflow_call:
-  pull_request:
-    types: [ labeled ]
+on: issue_comment
 
 jobs:
-  display-pr-label:
-    runs-on: ubuntu-latest
-    steps:
-        - name: Display Pull Request Label
-          run: |
-            echo ${{ github.event.label.name }}
-            echo ${{ github.event.label.name == 'slow-tests' }}
-
   tests-job:
+    # The first condition limits to consider only comments on pull requests
+    # rather than on GitHub issues.
+    if: ${{ github.event.issue.pull_request &&
+            contains(github.event.comment.body, '[run-slow-tests]') }}
     uses: ./.github/workflows/run-tests.yml
     secrets: inherit
     with:
-      slow-tests: ${{ github.event.label.name == 'slow-tests' }}
+      slow-tests: true
       python-version: "3.10"
 
   branch-protection:
+    name: Gate 2 (Allow Merge)
     needs: [ tests-job ]
     uses: ./.github/workflows/branch-protection.yml
