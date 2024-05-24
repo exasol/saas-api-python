@@ -24,6 +24,7 @@ jobs:
     needs: [ ci-job ]
     uses: ./.github/workflows/report.yml
 
+
   gate-1-regular-ci:
     name: Gate 1 (Regular CI)
     needs: [ ci-job ]
