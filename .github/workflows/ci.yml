@@ -7,8 +7,6 @@ on:
       - "gh-pages/*"
       - "main"
       - "master"
-  pull_request:
-    types: [opened, reopened]
   schedule:
     # “At 00:00 on every 7th day-of-month from 1 through 31.” (https://crontab.guru)
     - cron: "0 0 1/7 * *"
@@ -24,8 +22,27 @@ jobs:
     needs: [ ci-job ]
     uses: ./.github/workflows/report.yml
 
-
-  gate-1-regular-ci:
-    name: Gate 1 (Regular CI)
+  gate-1:
+    name: Regular
     needs: [ ci-job ]
-    uses: ./.github/workflows/branch-protection.yml
+    steps:
+      step:
+        - name: Branch Protection
+          run: true
+
+  slow-tests:
+    uses: ./.github/workflows/run-tests.yml
+    secrets: inherit
+    with:
+      slow-tests: true
+      python-version: "3.10"
+    environment:
+      slow-tests
+
+  gate-2:
+    name: Merge
+    needs: [ slow-tests ]
+    steps:
+      step:
+        - name: Branch Protection
+          run: true
