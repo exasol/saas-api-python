@@ -28,9 +28,8 @@ jobs:
     name: Regular
     needs: [ ci-job ]
     steps:
-      step:
-        - name: Branch Protection
-          run: true
+      - name: Branch Protection
+        run: true
 
   slow-tests:
     uses: ./.github/workflows/run-tests.yml
@@ -45,6 +44,5 @@ jobs:
     name: Merge
     needs: [ slow-tests ]
     steps:
-      step:
-        - name: Branch Protection
-          run: true
+      - name: Branch Protection
+        run: true
