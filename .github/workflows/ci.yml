@@ -32,10 +32,17 @@ jobs:
       - name: Branch Protection
         run: true
 
-  slow-tests:
-    uses: ./.github/workflows/run-tests.yml
+  slow-test-detection:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Detect Slow Tests
+        run: true
     environment:
       slow-tests
+
+  run-slow-tests:
+    uses: ./.github/workflows/run-tests.yml
+    needs: [ slow-test-detection ]
     secrets: inherit
     with:
       slow-tests: true
