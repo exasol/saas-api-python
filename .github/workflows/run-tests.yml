@@ -41,8 +41,8 @@ jobs:
           poetry run nox -s coverage -- --
 
       - name: Upload Artifacts
-        if: ${{ ! inputs.slow-tests }}
         uses: actions/upload-artifact@v4
         with:
           name: .coverage
           path: .coverage
+          overwrite: true
