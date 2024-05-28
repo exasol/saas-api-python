@@ -16,7 +16,7 @@ on:
 jobs:
 
   check-api-outdated:
-    name: Check Outdated
+    name: Check API Outdated
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
