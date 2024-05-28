@@ -1,4 +1,4 @@
-name: Check if OpenAPI is Outdated
+name: Open API
 
 on:
   push:
@@ -16,7 +16,7 @@ on:
 jobs:
 
   check-api-outdated:
-    name: Check if OpenAPI Generated From JSON is Outdated
+    name: Check Outdated
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
