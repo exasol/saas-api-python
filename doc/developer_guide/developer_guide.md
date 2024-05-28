@@ -72,7 +72,7 @@ Executing the integration tests requires the following environment variables to 
 
 Some of the test cases verify connecting to a SaaS database instance and execution will take about 20 minutes.
 
-These test cases are disabled by default and will only be executed by adding a comment `[run-slow-tests]` to your pull request.
+The regular CI build will ask for a confirmation (aka. "review) before executing these tests.
 
 ## Creating a Release
 
