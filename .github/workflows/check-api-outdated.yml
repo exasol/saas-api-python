@@ -25,20 +25,6 @@ jobs:
       - name: SCM Checkout
         uses: actions/checkout@v4
 
-      - name: Display Branch and Download openapi.json
-        id: download
-        run: |
-          git branch
-          F="ci-$(date "+%y%m%d-%H%M").json"
-          curl -s https://cloud.exasol.com/openapi.json -o "$F"
-          echo json=$F >> "$GITHUB_OUTPUT"
-
-      - name: Upload openapi.json
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.download.outputs.json}}
-          path: ${{ steps.download.outputs.json}}
-
       - name: Setup Python & Poetry Environment
         uses: exasol/python-toolbox/.github/actions/python-environment@0.8.0
         with:
@@ -58,3 +44,10 @@ jobs:
           notify_when: "failure,cancelled,warnings,skipped"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.INTEGRATION_TEAM_SLACK_NOTIFICATION_WEBHOOK }}
+
+      - name: Upload openapi.json
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi.json
+          path: openapi.json
