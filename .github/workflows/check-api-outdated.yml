@@ -1,4 +1,4 @@
-name: Check if OpenAPI is Outdated
+name: Open API
 
 on:
   push:
@@ -16,19 +16,28 @@ on:
 jobs:
 
   check-api-outdated:
-    name: Check if OpenAPI Generated From JSON is Outdated
+    name: Check API Outdated
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
 
     steps:
       - name: SCM Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Display branch
+      - name: Display Branch and Download openapi.json
+        id: download
         run: |
           git branch
-          curl -s https://cloud.exasol.com/openapi.json
+          F="ci-$(date "+%y%m%d-%H%M").json"
+          curl -s https://cloud.exasol.com/openapi.json -o "$F"
+          echo json=$F >> "$GITHUB_OUTPUT"
+
+      - name: Upload openapi.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.download.outputs.json}}
+          path: ${{ steps.download.outputs.json}}
 
       - name: Setup Python & Poetry Environment
         uses: exasol/python-toolbox/.github/actions/python-environment@0.8.0
