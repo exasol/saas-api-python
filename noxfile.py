@@ -49,7 +49,7 @@ def generate_api(session: Session):
     session.run(
         "openapi-python-client",
         "update",
-        "--path", filename,
+        "--path", str(filename),
         "--config", "openapi_config.yml",
         silent=silent,
     )
