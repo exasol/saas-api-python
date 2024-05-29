@@ -9,6 +9,3 @@ __all__ = (
     "AuthenticatedClient",
     "Client",
 )
-
-
-_A = "sample"
