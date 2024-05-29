@@ -19,8 +19,7 @@ nox.options.sessions = ["fix"]
 def _download_openapi_json() -> Path:
     url = f"{SAAS_HOST}/openapi.json"
     response = requests.get(url)
-    if response.status_code != 200:
-        raise Exception(f"Failed to download {url}")
+    response.raise_for_status()
     content = response.json()
     content["info"]["download"] = {
         "source": url,
