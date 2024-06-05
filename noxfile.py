@@ -1,6 +1,9 @@
+import json
 import os
 import nox
+import requests
 
+from datetime import datetime, timezone
 from pathlib import Path
 from nox import Session
 from noxconfig import PROJECT_CONFIG
@@ -11,6 +14,21 @@ from exasol.toolbox.nox.tasks import *
 
 # default actions to be run if nothing is explicitly specified with the -s option
 nox.options.sessions = ["fix"]
+
+
+def _download_openapi_json() -> Path:
+    url = f"{SAAS_HOST}/openapi.json"
+    response = requests.get(url)
+    response.raise_for_status()
+    content = response.json()
+    content["info"]["download"] = {
+        "source": url,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+    file = Path("openapi.json")
+    with open(file, "w") as f:
+        json.dump(content, f, indent=4)
+    return file
 
 
 @nox.session(name="generate-api", python=False)
@@ -26,10 +44,11 @@ def generate_api(session: Session):
     #default-environment-variables.
     """
     silent = "CI" not in os.environ
+    filename = _download_openapi_json()
     session.run(
         "openapi-python-client",
         "update",
-        "--url", f"{SAAS_HOST}/openapi.json",
+        "--path", str(filename),
         "--config", "openapi_config.yml",
         silent=silent,
     )
@@ -42,7 +61,7 @@ def check_api_outdated(session: Session):
     Generate API and run git diff to verify if API is out-dated.
     """
     generate_api(session)
-    session.run("git", "diff", "--exit-code")
+    session.run("git", "diff", "--exit-code", "exasol/saas/client/openapi")
 
 
 @nox.session(name="get-project-short-tag", python=False)

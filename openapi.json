@@ -1,0 +1,3384 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "Exasol SaaS REST-API",
+        "description": "## Authentication\n\nThe REST API can be used with your Personal Access Token (PAT). If you don't know what a PAT is, check our documentation \n[here](https://docs.exasol.com/saas/administration/access_mngt/access_token.htm).\n\nAfter you created a PAT click on Authorize and add your PAT under BearerAuth.\n",
+        "version": "1.0",
+        "download": {
+            "source": "https://cloud.exasol.com/openapi.json",
+            "timestamp": "2024-05-29T07:23:51.254756+00:00"
+        }
+    },
+    "servers": [
+        {
+            "url": "https://cloud.exasol.com"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Databases",
+            "description": "Calls to interact with your database"
+        },
+        {
+            "name": "Clusters",
+            "description": "Calls to interact with your clusters"
+        },
+        {
+            "name": "Platform",
+            "description": "Calls to get platform information"
+        },
+        {
+            "name": "Users",
+            "description": "Calls to manage users"
+        },
+        {
+            "name": "Usage",
+            "description": "Get usage"
+        }
+    ],
+    "paths": {
+        "/api/v1/accounts/{accountId}/usage": {
+            "get": {
+                "operationId": "GetUsage",
+                "responses": {
+                    "200": {
+                        "description": "Usage information per month",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Usage"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Usage"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "required": false,
+                        "name": "yearMonth",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "YYYY-MM"
+                    },
+                    {
+                        "in": "query",
+                        "required": false,
+                        "name": "type",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "csv",
+                                "json"
+                            ]
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/clusters": {
+            "post": {
+                "operationId": "CreateCluster",
+                "responses": {
+                    "200": {
+                        "description": "A cluster",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Cluster"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Clusters"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateCluster"
+                            }
+                        }
+                    },
+                    "required": true
+                }
+            },
+            "get": {
+                "operationId": "ListClusters",
+                "responses": {
+                    "200": {
+                        "description": "List of clusters from one database",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Cluster"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Clusters"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/clusters/{clusterId}": {
+            "delete": {
+                "operationId": "DeleteCluster",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Clusters"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "clusterId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            },
+            "get": {
+                "operationId": "GetCluster",
+                "responses": {
+                    "200": {
+                        "description": "A cluster",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Cluster"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Clusters"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "clusterId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            },
+            "put": {
+                "operationId": "UpdateCluster",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Clusters"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "clusterId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateCluster"
+                            }
+                        }
+                    },
+                    "required": true
+                }
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/clusters/{clusterId}/connect": {
+            "get": {
+                "operationId": "GetClusterConnection",
+                "responses": {
+                    "200": {
+                        "description": "Information about the cluster connection",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ClusterConnection"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Clusters"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "clusterId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/clusters/{clusterId}/scale": {
+            "put": {
+                "operationId": "ScaleCluster",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Clusters"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "clusterId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ScaleCluster"
+                            }
+                        }
+                    },
+                    "required": true
+                }
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/clusters/{clusterId}/start": {
+            "put": {
+                "operationId": "StartCluster",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Clusters"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "clusterId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/clusters/{clusterId}/stop": {
+            "put": {
+                "operationId": "StopCluster",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Clusters"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "clusterId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}": {
+            "delete": {
+                "operationId": "DeleteDatabase",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Databases"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            },
+            "get": {
+                "operationId": "GetDatabase",
+                "responses": {
+                    "200": {
+                        "description": "A database",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Database"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Databases"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            },
+            "put": {
+                "operationId": "UpdateDatabase",
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Databases"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateDatabase"
+                            }
+                        }
+                    },
+                    "required": true
+                }
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/extensions": {
+            "get": {
+                "operationId": "ListExtensions",
+                "responses": {
+                    "200": {
+                        "description": "List of extensions the user has access to",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Extension"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Extensions"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/extensions/{extensionId}/{extensionVersion}/install": {
+            "put": {
+                "operationId": "InstallExtension",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Extensions"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "extensionId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "extensionVersion",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/extensions/{extensionId}/{extensionVersion}/uninstall": {
+            "put": {
+                "operationId": "UninstallExtension",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Extensions"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "extensionId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "extensionVersion",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/extensions/{extensionId}/{extensionVersion}": {
+            "get": {
+                "operationId": "GetExtension",
+                "responses": {
+                    "200": {
+                        "description": "Get details about an extension version",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExtensionDetail"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Extension does not support instances",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Extensions"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "extensionId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "extensionVersion",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/extensions/{extensionId}/{extensionVersion}/instances": {
+            "post": {
+                "operationId": "CreateExtensionInstance",
+                "responses": {
+                    "200": {
+                        "description": "Creates an instance of an extension",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ExtensionInstance"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Extension does not support instances",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Extensions"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "extensionId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "extensionVersion",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateExtensionInstance"
+                            }
+                        }
+                    },
+                    "required": true
+                }
+            },
+            "get": {
+                "operationId": "ListExtensionInstances",
+                "responses": {
+                    "200": {
+                        "description": "List instances from a specific extension version",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ExtensionInstance"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Extension does not support instances",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Extensions"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "extensionId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "extensionVersion",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/extensions/{extensionId}/{extensionVersion}/instances/{instanceId}": {
+            "delete": {
+                "operationId": "DeleteExtensionInstance",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Extensions"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "extensionId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "extensionVersion",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "instanceId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases": {
+            "post": {
+                "operationId": "CreateDatabase",
+                "responses": {
+                    "200": {
+                        "description": "A database",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Database"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Databases"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateDatabase"
+                            }
+                        }
+                    },
+                    "required": true
+                }
+            },
+            "get": {
+                "operationId": "ListDatabases",
+                "responses": {
+                    "200": {
+                        "description": "List of databases the user has access to",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Database"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Databases"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/start": {
+            "put": {
+                "operationId": "StartDatabase",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Databases"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/stop": {
+            "put": {
+                "operationId": "StopDatabase",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Databases"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/folder/{key}": {
+            "post": {
+                "operationId": "CreateFolder",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Files"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "key",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            },
+            "delete": {
+                "operationId": "DeleteFolder",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Files"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "key",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/files/{key}": {
+            "delete": {
+                "operationId": "DeleteFile",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Files"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "key",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            },
+            "post": {
+                "operationId": "UploadFile",
+                "responses": {
+                    "200": {
+                        "description": "URL to upload the file",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UploadFile"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Files"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "key",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/internal/accounts/{accountId}/databases/{databaseId}/files/{key}": {
+            "get": {
+                "operationId": "DownloadFile",
+                "responses": {
+                    "200": {
+                        "description": "Url to download the file",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DownloadFile"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Files"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "key",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/files": {
+            "get": {
+                "operationId": "ListFiles",
+                "responses": {
+                    "200": {
+                        "description": "List of files from one database",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/File"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Files"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/platforms": {
+            "get": {
+                "operationId": "ListPlatforms",
+                "responses": {
+                    "200": {
+                        "description": "List of all platforms",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Platform"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Platform"
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/platforms/{platform}/regions": {
+            "get": {
+                "operationId": "ListRegions",
+                "responses": {
+                    "200": {
+                        "description": "Get available regions for given platform",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Region"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Platform"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "platform",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/platforms/{platform}/sizes": {
+            "get": {
+                "operationId": "ListClusterSizes",
+                "responses": {
+                    "200": {
+                        "description": "Get available cluster sizes for given platform",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ClusterSize"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Platform"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "platform",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/security/allowlist_ip": {
+            "post": {
+                "operationId": "AddAllowedIP",
+                "responses": {
+                    "200": {
+                        "description": "Allowed ip range",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AllowedIP"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Security"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateAllowedIP"
+                            }
+                        }
+                    },
+                    "required": true
+                }
+            },
+            "get": {
+                "operationId": "ListAllowedIPs",
+                "responses": {
+                    "200": {
+                        "description": "List of allowed ip ranges",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/AllowedIP"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Security"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/security/allowlist_ip/{allowlistIpId}": {
+            "delete": {
+                "operationId": "DeleteAllowedIP",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Security"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "allowlistIpId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            },
+            "get": {
+                "operationId": "GetAllowedIP",
+                "responses": {
+                    "200": {
+                        "description": "Allowed ip range",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AllowedIP"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Security"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "allowlistIpId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            },
+            "put": {
+                "operationId": "UpdateAllowedIP",
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Security"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "allowlistIpId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateAllowedIP"
+                            }
+                        }
+                    },
+                    "required": true
+                }
+            }
+        },
+        "/api/v1/me": {
+            "put": {
+                "operationId": "UpdateProfile",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Profile"
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateProfile"
+                            }
+                        }
+                    },
+                    "required": true
+                }
+            }
+        },
+        "/api/v1/accounts/{accountId}/users/{userId}": {
+            "delete": {
+                "operationId": "DeleteUser",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Users"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "userId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            },
+            "patch": {
+                "operationId": "PatchUser",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Users"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "userId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatchUser"
+                            }
+                        }
+                    },
+                    "required": true
+                }
+            }
+        },
+        "/api/v1/internal/accounts/{accountId}/users/{userId}": {
+            "get": {
+                "operationId": "GetUser",
+                "responses": {
+                    "200": {
+                        "description": "Users",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Users"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "userId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/users": {
+            "get": {
+                "operationId": "ListUsers",
+                "responses": {
+                    "200": {
+                        "description": "List of users",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/User"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Users"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "required": false,
+                        "name": "filter",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "required": false,
+                        "name": "next",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Get next page of users"
+                    },
+                    {
+                        "in": "query",
+                        "required": false,
+                        "name": "limit",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "description": "Limit amount of user in response"
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ApiError": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "number"
+                    },
+                    "causes": {
+                        "additionalProperties": {
+                            "type": "boolean"
+                        }
+                    },
+                    "message": {
+                        "type": "string"
+                    },
+                    "requestId": {
+                        "type": "string"
+                    },
+                    "path": {
+                        "type": "string"
+                    },
+                    "method": {
+                        "type": "string"
+                    },
+                    "logId": {
+                        "type": "string"
+                    },
+                    "handler": {
+                        "type": "string"
+                    },
+                    "timestamp": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "requestId",
+                    "path",
+                    "method",
+                    "logId",
+                    "handler",
+                    "timestamp"
+                ],
+                "additionalProperties": false
+            },
+            "UsageCluster": {
+                "required": [
+                    "id",
+                    "size",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "size": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "compute": {
+                        "type": "number"
+                    },
+                    "outSameRegion": {
+                        "type": "number"
+                    },
+                    "outDifferentRegion": {
+                        "type": "number"
+                    },
+                    "outInternet": {
+                        "type": "number"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "Usage": {
+                "additionalProperties": {
+                    "items": {
+                        "required": [
+                            "id",
+                            "name",
+                            "clusters"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "usedStorage": {
+                                "type": "number"
+                            },
+                            "clusters": {
+                                "items": {
+                                    "$ref": "#/components/schemas/UsageCluster"
+                                },
+                                "type": "array"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object"
+                    },
+                    "title": "UsageDatabase",
+                    "type": "array"
+                },
+                "type": "object"
+            },
+            "Cluster": {
+                "required": [
+                    "status",
+                    "id",
+                    "name",
+                    "size",
+                    "createdAt",
+                    "createdBy",
+                    "mainCluster"
+                ],
+                "properties": {
+                    "status": {
+                        "$ref": "#/components/schemas/Status"
+                    },
+                    "deletedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "deletedBy": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "size": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "createdBy": {
+                        "type": "string"
+                    },
+                    "mainCluster": {
+                        "type": "boolean"
+                    },
+                    "autoStop": {
+                        "$ref": "#/components/schemas/AutoStop"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "ClusterConnection": {
+                "required": [
+                    "dns",
+                    "port",
+                    "jdbc",
+                    "ips",
+                    "dbUsername"
+                ],
+                "properties": {
+                    "dns": {
+                        "type": "string"
+                    },
+                    "port": {
+                        "type": "integer"
+                    },
+                    "jdbc": {
+                        "type": "string"
+                    },
+                    "ips": {
+                        "$ref": "#/components/schemas/ConnectionIPs"
+                    },
+                    "dbUsername": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "ClusterSize": {
+                "required": [
+                    "size",
+                    "price",
+                    "vcpu",
+                    "ram",
+                    "isDefault",
+                    "name"
+                ],
+                "properties": {
+                    "size": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "number"
+                    },
+                    "vcpu": {
+                        "type": "number"
+                    },
+                    "ram": {
+                        "type": "number"
+                    },
+                    "isDefault": {
+                        "type": "boolean"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "ConnectionIPs": {
+                "required": [
+                    "private",
+                    "public"
+                ],
+                "properties": {
+                    "private": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "public": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "CreateCluster": {
+                "required": [
+                    "name",
+                    "size"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "size": {
+                        "type": "string"
+                    },
+                    "autoStop": {
+                        "$ref": "#/components/schemas/AutoStop"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "CreateDatabase": {
+                "required": [
+                    "name",
+                    "initialCluster",
+                    "provider",
+                    "region"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "initialCluster": {
+                        "required": [
+                            "name",
+                            "size"
+                        ],
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "size": {
+                                "type": "string"
+                            },
+                            "autoStop": {
+                                "$ref": "#/components/schemas/AutoStop"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object"
+                    },
+                    "provider": {
+                        "type": "string"
+                    },
+                    "region": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": true,
+                "type": "object"
+            },
+            "Database": {
+                "required": [
+                    "status",
+                    "id",
+                    "name",
+                    "clusters",
+                    "provider",
+                    "region",
+                    "createdAt",
+                    "createdBy"
+                ],
+                "properties": {
+                    "status": {
+                        "$ref": "#/components/schemas/Status"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "clusters": {
+                        "required": [
+                            "total",
+                            "running"
+                        ],
+                        "properties": {
+                            "total": {
+                                "type": "integer"
+                            },
+                            "running": {
+                                "type": "integer"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object"
+                    },
+                    "integrations": {
+                        "items": {
+                            "required": [
+                                "id",
+                                "name"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "url": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "type": "array"
+                    },
+                    "provider": {
+                        "type": "string"
+                    },
+                    "region": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "createdBy": {
+                        "type": "string"
+                    },
+                    "deletedBy": {
+                        "type": "string"
+                    },
+                    "deletedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "DownloadFile": {
+                "required": [
+                    "url"
+                ],
+                "properties": {
+                    "url": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "Extension": {
+                "required": [
+                    "id",
+                    "name",
+                    "description",
+                    "installableVersions",
+                    "categoryId"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "categoryId": {
+                        "type": "string"
+                    },
+                    "installableVersions": {
+                        "items": {
+                            "$ref": "#/components/schemas/ExtensionVersion"
+                        },
+                        "type": "array"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "ExtensionDetail": {
+                "required": [
+                    "id",
+                    "version",
+                    "parameterDefinitions"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "version": {
+                        "type": "string"
+                    },
+                    "parameterDefinitions": {
+                        "items": {
+                            "$ref": "#/components/schemas/ExtensionParameterDefinitions"
+                        },
+                        "type": "array"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "ExtensionInstance": {
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "ExtensionParameterDefinitions": {
+                "required": [
+                    "id",
+                    "name",
+                    "definition"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "rawDefinition": {
+                        "additionalProperties": true
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "ExtensionParameterValue": {
+                "required": [
+                    "id",
+                    "value"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "ExtensionVersion": {
+                "required": [
+                    "version",
+                    "latest",
+                    "deprecated",
+                    "installed"
+                ],
+                "properties": {
+                    "version": {
+                        "type": "string"
+                    },
+                    "latest": {
+                        "type": "boolean"
+                    },
+                    "deprecated": {
+                        "type": "boolean"
+                    },
+                    "installed": {
+                        "type": "boolean"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "File": {
+                "required": [
+                    "name",
+                    "type",
+                    "path",
+                    "lastModified"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    },
+                    "path": {
+                        "type": "string"
+                    },
+                    "lastModified": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "size": {
+                        "type": "integer"
+                    },
+                    "children": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/File"
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "ScaleCluster": {
+                "required": [
+                    "size"
+                ],
+                "properties": {
+                    "size": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "UpdateCluster": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "autoStop": {
+                        "$ref": "#/components/schemas/AutoStop"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "UpdateDatabase": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "UploadFile": {
+                "required": [
+                    "url"
+                ],
+                "properties": {
+                    "url": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "AutoStop": {
+                "required": [
+                    "enabled",
+                    "idleTime"
+                ],
+                "properties": {
+                    "enabled": {
+                        "type": "boolean"
+                    },
+                    "idleTime": {
+                        "type": "integer"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "Status": {
+                "enum": [
+                    "todelete",
+                    "tostart",
+                    "tocreate",
+                    "tostop",
+                    "creating",
+                    "starting",
+                    "running",
+                    "stopping",
+                    "stopped",
+                    "error",
+                    "maintenance",
+                    "deleting",
+                    "deleted",
+                    "scaling",
+                    "toscale"
+                ],
+                "type": "string"
+            },
+            "CreateExtensionInstance": {
+                "required": [
+                    "parameterValues"
+                ],
+                "properties": {
+                    "parameterValues": {
+                        "items": {
+                            "$ref": "#/components/schemas/ExtensionParameterValue"
+                        },
+                        "type": "array"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "Platform": {
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "Region": {
+                "required": [
+                    "id",
+                    "name",
+                    "priceMultiplier",
+                    "storagePrice"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "priceMultiplier": {
+                        "type": "number"
+                    },
+                    "storagePrice": {
+                        "type": "number"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "AllowedIP": {
+                "required": [
+                    "id",
+                    "name",
+                    "cidrIp",
+                    "createdAt",
+                    "createdBy"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "cidrIp": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "createdBy": {
+                        "type": "string"
+                    },
+                    "deletedBy": {
+                        "type": "string"
+                    },
+                    "deletedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "CreateAllowedIP": {
+                "required": [
+                    "name",
+                    "cidrIp"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "cidrIp": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "UpdateAllowedIP": {
+                "required": [
+                    "name",
+                    "cidrIp"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "cidrIp": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "PatchUser": {
+                "properties": {
+                    "roleID": {
+                        "type": "string"
+                    },
+                    "databases": {
+                        "$ref": "#/components/schemas/PatchUserDatabases"
+                    },
+                    "dbUsername": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "PatchUserDatabases": {
+                "required": [
+                    "delete",
+                    "add"
+                ],
+                "properties": {
+                    "delete": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "add": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "UpdateProfile": {
+                "required": [
+                    "firstName",
+                    "lastName"
+                ],
+                "properties": {
+                    "firstName": {
+                        "type": "string"
+                    },
+                    "lastName": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "User": {
+                "required": [
+                    "email",
+                    "id",
+                    "createdAt",
+                    "createdBy",
+                    "status",
+                    "roles",
+                    "isDeletable"
+                ],
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "firstName": {
+                        "type": "string"
+                    },
+                    "lastName": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "createdBy": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/UserStatus"
+                    },
+                    "databases": {
+                        "items": {
+                            "$ref": "#/components/schemas/UserDatabase"
+                        },
+                        "type": "array"
+                    },
+                    "roles": {
+                        "items": {
+                            "$ref": "#/components/schemas/UserRole"
+                        },
+                        "type": "array"
+                    },
+                    "dbUsername": {
+                        "type": "string"
+                    },
+                    "isDeletable": {
+                        "type": "boolean"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "UserDatabase": {
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "UserRole": {
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "UserStatus": {
+                "enum": [
+                    "active",
+                    "deactivated",
+                    "pending"
+                ],
+                "type": "string"
+            }
+        },
+        "securitySchemes": {
+            "authorizer": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    }
+}
