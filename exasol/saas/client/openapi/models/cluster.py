@@ -25,6 +25,7 @@ from ..types import (
 
 if TYPE_CHECKING:
   from ..models.auto_stop import AutoStop
+  from ..models.cluster_settings import ClusterSettings
 
 
 
@@ -44,6 +45,7 @@ class Cluster:
             created_at (datetime.datetime):
             created_by (str):
             main_cluster (bool):
+            settings (ClusterSettings):
             deleted_at (Union[Unset, datetime.datetime]):
             deleted_by (Union[Unset, str]):
             auto_stop (Union[Unset, AutoStop]):
@@ -56,6 +58,7 @@ class Cluster:
     created_at: datetime.datetime
     created_by: str
     main_cluster: bool
+    settings: 'ClusterSettings'
     deleted_at: Union[Unset, datetime.datetime] = UNSET
     deleted_by: Union[Unset, str] = UNSET
     auto_stop: Union[Unset, 'AutoStop'] = UNSET
@@ -63,6 +66,7 @@ class Cluster:
 
     def to_dict(self) -> Dict[str, Any]:
         from ..models.auto_stop import AutoStop
+        from ..models.cluster_settings import ClusterSettings
         status = self.status.value
 
         id = self.id
@@ -76,6 +80,8 @@ class Cluster:
         created_by = self.created_by
 
         main_cluster = self.main_cluster
+
+        settings = self.settings.to_dict()
 
         deleted_at: Union[Unset, str] = UNSET
         if not isinstance(self.deleted_at, Unset):
@@ -97,6 +103,7 @@ class Cluster:
             "createdAt": created_at,
             "createdBy": created_by,
             "mainCluster": main_cluster,
+            "settings": settings,
         })
         if deleted_at is not UNSET:
             field_dict["deletedAt"] = deleted_at
@@ -112,6 +119,7 @@ class Cluster:
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         from ..models.auto_stop import AutoStop
+        from ..models.cluster_settings import ClusterSettings
         d = src_dict.copy()
         status = Status(d.pop("status"))
 
@@ -132,6 +140,11 @@ class Cluster:
         created_by = d.pop("createdBy")
 
         main_cluster = d.pop("mainCluster")
+
+        settings = ClusterSettings.from_dict(d.pop("settings"))
+
+
+
 
         _deleted_at = d.pop("deletedAt", UNSET)
         deleted_at: Union[Unset, datetime.datetime]
@@ -163,6 +176,7 @@ class Cluster:
             created_at=created_at,
             created_by=created_by,
             main_cluster=main_cluster,
+            settings=settings,
             deleted_at=deleted_at,
             deleted_by=deleted_by,
             auto_stop=auto_stop,

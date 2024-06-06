@@ -5,6 +5,8 @@ from .api_error import ApiError
 from .auto_stop import AutoStop
 from .cluster import Cluster
 from .cluster_connection import ClusterConnection
+from .cluster_settings import ClusterSettings
+from .cluster_settings_update import ClusterSettingsUpdate
 from .cluster_size import ClusterSize
 from .connection_i_ps import ConnectionIPs
 from .create_allowed_ip import CreateAllowedIP
@@ -49,6 +51,8 @@ __all__ = (
     "AutoStop",
     "Cluster",
     "ClusterConnection",
+    "ClusterSettings",
+    "ClusterSettingsUpdate",
     "ClusterSize",
     "ConnectionIPs",
     "CreateAllowedIP",

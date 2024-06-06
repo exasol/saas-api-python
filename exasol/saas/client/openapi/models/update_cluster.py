@@ -22,6 +22,7 @@ from ..types import (
 
 if TYPE_CHECKING:
   from ..models.auto_stop import AutoStop
+  from ..models.cluster_settings_update import ClusterSettingsUpdate
 
 
 
@@ -34,29 +35,39 @@ T = TypeVar("T", bound="UpdateCluster")
 class UpdateCluster:
     """ 
         Attributes:
-            name (str):
+            name (Union[Unset, str]):
             auto_stop (Union[Unset, AutoStop]):
+            settings (Union[Unset, ClusterSettingsUpdate]):
      """
 
-    name: str
+    name: Union[Unset, str] = UNSET
     auto_stop: Union[Unset, 'AutoStop'] = UNSET
+    settings: Union[Unset, 'ClusterSettingsUpdate'] = UNSET
 
 
     def to_dict(self) -> Dict[str, Any]:
         from ..models.auto_stop import AutoStop
+        from ..models.cluster_settings_update import ClusterSettingsUpdate
         name = self.name
 
         auto_stop: Union[Unset, Dict[str, Any]] = UNSET
         if not isinstance(self.auto_stop, Unset):
             auto_stop = self.auto_stop.to_dict()
 
+        settings: Union[Unset, Dict[str, Any]] = UNSET
+        if not isinstance(self.settings, Unset):
+            settings = self.settings.to_dict()
+
 
         field_dict: Dict[str, Any] = {}
         field_dict.update({
-            "name": name,
         })
+        if name is not UNSET:
+            field_dict["name"] = name
         if auto_stop is not UNSET:
             field_dict["autoStop"] = auto_stop
+        if settings is not UNSET:
+            field_dict["settings"] = settings
 
         return field_dict
 
@@ -65,8 +76,9 @@ class UpdateCluster:
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         from ..models.auto_stop import AutoStop
+        from ..models.cluster_settings_update import ClusterSettingsUpdate
         d = src_dict.copy()
-        name = d.pop("name")
+        name = d.pop("name", UNSET)
 
         _auto_stop = d.pop("autoStop", UNSET)
         auto_stop: Union[Unset, AutoStop]
@@ -78,9 +90,20 @@ class UpdateCluster:
 
 
 
+        _settings = d.pop("settings", UNSET)
+        settings: Union[Unset, ClusterSettingsUpdate]
+        if isinstance(_settings,  Unset):
+            settings = UNSET
+        else:
+            settings = ClusterSettingsUpdate.from_dict(_settings)
+
+
+
+
         update_cluster = cls(
             name=name,
             auto_stop=auto_stop,
+            settings=settings,
         )
 
         return update_cluster

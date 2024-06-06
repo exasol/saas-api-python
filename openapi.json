@@ -6,7 +6,7 @@
         "version": "1.0",
         "download": {
             "source": "https://cloud.exasol.com/openapi.json",
-            "timestamp": "2024-05-29T07:23:51.254756+00:00"
+            "timestamp": "2024-06-06T11:30:52.252009+00:00"
         }
     },
     "servers": [
@@ -2578,7 +2578,8 @@
                     "size",
                     "createdAt",
                     "createdBy",
-                    "mainCluster"
+                    "mainCluster",
+                    "settings"
                 ],
                 "properties": {
                     "status": {
@@ -2612,6 +2613,9 @@
                     },
                     "autoStop": {
                         "$ref": "#/components/schemas/AutoStop"
+                    },
+                    "settings": {
+                        "$ref": "#/components/schemas/ClusterSettings"
                     }
                 },
                 "additionalProperties": false,
@@ -2640,6 +2644,22 @@
                     },
                     "dbUsername": {
                         "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "ClusterSettings": {
+                "required": [
+                    "offloadEnabled",
+                    "offloadTimeoutMin"
+                ],
+                "properties": {
+                    "offloadEnabled": {
+                        "type": "boolean"
+                    },
+                    "offloadTimeoutMin": {
+                        "type": "integer"
                     }
                 },
                 "additionalProperties": false,
@@ -2713,6 +2733,9 @@
                     },
                     "autoStop": {
                         "$ref": "#/components/schemas/AutoStop"
+                    },
+                    "settings": {
+                        "$ref": "#/components/schemas/ClusterSettingsUpdate"
                     }
                 },
                 "additionalProperties": false,
@@ -2743,6 +2766,9 @@
                             },
                             "autoStop": {
                                 "$ref": "#/components/schemas/AutoStop"
+                            },
+                            "settings": {
+                                "$ref": "#/components/schemas/ClusterSettingsUpdate"
                             }
                         },
                         "additionalProperties": false,
@@ -3028,15 +3054,15 @@
                 "type": "object"
             },
             "UpdateCluster": {
-                "required": [
-                    "name"
-                ],
                 "properties": {
                     "name": {
                         "type": "string"
                     },
                     "autoStop": {
                         "$ref": "#/components/schemas/AutoStop"
+                    },
+                    "settings": {
+                        "$ref": "#/components/schemas/ClusterSettingsUpdate"
                     }
                 },
                 "additionalProperties": false,
@@ -3075,6 +3101,18 @@
                         "type": "boolean"
                     },
                     "idleTime": {
+                        "type": "integer"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "ClusterSettingsUpdate": {
+                "properties": {
+                    "offloadEnabled": {
+                        "type": "boolean"
+                    },
+                    "offloadTimeoutMin": {
                         "type": "integer"
                     }
                 },
