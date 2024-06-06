@@ -179,16 +179,18 @@ class OpenApiAccess:
             name: str,
             cluster_size: str = "XS",
             region: str = "eu-central-1",
+            idle_time: timedelta | None = None
     ) -> Optional[openapi.models.Database]:
         def minutes(x: timedelta) -> int:
             return x.seconds // 60
 
+        idle_time = idle_time or Limits.AUTOSTOP_MIN_IDLE_TIME
         cluster_spec = openapi.models.CreateDatabaseInitialCluster(
             name="my-cluster",
             size=cluster_size,
             auto_stop=openapi.models.AutoStop(
                 enabled=True,
-                idle_time=minutes(Limits.AUTOSTOP_MIN_IDLE_TIME),
+                idle_time=minutes(idle_time),
             ),
         )
         LOG.info(f"Creating database {name}")
@@ -225,11 +227,12 @@ class OpenApiAccess:
             name: str,
             keep: bool = False,
             ignore_delete_failure: bool = False,
+            idle_time: timedelta | None = None
     ):
         db = None
         start = datetime.now()
         try:
-            db = self.create_database(name)
+            db = self.create_database(name, idle_time=idle_time)
             yield db
             wait_for_delete_clearance(start)
         finally:
