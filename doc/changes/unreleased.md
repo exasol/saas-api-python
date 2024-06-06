@@ -10,6 +10,7 @@
 
 * #55 Added publicly callable function finding the database id from its name.
 * #60: Added download of `openapi.json` when generating python client
+* #64: Add an optional idle time parameter to the database factory.
 
 ## Documentation
 
