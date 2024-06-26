@@ -64,6 +64,11 @@ class DatabaseStartupFailure(Exception):
     successful.
     """
 
+class DatabaseDeleteTimeout(Exception):
+    """
+    If deletion of a SaaS database instance was requested but during the
+    specified timeout it was still reported in the list of existing databases.
+    """
 
 def create_saas_client(
         host: str,
@@ -212,6 +217,22 @@ class OpenApiAccess:
         yield self._client
         self._client.raise_on_unexpected_status = before
 
+    def wait_until_deleted(
+            self,
+            database_id: str,
+            timeout: timedelta = timedelta(seconds=1),
+            interval: timedelta = timedelta(minutes=1),
+    ):
+        @retry(wait=wait_fixed(interval), stop=stop_after_delay(timeout))
+        def still_exists() -> bool:
+            result = database_id in self.list_database_ids()
+            if result:
+                raise TryAgain
+            return result
+
+        if still_exists():
+            raise DatabaseDeleteTimeout
+
     def delete_database(self, database_id: str, ignore_failures=False):
         with self._ignore_failures(ignore_failures) as client:
             return delete_database.sync_detailed(
@@ -273,7 +294,7 @@ class OpenApiAccess:
         def poll_status():
             db = self.get_database(database_id)
             if db.status not in success:
-                print(f'status = {db.status}')
+                LOG.info("- Database status: %s ...", db.status)
                 raise TryAgain
             return db.status
 

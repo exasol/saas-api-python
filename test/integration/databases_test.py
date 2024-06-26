@@ -31,6 +31,7 @@ def test_lifecycle(api_access, database_name):
         # delete database and verify database is not listed anymore
         wait_for_delete_clearance(start)
         testee.delete_database(db.id)
+        testee.wait_until_deleted(db.id)
         assert db.id not in testee.list_database_ids()
 
 
