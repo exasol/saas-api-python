@@ -10,8 +10,8 @@ on:
     types: [opened, reopened]
   workflow_dispatch:
   schedule:
-    # “At 4 am on every day.” (https://crontab.guru)
-    - cron: "0 4 * * *"
+    # "At 2 am UTC on every day." (https://crontab.guru)
+    - cron: "0 2 * * *"
 
 jobs:
 
