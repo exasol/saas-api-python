@@ -294,7 +294,7 @@ class OpenApiAccess:
         def poll_status():
             db = self.get_database(database_id)
             if db.status not in success:
-                LOG.info(f"- Database status: {db.status} ...")
+                LOG.info("- Database status: %s ...", db.status)
                 raise TryAgain
             return db.status
 
