@@ -47,9 +47,12 @@ def generate_api(session: Session):
     filename = _download_openapi_json()
     session.run(
         "openapi-python-client",
-        "update",
+        # "update",
+        "generate",
+        "--overwrite", # new
         "--path", str(filename),
-        "--config", "openapi_config.yml",
+        # "--config", "openapi_config.yml",
+        "--output-path", "exasol/saas/client/openapi",
         silent=silent,
     )
     session.run("isort", "-q", "exasol/saas/client/openapi")

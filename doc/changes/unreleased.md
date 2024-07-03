@@ -1,5 +1,12 @@
 # Unreleased
 
+This release fixes vulnerabilities by updating dependencies.
+
+## Security
+
+* Fixed vulnerabilities by updating dependencies
+  * Vulnerability CVE-2024-21503 in transitive dependency via `exasol-toolbox` to `black` in versions below `24.3.0`
+
 ## Refactorings
 
 * #68: Update to Python 3.10
