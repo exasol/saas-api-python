@@ -56,6 +56,7 @@ class UpdateDatabase:
             name=name,
         )
 
+
         update_database.additional_properties = d
         return update_database
 

@@ -40,11 +40,7 @@ class ConnectionIPs:
 
 
 
-
-
         public = self.public
-
-
 
 
 

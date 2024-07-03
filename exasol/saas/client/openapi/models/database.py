@@ -94,8 +94,6 @@ class Database:
 
 
 
-
-
         deleted_by = self.deleted_by
 
         deleted_at: Union[Unset, str] = UNSET
@@ -191,6 +189,7 @@ class Database:
             deleted_by=deleted_by,
             deleted_at=deleted_at,
         )
+
 
         database.additional_properties = d
         return database

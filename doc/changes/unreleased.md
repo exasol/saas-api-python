@@ -12,3 +12,4 @@ This release fixes vulnerabilities by updating dependencies.
 * #68: Update to Python 3.10
 * #70: Optimized logging
 * n/a: Changed schedule checking if open api is outdated to 2 am
+* #29: Enhanced nox task generate-api to add transitive dependencies into main `pyproject.toml`

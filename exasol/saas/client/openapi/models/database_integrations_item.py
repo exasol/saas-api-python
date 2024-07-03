@@ -74,6 +74,7 @@ class DatabaseIntegrationsItem:
             url=url,
         )
 
+
         database_integrations_item.additional_properties = d
         return database_integrations_item
 
