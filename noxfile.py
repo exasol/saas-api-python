@@ -4,7 +4,7 @@ import nox
 import re
 import requests
 import shutil
-import toml
+import toml # type: ignore
 
 from datetime import datetime, timezone
 from typing import List
