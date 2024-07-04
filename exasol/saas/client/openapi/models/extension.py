@@ -66,8 +66,6 @@ class Extension:
 
 
 
-
-
         field_dict: Dict[str, Any] = {}
         field_dict.update({
             "id": id,

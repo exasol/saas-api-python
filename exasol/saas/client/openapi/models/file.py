@@ -67,8 +67,6 @@ class File:
 
 
 
-
-
         field_dict: Dict[str, Any] = {}
         field_dict.update({
             "name": name,

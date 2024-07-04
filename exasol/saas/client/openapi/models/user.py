@@ -85,8 +85,6 @@ class User:
 
 
 
-
-
         is_deletable = self.is_deletable
 
         first_name = self.first_name
@@ -99,8 +97,6 @@ class User:
             for databases_item_data in self.databases:
                 databases_item = databases_item_data.to_dict()
                 databases.append(databases_item)
-
-
 
 
 

@@ -1,9 +1,13 @@
 import json
 import os
 import nox
+import re
 import requests
+import shutil
+import toml # type: ignore
 
 from datetime import datetime, timezone
+from typing import List
 from pathlib import Path
 from nox import Session
 from noxconfig import PROJECT_CONFIG
@@ -14,6 +18,9 @@ from exasol.toolbox.nox.tasks import *
 
 # default actions to be run if nothing is explicitly specified with the -s option
 nox.options.sessions = ["fix"]
+
+# destination folder for the generated open api client code
+DEST_DIR = "exasol/saas/client/openapi"
 
 
 def _download_openapi_json() -> Path:
@@ -31,6 +38,20 @@ def _download_openapi_json() -> Path:
     return file
 
 
+def dependencies(filename: str) -> List[str]:
+    def unlimit_max(lib, version):
+      version_spec = re.sub(r",.*$", "", version)
+      return f"{lib}@{version_spec}"
+
+    with open(filename, "r") as stream:
+        _toml = toml.load(stream)
+    return [
+        unlimit_max(lib, version)
+        for lib, version in _toml["tool"]["poetry"]["dependencies"].items()
+        if lib != "python"
+    ]
+
+
 @nox.session(name="generate-api", python=False)
 def generate_api(session: Session):
     """
@@ -43,16 +64,22 @@ def generate_api(session: Session):
     https://docs.github.com/en/actions/learn-github-actions/variables.
     #default-environment-variables.
     """
-    silent = "CI" not in os.environ
+    local_build = "CI" not in os.environ
     filename = _download_openapi_json()
     session.run(
         "openapi-python-client",
-        "update",
+        "generate",
         "--path", str(filename),
         "--config", "openapi_config.yml",
-        silent=silent,
+        "--output-path", "tmp",
+        silent=local_build,
     )
-    session.run("isort", "-q", "exasol/saas/client/openapi")
+    shutil.rmtree(DEST_DIR)
+    shutil.move("tmp/generated", DEST_DIR)
+    if local_build:
+        session.run("poetry", "add", *dependencies("tmp/pyproject.toml"))
+    shutil.rmtree("tmp")
+    session.run("isort", "-q", DEST_DIR)
 
 
 @nox.session(name="check-api-outdated", python=False)
@@ -61,7 +88,7 @@ def check_api_outdated(session: Session):
     Generate API and run git diff to verify if API is out-dated.
     """
     generate_api(session)
-    session.run("git", "diff", "--exit-code", "exasol/saas/client/openapi")
+    session.run("git", "diff", "--exit-code", DEST_DIR)
 
 
 @nox.session(name="get-project-short-tag", python=False)

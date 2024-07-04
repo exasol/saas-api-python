@@ -50,8 +50,6 @@ class CreateExtensionInstance:
 
 
 
-
-
         field_dict: Dict[str, Any] = {}
         field_dict.update({
             "parameterValues": parameter_values,

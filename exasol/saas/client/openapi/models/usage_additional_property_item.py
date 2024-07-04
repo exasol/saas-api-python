@@ -60,8 +60,6 @@ class UsageAdditionalPropertyItem:
 
 
 
-
-
         used_storage = self.used_storage
 
 
