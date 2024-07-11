@@ -18,12 +18,8 @@ jobs:
     secrets: inherit
 
   cd-job:
-    name: Continues Delivery
+    name: Continuous Delivery
     needs: [ ci-job ]
     uses: ./.github/workflows/build-and-publish.yml
     secrets:
       PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-
-  metrics:
-    needs: [ ci-job ]
-    uses: ./.github/workflows/report.yml
