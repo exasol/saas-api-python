@@ -6,7 +6,7 @@
         "version": "1.0",
         "download": {
             "source": "https://cloud.exasol.com/openapi.json",
-            "timestamp": "2024-07-03T14:36:30.377504+00:00"
+            "timestamp": "2024-08-05T11:13:00.786294+00:00"
         }
     },
     "servers": [
@@ -2793,7 +2793,8 @@
                     "provider",
                     "region",
                     "createdAt",
-                    "createdBy"
+                    "createdBy",
+                    "settings"
                 ],
                 "properties": {
                     "status": {
@@ -2861,8 +2862,23 @@
                     "deletedAt": {
                         "type": "string",
                         "format": "date-time"
+                    },
+                    "settings": {
+                        "$ref": "#/components/schemas/DatabaseSettings"
                     }
                 },
+                "type": "object"
+            },
+            "DatabaseSettings": {
+                "required": [
+                    "offloadEnabled"
+                ],
+                "properties": {
+                    "offloadEnabled": {
+                        "type": "boolean"
+                    }
+                },
+                "additionalProperties": false,
                 "type": "object"
             },
             "DownloadFile": {

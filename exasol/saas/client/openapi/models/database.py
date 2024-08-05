@@ -27,6 +27,7 @@ from ..types import (
 if TYPE_CHECKING:
   from ..models.database_clusters import DatabaseClusters
   from ..models.database_integrations_item import DatabaseIntegrationsItem
+  from ..models.database_settings import DatabaseSettings
 
 
 
@@ -47,6 +48,7 @@ class Database:
             region (str):
             created_at (datetime.datetime):
             created_by (str):
+            settings (DatabaseSettings):
             integrations (Union[Unset, List['DatabaseIntegrationsItem']]):
             deleted_by (Union[Unset, str]):
             deleted_at (Union[Unset, datetime.datetime]):
@@ -60,6 +62,7 @@ class Database:
     region: str
     created_at: datetime.datetime
     created_by: str
+    settings: 'DatabaseSettings'
     integrations: Union[Unset, List['DatabaseIntegrationsItem']] = UNSET
     deleted_by: Union[Unset, str] = UNSET
     deleted_at: Union[Unset, datetime.datetime] = UNSET
@@ -69,6 +72,7 @@ class Database:
     def to_dict(self) -> Dict[str, Any]:
         from ..models.database_clusters import DatabaseClusters
         from ..models.database_integrations_item import DatabaseIntegrationsItem
+        from ..models.database_settings import DatabaseSettings
         status = self.status.value
 
         id = self.id
@@ -84,6 +88,8 @@ class Database:
         created_at = self.created_at.isoformat()
 
         created_by = self.created_by
+
+        settings = self.settings.to_dict()
 
         integrations: Union[Unset, List[Dict[str, Any]]] = UNSET
         if not isinstance(self.integrations, Unset):
@@ -112,6 +118,7 @@ class Database:
             "region": region,
             "createdAt": created_at,
             "createdBy": created_by,
+            "settings": settings,
         })
         if integrations is not UNSET:
             field_dict["integrations"] = integrations
@@ -128,6 +135,7 @@ class Database:
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         from ..models.database_clusters import DatabaseClusters
         from ..models.database_integrations_item import DatabaseIntegrationsItem
+        from ..models.database_settings import DatabaseSettings
         d = src_dict.copy()
         status = Status(d.pop("status"))
 
@@ -153,6 +161,11 @@ class Database:
 
 
         created_by = d.pop("createdBy")
+
+        settings = DatabaseSettings.from_dict(d.pop("settings"))
+
+
+
 
         integrations = []
         _integrations = d.pop("integrations", UNSET)
@@ -185,6 +198,7 @@ class Database:
             region=region,
             created_at=created_at,
             created_by=created_by,
+            settings=settings,
             integrations=integrations,
             deleted_by=deleted_by,
             deleted_at=deleted_at,
