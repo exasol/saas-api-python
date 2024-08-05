@@ -17,6 +17,7 @@ from .create_extension_instance import CreateExtensionInstance
 from .database import Database
 from .database_clusters import DatabaseClusters
 from .database_integrations_item import DatabaseIntegrationsItem
+from .database_settings import DatabaseSettings
 from .download_file import DownloadFile
 from .extension import Extension
 from .extension_detail import ExtensionDetail
@@ -63,6 +64,7 @@ __all__ = (
     "Database",
     "DatabaseClusters",
     "DatabaseIntegrationsItem",
+    "DatabaseSettings",
     "DownloadFile",
     "Extension",
     "ExtensionDetail",
