@@ -2,4 +2,4 @@
 
 ## Refactorings
 
-* #76: Update OpenApi
+* #76: Updated `openapi.json`
