@@ -4,6 +4,8 @@ from .allowed_ip import AllowedIP
 from .api_error import ApiError
 from .auto_stop import AutoStop
 from .cluster import Cluster
+from .cluster_action_scale import ClusterActionScale
+from .cluster_action_start_stop import ClusterActionStartStop
 from .cluster_connection import ClusterConnection
 from .cluster_settings import ClusterSettings
 from .cluster_settings_update import ClusterSettingsUpdate
@@ -32,6 +34,8 @@ from .patch_user_databases import PatchUserDatabases
 from .platform import Platform
 from .region import Region
 from .scale_cluster import ScaleCluster
+from .schedule import Schedule
+from .schedule_action_type_0 import ScheduleActionType0
 from .status import Status
 from .update_allowed_ip import UpdateAllowedIP
 from .update_cluster import UpdateCluster
@@ -51,6 +55,8 @@ __all__ = (
     "ApiError",
     "AutoStop",
     "Cluster",
+    "ClusterActionScale",
+    "ClusterActionStartStop",
     "ClusterConnection",
     "ClusterSettings",
     "ClusterSettingsUpdate",
@@ -79,6 +85,8 @@ __all__ = (
     "Platform",
     "Region",
     "ScaleCluster",
+    "Schedule",
+    "ScheduleActionType0",
     "Status",
     "UpdateAllowedIP",
     "UpdateCluster",
