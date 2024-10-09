@@ -6,7 +6,7 @@
         "version": "1.0",
         "download": {
             "source": "https://cloud.exasol.com/openapi.json",
-            "timestamp": "2024-09-16T07:47:42.561924+00:00"
+            "timestamp": "2024-10-09T08:16:21.376250+00:00"
         }
     },
     "servers": [
@@ -3276,6 +3276,15 @@
                 ],
                 "properties": {
                     "id": {
+                        "type": "string"
+                    },
+                    "createdbyID": {
+                        "type": "string"
+                    },
+                    "createdbyFirstName": {
+                        "type": "string"
+                    },
+                    "createdbyLastName": {
                         "type": "string"
                     },
                     "clusterName": {

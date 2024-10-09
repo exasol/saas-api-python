@@ -40,6 +40,9 @@ class Schedule:
             cron_rule (str): cron rule in format: <minute> <hour> <day> <month> <weekday>
             payload (Union['ClusterActionScale', 'ClusterActionStartStop']):
             id (Union[Unset, str]):
+            createdby_id (Union[Unset, str]):
+            createdby_first_name (Union[Unset, str]):
+            createdby_last_name (Union[Unset, str]):
             cluster_name (Union[Unset, str]):
      """
 
@@ -47,6 +50,9 @@ class Schedule:
     cron_rule: str
     payload: Union['ClusterActionScale', 'ClusterActionStartStop']
     id: Union[Unset, str] = UNSET
+    createdby_id: Union[Unset, str] = UNSET
+    createdby_first_name: Union[Unset, str] = UNSET
+    createdby_last_name: Union[Unset, str] = UNSET
     cluster_name: Union[Unset, str] = UNSET
 
 
@@ -69,6 +75,12 @@ class Schedule:
 
         id = self.id
 
+        createdby_id = self.createdby_id
+
+        createdby_first_name = self.createdby_first_name
+
+        createdby_last_name = self.createdby_last_name
+
         cluster_name = self.cluster_name
 
 
@@ -80,6 +92,12 @@ class Schedule:
         })
         if id is not UNSET:
             field_dict["id"] = id
+        if createdby_id is not UNSET:
+            field_dict["createdbyID"] = createdby_id
+        if createdby_first_name is not UNSET:
+            field_dict["createdbyFirstName"] = createdby_first_name
+        if createdby_last_name is not UNSET:
+            field_dict["createdbyLastName"] = createdby_last_name
         if cluster_name is not UNSET:
             field_dict["clusterName"] = cluster_name
 
@@ -130,6 +148,12 @@ class Schedule:
 
         id = d.pop("id", UNSET)
 
+        createdby_id = d.pop("createdbyID", UNSET)
+
+        createdby_first_name = d.pop("createdbyFirstName", UNSET)
+
+        createdby_last_name = d.pop("createdbyLastName", UNSET)
+
         cluster_name = d.pop("clusterName", UNSET)
 
         schedule = cls(
@@ -137,6 +161,9 @@ class Schedule:
             cron_rule=cron_rule,
             payload=payload,
             id=id,
+            createdby_id=createdby_id,
+            createdby_first_name=createdby_first_name,
+            createdby_last_name=createdby_last_name,
             cluster_name=cluster_name,
         )
 
