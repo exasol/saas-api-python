@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Python & Poetry Environment
-        uses: exasol/python-toolbox/.github/actions/python-environment@0.14.0
+        uses: exasol/python-toolbox/.github/actions/python-environment@0.20.0
         with:
           python-version: ${{ inputs.python-version }}
 
@@ -38,7 +38,7 @@ jobs:
         run: |
           echo "PYTEST_ADDOPTS = $PYTEST_ADDOPTS"
           export PROJECT_SHORT_TAG=$(poetry run nox -s get-project-short-tag)
-          poetry run nox -s coverage -- --
+          poetry run nox -s test:coverage -- --
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4

@@ -89,7 +89,7 @@ The invocation depends on your setup:
 * When calling `poetry` directly for one-time usage, then you need to add _two_ double-dashes `-- --` to terminate arguments to poetry and nox before arguments to the nox-session.
 
 ```shell
-poetry run nox -s prepare-release -- -- <version>
+poetry run nox -s release:prepare -- -- <version>
 ```
 
 #### Scenario a) Prepare a Release from Branch `main`
@@ -117,7 +117,7 @@ Please note that creating a pull request on GitHub requires
 If you prefer to create the pull request manually or cannot provide one of the prerequisites, you can add command line option `--no-pr`:
 
 ```shell
-poetry run nox -s prepare-release -- -- <version> --no-pr
+poetry run nox -s release:prepare -- -- <version> --no-pr
 ```
 
 #### Scenario b) Prepare a Release from Another Branch
@@ -125,7 +125,7 @@ poetry run nox -s prepare-release -- -- <version> --no-pr
 In case you currently are already working on a branch other than `main`, please ensure to have all changes commited and add command line option `--no-branch`:
 
 ```shell
-poetry run nox -s prepare-release -- -- <version> --no-pr --no-branch
+poetry run nox -s release:preparee -- -- <version> --no-pr --no-branch
 ```
 
 ### Finalize and Publish the Release
