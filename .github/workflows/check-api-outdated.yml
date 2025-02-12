@@ -28,6 +28,7 @@ jobs:
       - name: Setup Python & Poetry Environment
         uses: exasol/python-toolbox/.github/actions/python-environment@0.20.0
         with:
+          poetry-version: 2.0.1
           python-version: "3.10"
 
       - name: Run Nox Task check-api-outdated
