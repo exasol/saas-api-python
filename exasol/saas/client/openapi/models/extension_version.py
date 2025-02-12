@@ -2,11 +2,8 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
-    Dict,
     Optional,
     TextIO,
-    Tuple,
-    Type,
     TypeVar,
 )
 
@@ -37,7 +34,7 @@ class ExtensionVersion:
     installed: bool
 
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         version = self.version
 
         latest = self.latest
@@ -47,7 +44,7 @@ class ExtensionVersion:
         installed = self.installed
 
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update({
             "version": version,
             "latest": latest,
@@ -60,7 +57,7 @@ class ExtensionVersion:
 
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         d = src_dict.copy()
         version = d.pop("version")
 

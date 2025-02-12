@@ -2,11 +2,8 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
-    Dict,
     Optional,
     TextIO,
-    Tuple,
-    Type,
     TypeVar,
     Union,
 )
@@ -34,13 +31,13 @@ class ClusterSettingsUpdate:
     offload_timeout_min: Union[Unset, int] = UNSET
 
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         offload_enabled = self.offload_enabled
 
         offload_timeout_min = self.offload_timeout_min
 
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update({
         })
         if offload_enabled is not UNSET:
@@ -53,7 +50,7 @@ class ClusterSettingsUpdate:
 
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         d = src_dict.copy()
         offload_enabled = d.pop("offloadEnabled", UNSET)
 

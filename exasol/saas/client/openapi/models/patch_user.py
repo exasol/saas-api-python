@@ -2,11 +2,8 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
-    Dict,
     Optional,
     TextIO,
-    Tuple,
-    Type,
     TypeVar,
     Union,
     cast,
@@ -44,18 +41,18 @@ class PatchUser:
     db_username: Union[Unset, str] = UNSET
 
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         from ..models.patch_user_databases import PatchUserDatabases
         role_id = self.role_id
 
-        databases: Union[Unset, Dict[str, Any]] = UNSET
+        databases: Union[Unset, dict[str, Any]] = UNSET
         if not isinstance(self.databases, Unset):
             databases = self.databases.to_dict()
 
         db_username = self.db_username
 
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update({
         })
         if role_id is not UNSET:
@@ -70,7 +67,7 @@ class PatchUser:
 
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         from ..models.patch_user_databases import PatchUserDatabases
         d = src_dict.copy()
         role_id = d.pop("roleID", UNSET)
