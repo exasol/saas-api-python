@@ -11,6 +11,7 @@ poetry run pre-commit install
 ```
 
 When the hooks are installed, then git will run each of the hooks on the resp. stage, e.g. before executing a commit.
+The Hooks include linting, code-formating and generating the api for each commit, so it stays up to date.
 
 ## Generate the API Model
 
@@ -23,6 +24,31 @@ In order to regenerate the model layer please use the following command line:
 ```shell
 poetry run nox generate-api
 ```
+
+### Check API Outdated
+
+The CI checks include a check "Check API Outdated" (file check-api-outdated.yml, uses nox task check-api-outdated),
+which regenerates the api, and checks it against the api version commited to GitHub.
+If this check fails, it is likely for one of the following causes:
+
+* SaaS API could have changed in the meantime (should be detected automatically)
+* SaaS production vs. live system potentially can have subtle differences in the json API description (for api generation the production system is used)
+* The version of python used changed
+* The version of the generator openapi-python-client changed
+
+In any of those cases, generating the api might give different results than in previous commits. These changes in the
+generated api need to be commited to your GitHub branch for the check to pass in the CI.
+This should be done automatically by the Pre-Commit Hooks (check if they are installed correctly),
+but can also be done manually by calling the generate-api nox task, and commiting the results.
+Before commiting, you might want to run the check-api-outdated nox task locally to see if it passed or if there are further problems:
+
+```shell
+poetry run nox check-api-outdated
+```
+
+another cause for the check failing might be a python-toolbox update changing the linting/code formating. This can result in formatting tools
+like black or isort can modifying the generated code and causing artificial changes.
+
 
 ### Change the Source URL of the API Model JSON Definition
 
