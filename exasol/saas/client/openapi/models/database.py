@@ -3,12 +3,8 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
-    Dict,
-    List,
     Optional,
     TextIO,
-    Tuple,
-    Type,
     TypeVar,
     Union,
     cast,
@@ -49,7 +45,7 @@ class Database:
             created_at (datetime.datetime):
             created_by (str):
             settings (DatabaseSettings):
-            integrations (Union[Unset, List['DatabaseIntegrationsItem']]):
+            integrations (Union[Unset, list['DatabaseIntegrationsItem']]):
             deleted_by (Union[Unset, str]):
             deleted_at (Union[Unset, datetime.datetime]):
      """
@@ -63,13 +59,13 @@ class Database:
     created_at: datetime.datetime
     created_by: str
     settings: 'DatabaseSettings'
-    integrations: Union[Unset, List['DatabaseIntegrationsItem']] = UNSET
+    integrations: Union[Unset, list['DatabaseIntegrationsItem']] = UNSET
     deleted_by: Union[Unset, str] = UNSET
     deleted_at: Union[Unset, datetime.datetime] = UNSET
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         from ..models.database_clusters import DatabaseClusters
         from ..models.database_integrations_item import DatabaseIntegrationsItem
         from ..models.database_settings import DatabaseSettings
@@ -91,7 +87,7 @@ class Database:
 
         settings = self.settings.to_dict()
 
-        integrations: Union[Unset, List[Dict[str, Any]]] = UNSET
+        integrations: Union[Unset, list[dict[str, Any]]] = UNSET
         if not isinstance(self.integrations, Unset):
             integrations = []
             for integrations_item_data in self.integrations:
@@ -107,7 +103,7 @@ class Database:
             deleted_at = self.deleted_at.isoformat()
 
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({
             "status": status,
@@ -132,7 +128,7 @@ class Database:
 
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         from ..models.database_clusters import DatabaseClusters
         from ..models.database_integrations_item import DatabaseIntegrationsItem
         from ..models.database_settings import DatabaseSettings
@@ -209,7 +205,7 @@ class Database:
         return database
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

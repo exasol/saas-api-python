@@ -2,12 +2,8 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
-    Dict,
-    List,
     Optional,
     TextIO,
-    Tuple,
-    Type,
     TypeVar,
     cast,
 )
@@ -27,15 +23,15 @@ T = TypeVar("T", bound="ConnectionIPs")
 class ConnectionIPs:
     """ 
         Attributes:
-            private (List[str]):
-            public (List[str]):
+            private (list[str]):
+            public (list[str]):
      """
 
-    private: List[str]
-    public: List[str]
+    private: list[str]
+    public: list[str]
 
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         private = self.private
 
 
@@ -45,7 +41,7 @@ class ConnectionIPs:
 
 
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update({
             "private": private,
             "public": public,
@@ -56,12 +52,12 @@ class ConnectionIPs:
 
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         d = src_dict.copy()
-        private = cast(List[str], d.pop("private"))
+        private = cast(list[str], d.pop("private"))
 
 
-        public = cast(List[str], d.pop("public"))
+        public = cast(list[str], d.pop("public"))
 
 
         connection_i_ps = cls(

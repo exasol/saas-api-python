@@ -86,6 +86,8 @@ def generate_api(session: Session):
 def check_api_outdated(session: Session):
     """
     Generate API and run git diff to verify if API is out-dated.
+    If it fails, something changed in the api generation. It needs to be regenerated and
+    commited before this task can succeed.
     """
     generate_api(session)
     session.run("git", "diff", "--exit-code", DEST_DIR)

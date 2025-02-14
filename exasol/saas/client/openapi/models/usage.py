@@ -2,12 +2,8 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
-    Dict,
-    List,
     Optional,
     TextIO,
-    Tuple,
-    Type,
     TypeVar,
     cast,
 )
@@ -35,13 +31,13 @@ class Usage:
     """ 
      """
 
-    additional_properties: Dict[str, List['UsageAdditionalPropertyItem']] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, list['UsageAdditionalPropertyItem']] = _attrs_field(init=False, factory=dict)
 
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         from ..models.usage_additional_property_item import UsageAdditionalPropertyItem
         
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         for prop_name, prop in self.additional_properties.items():
             field_dict[prop_name] = []
             for additional_property_item_data in prop:
@@ -55,7 +51,7 @@ class Usage:
 
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         from ..models.usage_additional_property_item import UsageAdditionalPropertyItem
         d = src_dict.copy()
         usage = cls(
@@ -79,13 +75,13 @@ class Usage:
         return usage
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
-    def __getitem__(self, key: str) -> List['UsageAdditionalPropertyItem']:
+    def __getitem__(self, key: str) -> list['UsageAdditionalPropertyItem']:
         return self.additional_properties[key]
 
-    def __setitem__(self, key: str, value: List['UsageAdditionalPropertyItem']) -> None:
+    def __setitem__(self, key: str, value: list['UsageAdditionalPropertyItem']) -> None:
         self.additional_properties[key] = value
 
     def __delitem__(self, key: str) -> None:

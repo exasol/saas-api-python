@@ -2,11 +2,8 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
-    Dict,
     Optional,
     TextIO,
-    Tuple,
-    Type,
     TypeVar,
     Union,
     cast,
@@ -56,7 +53,7 @@ class Schedule:
     cluster_name: Union[Unset, str] = UNSET
 
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         from ..models.cluster_action_scale import ClusterActionScale
         from ..models.cluster_action_start_stop import ClusterActionStartStop
         action: str
@@ -66,7 +63,7 @@ class Schedule:
 
         cron_rule = self.cron_rule
 
-        payload: Dict[str, Any]
+        payload: dict[str, Any]
         if isinstance(self.payload, ClusterActionScale):
             payload = self.payload.to_dict()
         else:
@@ -84,7 +81,7 @@ class Schedule:
         cluster_name = self.cluster_name
 
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update({
             "action": action,
             "cronRule": cron_rule,
@@ -106,7 +103,7 @@ class Schedule:
 
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         from ..models.cluster_action_scale import ClusterActionScale
         from ..models.cluster_action_start_stop import ClusterActionStartStop
         d = src_dict.copy()

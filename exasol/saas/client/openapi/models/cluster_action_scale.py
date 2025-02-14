@@ -2,11 +2,8 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
-    Dict,
     Optional,
     TextIO,
-    Tuple,
-    Type,
     TypeVar,
 )
 
@@ -33,13 +30,13 @@ class ClusterActionScale:
     size: str
 
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         cluster_id = self.cluster_id
 
         size = self.size
 
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update({
             "clusterId": cluster_id,
             "size": size,
@@ -50,7 +47,7 @@ class ClusterActionScale:
 
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         d = src_dict.copy()
         cluster_id = d.pop("clusterId")
 

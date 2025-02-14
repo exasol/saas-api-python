@@ -3,12 +3,8 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
-    Dict,
-    List,
     Optional,
     TextIO,
-    Tuple,
-    Type,
     TypeVar,
     Union,
     cast,
@@ -31,25 +27,25 @@ class File:
     """ 
         Attributes:
             name (str):
-            type (str):
+            type_ (str):
             path (str):
             last_modified (datetime.datetime):
             size (Union[Unset, int]):
-            children (Union[Unset, List['File']]):
+            children (Union[Unset, list['File']]):
      """
 
     name: str
-    type: str
+    type_: str
     path: str
     last_modified: datetime.datetime
     size: Union[Unset, int] = UNSET
-    children: Union[Unset, List['File']] = UNSET
+    children: Union[Unset, list['File']] = UNSET
 
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         name = self.name
 
-        type = self.type
+        type_ = self.type_
 
         path = self.path
 
@@ -57,7 +53,7 @@ class File:
 
         size = self.size
 
-        children: Union[Unset, List[Dict[str, Any]]] = UNSET
+        children: Union[Unset, list[dict[str, Any]]] = UNSET
         if not isinstance(self.children, Unset):
             children = []
             for children_item_data in self.children:
@@ -67,10 +63,10 @@ class File:
 
 
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update({
             "name": name,
-            "type": type,
+            "type": type_,
             "path": path,
             "lastModified": last_modified,
         })
@@ -84,11 +80,11 @@ class File:
 
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         d = src_dict.copy()
         name = d.pop("name")
 
-        type = d.pop("type")
+        type_ = d.pop("type")
 
         path = d.pop("path")
 
@@ -111,7 +107,7 @@ class File:
 
         file = cls(
             name=name,
-            type=type,
+            type_=type_,
             path=path,
             last_modified=last_modified,
             size=size,

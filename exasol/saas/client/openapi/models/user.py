@@ -3,12 +3,8 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
-    Dict,
-    List,
     Optional,
     TextIO,
-    Tuple,
-    Type,
     TypeVar,
     Union,
     cast,
@@ -44,11 +40,11 @@ class User:
             created_at (datetime.datetime):
             created_by (str):
             status (UserStatus):
-            roles (List['UserRole']):
+            roles (list['UserRole']):
             is_deletable (bool):
             first_name (Union[Unset, str]):
             last_name (Union[Unset, str]):
-            databases (Union[Unset, List['UserDatabase']]):
+            databases (Union[Unset, list['UserDatabase']]):
             db_username (Union[Unset, str]):
      """
 
@@ -57,15 +53,15 @@ class User:
     created_at: datetime.datetime
     created_by: str
     status: UserStatus
-    roles: List['UserRole']
+    roles: list['UserRole']
     is_deletable: bool
     first_name: Union[Unset, str] = UNSET
     last_name: Union[Unset, str] = UNSET
-    databases: Union[Unset, List['UserDatabase']] = UNSET
+    databases: Union[Unset, list['UserDatabase']] = UNSET
     db_username: Union[Unset, str] = UNSET
 
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         from ..models.user_database import UserDatabase
         from ..models.user_role import UserRole
         email = self.email
@@ -91,7 +87,7 @@ class User:
 
         last_name = self.last_name
 
-        databases: Union[Unset, List[Dict[str, Any]]] = UNSET
+        databases: Union[Unset, list[dict[str, Any]]] = UNSET
         if not isinstance(self.databases, Unset):
             databases = []
             for databases_item_data in self.databases:
@@ -103,7 +99,7 @@ class User:
         db_username = self.db_username
 
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update({
             "email": email,
             "id": id,
@@ -127,7 +123,7 @@ class User:
 
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         from ..models.user_database import UserDatabase
         from ..models.user_role import UserRole
         d = src_dict.copy()

@@ -1,8 +1,6 @@
 from http import HTTPStatus
 from typing import (
     Any,
-    Dict,
-    List,
     Optional,
     Union,
     cast,
@@ -32,15 +30,15 @@ def _get_kwargs(
     *,
     body: CreateExtensionInstance,
 
-) -> Dict[str, Any]:
-    headers: Dict[str, Any] = {}
+) -> dict[str, Any]:
+    headers: dict[str, Any] = {}
 
 
     
 
     
 
-    _kwargs: Dict[str, Any] = {
+    _kwargs: dict[str, Any] = {
         "method": "post",
         "url": "/api/v1/accounts/{account_id}/databases/{database_id}/extensions/{extension_id}/{extension_version}/instances".format(account_id=account_id,database_id=database_id,extension_id=extension_id,extension_version=extension_version,),
     }
@@ -56,13 +54,13 @@ def _get_kwargs(
 
 
 def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[Union[ApiError, ExtensionInstance]]:
-    if response.status_code == HTTPStatus.OK:
+    if response.status_code == 200:
         response_200 = ExtensionInstance.from_dict(response.json())
 
 
 
         return response_200
-    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+    if response.status_code == 422:
         response_422 = ApiError.from_dict(response.json())
 
 
