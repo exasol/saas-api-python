@@ -17,7 +17,7 @@ from exasol.saas.client import SAAS_HOST
 from exasol.toolbox.nox.tasks import *
 
 # default actions to be run if nothing is explicitly specified with the -s option
-nox.options.sessions = ["fix"]
+nox.options.sessions = ["project:fix"]
 
 # destination folder for the generated open api client code
 DEST_DIR = "exasol/saas/client/openapi"
@@ -52,7 +52,7 @@ def dependencies(filename: str) -> List[str]:
     ]
 
 
-@nox.session(name="generate-api", python=False)
+@nox.session(name="api:generate", python=False)
 def generate_api(session: Session):
     """
     Call openapi-python-client to generate the client api based on the
@@ -82,7 +82,7 @@ def generate_api(session: Session):
     session.run("isort", "-q", DEST_DIR)
 
 
-@nox.session(name="check-api-outdated", python=False)
+@nox.session(name="api:check-outdated", python=False)
 def check_api_outdated(session: Session):
     """
     Generate API and run git diff to verify if API is out-dated.
@@ -93,7 +93,7 @@ def check_api_outdated(session: Session):
     session.run("git", "diff", "--exit-code", DEST_DIR)
 
 
-@nox.session(name="get-project-short-tag", python=False)
+@nox.session(name="project:get-short-tag", python=False)
 def get_project_short_tag(session: Session):
     config_file = Path("error_code_config.yml")
     content = config_file.read_text()
