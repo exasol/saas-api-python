@@ -21,6 +21,7 @@ from ...types import (
 
 def _get_kwargs(
     account_id: str,
+    database_id: str,
 
 ) -> dict[str, Any]:
     
@@ -30,8 +31,8 @@ def _get_kwargs(
     
 
     _kwargs: dict[str, Any] = {
-        "method": "get",
-        "url": "/api/v1/accounts/{account_id}/databases".format(account_id=account_id,),
+        "method": "put",
+        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/upgrade".format(account_id=account_id,database_id=database_id,),
     }
 
 
@@ -39,6 +40,8 @@ def _get_kwargs(
 
 
 def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[Any]:
+    if response.status_code == 204:
+        return None
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
     else:
@@ -56,6 +59,7 @@ def _build_response(*, client: Union[AuthenticatedClient, Client], response: htt
 
 def sync_detailed(
     account_id: str,
+    database_id: str,
     *,
     client: AuthenticatedClient,
 
@@ -63,6 +67,7 @@ def sync_detailed(
     """ 
     Args:
         account_id (str):
+        database_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -75,6 +80,7 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         account_id=account_id,
+database_id=database_id,
 
     )
 
@@ -87,6 +93,7 @@ def sync_detailed(
 
 async def asyncio_detailed(
     account_id: str,
+    database_id: str,
     *,
     client: AuthenticatedClient,
 
@@ -94,6 +101,7 @@ async def asyncio_detailed(
     """ 
     Args:
         account_id (str):
+        database_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -106,6 +114,7 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         account_id=account_id,
+database_id=database_id,
 
     )
 

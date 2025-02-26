@@ -36,7 +36,7 @@ repos:
         types: [ python ]
         pass_filenames: false
         language: system
-        entry: poetry run nox -s generate-api
+        entry: poetry run nox -s api:generate
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0

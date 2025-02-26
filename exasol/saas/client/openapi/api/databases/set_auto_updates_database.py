@@ -13,6 +13,7 @@ from ...client import (
     AuthenticatedClient,
     Client,
 )
+from ...models.set_auto_updates_database import SetAutoUpdatesDatabase
 from ...types import (
     UNSET,
     Response,
@@ -21,24 +22,36 @@ from ...types import (
 
 def _get_kwargs(
     account_id: str,
+    database_id: str,
+    *,
+    body: SetAutoUpdatesDatabase,
 
 ) -> dict[str, Any]:
-    
+    headers: dict[str, Any] = {}
+
 
     
 
     
 
     _kwargs: dict[str, Any] = {
-        "method": "get",
-        "url": "/api/v1/accounts/{account_id}/databases".format(account_id=account_id,),
+        "method": "patch",
+        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/database_settings".format(account_id=account_id,database_id=database_id,),
     }
 
+    _body = body.to_dict()
 
+
+    _kwargs["json"] = _body
+    headers["Content-Type"] = "application/json"
+
+    _kwargs["headers"] = headers
     return _kwargs
 
 
 def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[Any]:
+    if response.status_code == 204:
+        return None
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
     else:
@@ -56,13 +69,17 @@ def _build_response(*, client: Union[AuthenticatedClient, Client], response: htt
 
 def sync_detailed(
     account_id: str,
+    database_id: str,
     *,
     client: AuthenticatedClient,
+    body: SetAutoUpdatesDatabase,
 
 ) -> Response[Any]:
     """ 
     Args:
         account_id (str):
+        database_id (str):
+        body (SetAutoUpdatesDatabase):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -75,6 +92,8 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         account_id=account_id,
+database_id=database_id,
+body=body,
 
     )
 
@@ -87,13 +106,17 @@ def sync_detailed(
 
 async def asyncio_detailed(
     account_id: str,
+    database_id: str,
     *,
     client: AuthenticatedClient,
+    body: SetAutoUpdatesDatabase,
 
 ) -> Response[Any]:
     """ 
     Args:
         account_id (str):
+        database_id (str):
+        body (SetAutoUpdatesDatabase):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -106,6 +129,8 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         account_id=account_id,
+database_id=database_id,
+body=body,
 
     )
 

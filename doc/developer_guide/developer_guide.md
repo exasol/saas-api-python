@@ -22,13 +22,14 @@ See also [API Documentation](https://docs.exasol.com/saas/administration/rest_ap
 In order to regenerate the model layer please use the following command line:
 
 ```shell
-poetry run nox generate-api
+poetry run nox -s api:generate
 ```
 
 ### Check API Outdated
 
-The CI checks include a check "Check API Outdated" (file check-api-outdated.yml, uses nox task check-api-outdated),
+The CI checks include a check "Check API Outdated" (file check-api-outdated.yml, uses nox task `api:check-outdated`),
 which regenerates the api, and checks it against the api version commited to GitHub.
+
 If this check fails, it is likely for one of the following causes:
 
 * SaaS API could have changed in the meantime (should be detected automatically)
@@ -39,11 +40,11 @@ If this check fails, it is likely for one of the following causes:
 In any of those cases, generating the api might give different results than in previous commits. These changes in the
 generated api need to be commited to your GitHub branch for the check to pass in the CI.
 This should be done automatically by the Pre-Commit Hooks (check if they are installed correctly),
-but can also be done manually by calling the generate-api nox task, and commiting the results.
-Before commiting, you might want to run the check-api-outdated nox task locally to see if it passed or if there are further problems:
+but can also be done manually by calling the nox task `api:generate`, and commiting the results.
+Before commiting, you might want to run the nox task `api:check-outdated` locally to see if it passed or if there are further problems:
 
 ```shell
-poetry run nox check-api-outdated
+poetry run nox -s api:check-outdated
 ```
 
 another cause for the check failing might be a python-toolbox update changing the linting/code formating. This can result in formatting tools
@@ -151,7 +152,7 @@ poetry run nox -s release:prepare -- -- <version> --no-pr
 In case you currently are already working on a branch other than `main`, please ensure to have all changes commited and add command line option `--no-branch`:
 
 ```shell
-poetry run nox -s release:preparee -- -- <version> --no-pr --no-branch
+poetry run nox -s release:prepare -- -- <version> --no-pr --no-branch
 ```
 
 ### Finalize and Publish the Release
