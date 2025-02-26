@@ -2,8 +2,12 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
+    Dict,
+    List,
     Optional,
     TextIO,
+    Tuple,
+    Type,
     TypeVar,
     Union,
     cast,
@@ -33,17 +37,17 @@ class UsageAdditionalPropertyItem:
         Attributes:
             id (str):
             name (str):
-            clusters (list['UsageCluster']):
+            clusters (List['UsageCluster']):
             used_storage (Union[Unset, float]):
      """
 
     id: str
     name: str
-    clusters: list['UsageCluster']
+    clusters: List['UsageCluster']
     used_storage: Union[Unset, float] = UNSET
 
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         from ..models.usage_cluster import UsageCluster
         id = self.id
 
@@ -59,7 +63,7 @@ class UsageAdditionalPropertyItem:
         used_storage = self.used_storage
 
 
-        field_dict: dict[str, Any] = {}
+        field_dict: Dict[str, Any] = {}
         field_dict.update({
             "id": id,
             "name": name,
@@ -73,7 +77,7 @@ class UsageAdditionalPropertyItem:
 
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
+    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         from ..models.usage_cluster import UsageCluster
         d = src_dict.copy()
         id = d.pop("id")

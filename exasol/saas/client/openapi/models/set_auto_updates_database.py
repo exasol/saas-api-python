@@ -18,31 +18,26 @@ from ..types import (
     Unset,
 )
 
-T = TypeVar("T", bound="AutoStop")
+T = TypeVar("T", bound="SetAutoUpdatesDatabase")
 
 
 @_attrs_define
-class AutoStop:
+class SetAutoUpdatesDatabase:
     """ 
         Attributes:
-            enabled (bool):
-            idle_time (int):
+            auto_updates_enabled (bool):
      """
 
-    enabled: bool
-    idle_time: int
+    auto_updates_enabled: bool
 
 
     def to_dict(self) -> Dict[str, Any]:
-        enabled = self.enabled
-
-        idle_time = self.idle_time
+        auto_updates_enabled = self.auto_updates_enabled
 
 
         field_dict: Dict[str, Any] = {}
         field_dict.update({
-            "enabled": enabled,
-            "idleTime": idle_time,
+            "autoUpdatesEnabled": auto_updates_enabled,
         })
 
         return field_dict
@@ -52,14 +47,11 @@ class AutoStop:
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         d = src_dict.copy()
-        enabled = d.pop("enabled")
+        auto_updates_enabled = d.pop("autoUpdatesEnabled")
 
-        idle_time = d.pop("idleTime")
-
-        auto_stop = cls(
-            enabled=enabled,
-            idle_time=idle_time,
+        set_auto_updates_database = cls(
+            auto_updates_enabled=auto_updates_enabled,
         )
 
-        return auto_stop
+        return set_auto_updates_database
 

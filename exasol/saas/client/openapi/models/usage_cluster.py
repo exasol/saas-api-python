@@ -2,8 +2,11 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
+    Dict,
     Optional,
     TextIO,
+    Tuple,
+    Type,
     TypeVar,
     Union,
 )
@@ -41,7 +44,7 @@ class UsageCluster:
     out_internet: Union[Unset, float] = UNSET
 
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         id = self.id
 
         size = self.size
@@ -57,7 +60,7 @@ class UsageCluster:
         out_internet = self.out_internet
 
 
-        field_dict: dict[str, Any] = {}
+        field_dict: Dict[str, Any] = {}
         field_dict.update({
             "id": id,
             "size": size,
@@ -77,7 +80,7 @@ class UsageCluster:
 
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
+    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         d = src_dict.copy()
         id = d.pop("id")
 

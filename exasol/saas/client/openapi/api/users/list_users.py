@@ -1,6 +1,8 @@
 from http import HTTPStatus
 from typing import (
     Any,
+    Dict,
+    List,
     Optional,
     Union,
     cast,
@@ -28,12 +30,12 @@ def _get_kwargs(
     next_: Union[Unset, int] = UNSET,
     limit: Union[Unset, int] = UNSET,
 
-) -> dict[str, Any]:
+) -> Dict[str, Any]:
     
 
     
 
-    params: dict[str, Any] = {}
+    params: Dict[str, Any] = {}
 
     params["filter"] = filter_
 
@@ -45,7 +47,7 @@ def _get_kwargs(
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
 
-    _kwargs: dict[str, Any] = {
+    _kwargs: Dict[str, Any] = {
         "method": "get",
         "url": "/api/v1/accounts/{account_id}/users".format(account_id=account_id,),
         "params": params,
@@ -55,8 +57,8 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[list['User']]:
-    if response.status_code == 200:
+def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[List['User']]:
+    if response.status_code == HTTPStatus.OK:
         response_200 = []
         _response_200 = response.json()
         for response_200_item_data in (_response_200):
@@ -73,7 +75,7 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[list['User']]:
+def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[List['User']]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -90,7 +92,7 @@ def sync_detailed(
     next_: Union[Unset, int] = UNSET,
     limit: Union[Unset, int] = UNSET,
 
-) -> Response[list['User']]:
+) -> Response[List['User']]:
     """ 
     Args:
         account_id (str):
@@ -103,7 +105,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[list['User']]
+        Response[List['User']]
      """
 
 
@@ -129,7 +131,7 @@ def sync(
     next_: Union[Unset, int] = UNSET,
     limit: Union[Unset, int] = UNSET,
 
-) -> Optional[list['User']]:
+) -> Optional[List['User']]:
     """ 
     Args:
         account_id (str):
@@ -142,7 +144,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        list['User']
+        List['User']
      """
 
 
@@ -163,7 +165,7 @@ async def asyncio_detailed(
     next_: Union[Unset, int] = UNSET,
     limit: Union[Unset, int] = UNSET,
 
-) -> Response[list['User']]:
+) -> Response[List['User']]:
     """ 
     Args:
         account_id (str):
@@ -176,7 +178,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[list['User']]
+        Response[List['User']]
      """
 
 
@@ -202,7 +204,7 @@ async def asyncio(
     next_: Union[Unset, int] = UNSET,
     limit: Union[Unset, int] = UNSET,
 
-) -> Optional[list['User']]:
+) -> Optional[List['User']]:
     """ 
     Args:
         account_id (str):
@@ -215,7 +217,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        list['User']
+        List['User']
      """
 
 

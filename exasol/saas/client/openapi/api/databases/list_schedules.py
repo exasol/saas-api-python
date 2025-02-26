@@ -1,6 +1,8 @@
 from http import HTTPStatus
 from typing import (
     Any,
+    Dict,
+    List,
     Optional,
     Union,
     cast,
@@ -24,14 +26,14 @@ def _get_kwargs(
     account_id: str,
     database_id: str,
 
-) -> dict[str, Any]:
+) -> Dict[str, Any]:
     
 
     
 
     
 
-    _kwargs: dict[str, Any] = {
+    _kwargs: Dict[str, Any] = {
         "method": "get",
         "url": "/api/v1/accounts/{account_id}/databases/{database_id}/schedules".format(account_id=account_id,database_id=database_id,),
     }
@@ -40,8 +42,8 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[list['Schedule']]:
-    if response.status_code == 200:
+def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[List['Schedule']]:
+    if response.status_code == HTTPStatus.OK:
         response_200 = []
         _response_200 = response.json()
         for response_200_item_data in (_response_200):
@@ -58,7 +60,7 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[list['Schedule']]:
+def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[List['Schedule']]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -73,7 +75,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
 
-) -> Response[list['Schedule']]:
+) -> Response[List['Schedule']]:
     """ 
     Args:
         account_id (str):
@@ -84,7 +86,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[list['Schedule']]
+        Response[List['Schedule']]
      """
 
 
@@ -106,7 +108,7 @@ def sync(
     *,
     client: AuthenticatedClient,
 
-) -> Optional[list['Schedule']]:
+) -> Optional[List['Schedule']]:
     """ 
     Args:
         account_id (str):
@@ -117,7 +119,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        list['Schedule']
+        List['Schedule']
      """
 
 
@@ -134,7 +136,7 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
 
-) -> Response[list['Schedule']]:
+) -> Response[List['Schedule']]:
     """ 
     Args:
         account_id (str):
@@ -145,7 +147,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[list['Schedule']]
+        Response[List['Schedule']]
      """
 
 
@@ -167,7 +169,7 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
 
-) -> Optional[list['Schedule']]:
+) -> Optional[List['Schedule']]:
     """ 
     Args:
         account_id (str):
@@ -178,7 +180,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        list['Schedule']
+        List['Schedule']
      """
 
 

@@ -1,6 +1,8 @@
 from http import HTTPStatus
 from typing import (
     Any,
+    Dict,
+    List,
     Optional,
     Union,
     cast,
@@ -27,15 +29,15 @@ def _get_kwargs(
     *,
     body: CreateCluster,
 
-) -> dict[str, Any]:
-    headers: dict[str, Any] = {}
+) -> Dict[str, Any]:
+    headers: Dict[str, Any] = {}
 
 
     
 
     
 
-    _kwargs: dict[str, Any] = {
+    _kwargs: Dict[str, Any] = {
         "method": "post",
         "url": "/api/v1/accounts/{account_id}/databases/{database_id}/clusters".format(account_id=account_id,database_id=database_id,),
     }
@@ -51,7 +53,7 @@ def _get_kwargs(
 
 
 def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[Cluster]:
-    if response.status_code == 200:
+    if response.status_code == HTTPStatus.OK:
         response_200 = Cluster.from_dict(response.json())
 
 

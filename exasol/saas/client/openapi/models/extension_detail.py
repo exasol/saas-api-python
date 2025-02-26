@@ -2,8 +2,12 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
+    Dict,
+    List,
     Optional,
     TextIO,
+    Tuple,
+    Type,
     TypeVar,
     cast,
 )
@@ -32,15 +36,15 @@ class ExtensionDetail:
         Attributes:
             id (str):
             version (str):
-            parameter_definitions (list['ExtensionParameterDefinitions']):
+            parameter_definitions (List['ExtensionParameterDefinitions']):
      """
 
     id: str
     version: str
-    parameter_definitions: list['ExtensionParameterDefinitions']
+    parameter_definitions: List['ExtensionParameterDefinitions']
 
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         from ..models.extension_parameter_definitions import (
             ExtensionParameterDefinitions,
         )
@@ -56,7 +60,7 @@ class ExtensionDetail:
 
 
 
-        field_dict: dict[str, Any] = {}
+        field_dict: Dict[str, Any] = {}
         field_dict.update({
             "id": id,
             "version": version,
@@ -68,7 +72,7 @@ class ExtensionDetail:
 
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
+    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         from ..models.extension_parameter_definitions import (
             ExtensionParameterDefinitions,
         )

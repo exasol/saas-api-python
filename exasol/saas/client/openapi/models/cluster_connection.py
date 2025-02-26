@@ -2,8 +2,11 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
+    Dict,
     Optional,
     TextIO,
+    Tuple,
+    Type,
     TypeVar,
     cast,
 )
@@ -44,7 +47,7 @@ class ClusterConnection:
     db_username: str
 
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         from ..models.connection_i_ps import ConnectionIPs
         dns = self.dns
 
@@ -57,7 +60,7 @@ class ClusterConnection:
         db_username = self.db_username
 
 
-        field_dict: dict[str, Any] = {}
+        field_dict: Dict[str, Any] = {}
         field_dict.update({
             "dns": dns,
             "port": port,
@@ -71,7 +74,7 @@ class ClusterConnection:
 
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
+    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         from ..models.connection_i_ps import ConnectionIPs
         d = src_dict.copy()
         dns = d.pop("dns")

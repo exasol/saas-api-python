@@ -1,6 +1,8 @@
 from http import HTTPStatus
 from typing import (
     Any,
+    Dict,
+    List,
     Optional,
     Union,
     cast,
@@ -24,15 +26,15 @@ def _get_kwargs(
     *,
     body: UpdateProfile,
 
-) -> dict[str, Any]:
-    headers: dict[str, Any] = {}
+) -> Dict[str, Any]:
+    headers: Dict[str, Any] = {}
 
 
     
 
     
 
-    _kwargs: dict[str, Any] = {
+    _kwargs: Dict[str, Any] = {
         "method": "put",
         "url": "/api/v1/me",
     }
@@ -48,7 +50,7 @@ def _get_kwargs(
 
 
 def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[Any]:
-    if response.status_code == 204:
+    if response.status_code == HTTPStatus.NO_CONTENT:
         return None
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)

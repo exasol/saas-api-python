@@ -1,6 +1,8 @@
 from http import HTTPStatus
 from typing import (
     Any,
+    Dict,
+    List,
     Optional,
     Union,
     cast,
@@ -22,14 +24,14 @@ from ...types import (
 
 def _get_kwargs(
     
-) -> dict[str, Any]:
+) -> Dict[str, Any]:
     
 
     
 
     
 
-    _kwargs: dict[str, Any] = {
+    _kwargs: Dict[str, Any] = {
         "method": "get",
         "url": "/api/v1/platforms",
     }
@@ -38,8 +40,8 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[list['Platform']]:
-    if response.status_code == 200:
+def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[List['Platform']]:
+    if response.status_code == HTTPStatus.OK:
         response_200 = []
         _response_200 = response.json()
         for response_200_item_data in (_response_200):
@@ -56,7 +58,7 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[list['Platform']]:
+def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[List['Platform']]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -69,14 +71,14 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
 
-) -> Response[list['Platform']]:
+) -> Response[List['Platform']]:
     """ 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[list['Platform']]
+        Response[List['Platform']]
      """
 
 
@@ -94,14 +96,14 @@ def sync(
     *,
     client: AuthenticatedClient,
 
-) -> Optional[list['Platform']]:
+) -> Optional[List['Platform']]:
     """ 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        list['Platform']
+        List['Platform']
      """
 
 
@@ -114,14 +116,14 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
 
-) -> Response[list['Platform']]:
+) -> Response[List['Platform']]:
     """ 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[list['Platform']]
+        Response[List['Platform']]
      """
 
 
@@ -139,14 +141,14 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
 
-) -> Optional[list['Platform']]:
+) -> Optional[List['Platform']]:
     """ 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        list['Platform']
+        List['Platform']
      """
 
 

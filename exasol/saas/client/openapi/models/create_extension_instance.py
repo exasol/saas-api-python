@@ -2,8 +2,12 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
+    Dict,
+    List,
     Optional,
     TextIO,
+    Tuple,
+    Type,
     TypeVar,
     cast,
 )
@@ -30,13 +34,13 @@ T = TypeVar("T", bound="CreateExtensionInstance")
 class CreateExtensionInstance:
     """ 
         Attributes:
-            parameter_values (list['ExtensionParameterValue']):
+            parameter_values (List['ExtensionParameterValue']):
      """
 
-    parameter_values: list['ExtensionParameterValue']
+    parameter_values: List['ExtensionParameterValue']
 
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         from ..models.extension_parameter_value import ExtensionParameterValue
         parameter_values = []
         for parameter_values_item_data in self.parameter_values:
@@ -46,7 +50,7 @@ class CreateExtensionInstance:
 
 
 
-        field_dict: dict[str, Any] = {}
+        field_dict: Dict[str, Any] = {}
         field_dict.update({
             "parameterValues": parameter_values,
         })
@@ -56,7 +60,7 @@ class CreateExtensionInstance:
 
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
+    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         from ..models.extension_parameter_value import ExtensionParameterValue
         d = src_dict.copy()
         parameter_values = []

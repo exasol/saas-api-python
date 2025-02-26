@@ -2,8 +2,11 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
+    Dict,
     Optional,
     TextIO,
+    Tuple,
+    Type,
     TypeVar,
     Union,
 )
@@ -45,7 +48,7 @@ class ApiError:
     causes: Union[Unset, Any] = UNSET
 
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         status = self.status
 
         message = self.message
@@ -65,7 +68,7 @@ class ApiError:
         causes = self.causes
 
 
-        field_dict: dict[str, Any] = {}
+        field_dict: Dict[str, Any] = {}
         field_dict.update({
             "status": status,
             "message": message,
@@ -84,7 +87,7 @@ class ApiError:
 
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
+    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         d = src_dict.copy()
         status = d.pop("status")
 

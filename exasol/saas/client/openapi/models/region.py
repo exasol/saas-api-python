@@ -2,8 +2,11 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
+    Dict,
     Optional,
     TextIO,
+    Tuple,
+    Type,
     TypeVar,
 )
 
@@ -34,7 +37,7 @@ class Region:
     storage_price: float
 
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         id = self.id
 
         name = self.name
@@ -44,7 +47,7 @@ class Region:
         storage_price = self.storage_price
 
 
-        field_dict: dict[str, Any] = {}
+        field_dict: Dict[str, Any] = {}
         field_dict.update({
             "id": id,
             "name": name,
@@ -57,7 +60,7 @@ class Region:
 
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
+    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         d = src_dict.copy()
         id = d.pop("id")
 

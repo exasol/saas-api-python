@@ -2,8 +2,11 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
+    Dict,
     Optional,
     TextIO,
+    Tuple,
+    Type,
     TypeVar,
 )
 
@@ -30,13 +33,13 @@ class ExtensionParameterValue:
     value: str
 
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         id = self.id
 
         value = self.value
 
 
-        field_dict: dict[str, Any] = {}
+        field_dict: Dict[str, Any] = {}
         field_dict.update({
             "id": id,
             "value": value,
@@ -47,7 +50,7 @@ class ExtensionParameterValue:
 
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
+    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         d = src_dict.copy()
         id = d.pop("id")
 

@@ -1,6 +1,8 @@
 from http import HTTPStatus
 from typing import (
     Any,
+    Dict,
+    List,
     Optional,
     Union,
     cast,
@@ -27,14 +29,14 @@ def _get_kwargs(
     extension_id: str,
     extension_version: str,
 
-) -> dict[str, Any]:
+) -> Dict[str, Any]:
     
 
     
 
     
 
-    _kwargs: dict[str, Any] = {
+    _kwargs: Dict[str, Any] = {
         "method": "get",
         "url": "/api/v1/accounts/{account_id}/databases/{database_id}/extensions/{extension_id}/{extension_version}/instances".format(account_id=account_id,database_id=database_id,extension_id=extension_id,extension_version=extension_version,),
     }
@@ -43,8 +45,8 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[Union[ApiError, list['ExtensionInstance']]]:
-    if response.status_code == 200:
+def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[Union[ApiError, List['ExtensionInstance']]]:
+    if response.status_code == HTTPStatus.OK:
         response_200 = []
         _response_200 = response.json()
         for response_200_item_data in (_response_200):
@@ -55,7 +57,7 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
             response_200.append(response_200_item)
 
         return response_200
-    if response.status_code == 422:
+    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
         response_422 = ApiError.from_dict(response.json())
 
 
@@ -67,7 +69,7 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[Union[ApiError, list['ExtensionInstance']]]:
+def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[Union[ApiError, List['ExtensionInstance']]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -84,7 +86,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
 
-) -> Response[Union[ApiError, list['ExtensionInstance']]]:
+) -> Response[Union[ApiError, List['ExtensionInstance']]]:
     """ 
     Args:
         account_id (str):
@@ -97,7 +99,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[ApiError, list['ExtensionInstance']]]
+        Response[Union[ApiError, List['ExtensionInstance']]]
      """
 
 
@@ -123,7 +125,7 @@ def sync(
     *,
     client: AuthenticatedClient,
 
-) -> Optional[Union[ApiError, list['ExtensionInstance']]]:
+) -> Optional[Union[ApiError, List['ExtensionInstance']]]:
     """ 
     Args:
         account_id (str):
@@ -136,7 +138,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[ApiError, list['ExtensionInstance']]
+        Union[ApiError, List['ExtensionInstance']]
      """
 
 
@@ -157,7 +159,7 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
 
-) -> Response[Union[ApiError, list['ExtensionInstance']]]:
+) -> Response[Union[ApiError, List['ExtensionInstance']]]:
     """ 
     Args:
         account_id (str):
@@ -170,7 +172,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[ApiError, list['ExtensionInstance']]]
+        Response[Union[ApiError, List['ExtensionInstance']]]
      """
 
 
@@ -196,7 +198,7 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
 
-) -> Optional[Union[ApiError, list['ExtensionInstance']]]:
+) -> Optional[Union[ApiError, List['ExtensionInstance']]]:
     """ 
     Args:
         account_id (str):
@@ -209,7 +211,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[ApiError, list['ExtensionInstance']]
+        Union[ApiError, List['ExtensionInstance']]
      """
 
 

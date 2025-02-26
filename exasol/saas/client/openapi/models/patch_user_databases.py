@@ -2,8 +2,12 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
+    Dict,
+    List,
     Optional,
     TextIO,
+    Tuple,
+    Type,
     TypeVar,
     cast,
 )
@@ -23,15 +27,15 @@ T = TypeVar("T", bound="PatchUserDatabases")
 class PatchUserDatabases:
     """ 
         Attributes:
-            delete (list[str]):
-            add (list[str]):
+            delete (List[str]):
+            add (List[str]):
      """
 
-    delete: list[str]
-    add: list[str]
+    delete: List[str]
+    add: List[str]
 
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         delete = self.delete
 
 
@@ -41,7 +45,7 @@ class PatchUserDatabases:
 
 
 
-        field_dict: dict[str, Any] = {}
+        field_dict: Dict[str, Any] = {}
         field_dict.update({
             "delete": delete,
             "add": add,
@@ -52,12 +56,12 @@ class PatchUserDatabases:
 
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
+    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         d = src_dict.copy()
-        delete = cast(list[str], d.pop("delete"))
+        delete = cast(List[str], d.pop("delete"))
 
 
-        add = cast(list[str], d.pop("add"))
+        add = cast(List[str], d.pop("add"))
 
 
         patch_user_databases = cls(

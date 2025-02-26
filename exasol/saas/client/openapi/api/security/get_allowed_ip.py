@@ -1,6 +1,8 @@
 from http import HTTPStatus
 from typing import (
     Any,
+    Dict,
+    List,
     Optional,
     Union,
     cast,
@@ -24,14 +26,14 @@ def _get_kwargs(
     account_id: str,
     allowlist_ip_id: str,
 
-) -> dict[str, Any]:
+) -> Dict[str, Any]:
     
 
     
 
     
 
-    _kwargs: dict[str, Any] = {
+    _kwargs: Dict[str, Any] = {
         "method": "get",
         "url": "/api/v1/accounts/{account_id}/security/allowlist_ip/{allowlist_ip_id}".format(account_id=account_id,allowlist_ip_id=allowlist_ip_id,),
     }
@@ -41,7 +43,7 @@ def _get_kwargs(
 
 
 def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[AllowedIP]:
-    if response.status_code == 200:
+    if response.status_code == HTTPStatus.OK:
         response_200 = AllowedIP.from_dict(response.json())
 
 

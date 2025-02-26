@@ -2,8 +2,11 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
+    Dict,
     Optional,
     TextIO,
+    Tuple,
+    Type,
     TypeVar,
     Union,
     cast,
@@ -35,25 +38,25 @@ class Schedule:
         Attributes:
             action (ScheduleActionType0):
             cron_rule (str): cron rule in format: <minute> <hour> <day> <month> <weekday>
-            payload (Union['ClusterActionScale', 'ClusterActionStartStop']):
             id (Union[Unset, str]):
             createdby_id (Union[Unset, str]):
             createdby_first_name (Union[Unset, str]):
             createdby_last_name (Union[Unset, str]):
             cluster_name (Union[Unset, str]):
+            payload (Union['ClusterActionScale', 'ClusterActionStartStop', Unset]):
      """
 
     action: ScheduleActionType0
     cron_rule: str
-    payload: Union['ClusterActionScale', 'ClusterActionStartStop']
     id: Union[Unset, str] = UNSET
     createdby_id: Union[Unset, str] = UNSET
     createdby_first_name: Union[Unset, str] = UNSET
     createdby_last_name: Union[Unset, str] = UNSET
     cluster_name: Union[Unset, str] = UNSET
+    payload: Union['ClusterActionScale', 'ClusterActionStartStop', Unset] = UNSET
 
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         from ..models.cluster_action_scale import ClusterActionScale
         from ..models.cluster_action_start_stop import ClusterActionStartStop
         action: str
@@ -62,13 +65,6 @@ class Schedule:
 
 
         cron_rule = self.cron_rule
-
-        payload: dict[str, Any]
-        if isinstance(self.payload, ClusterActionScale):
-            payload = self.payload.to_dict()
-        else:
-            payload = self.payload.to_dict()
-
 
         id = self.id
 
@@ -80,12 +76,20 @@ class Schedule:
 
         cluster_name = self.cluster_name
 
+        payload: Union[Dict[str, Any], Unset]
+        if isinstance(self.payload, Unset):
+            payload = UNSET
+        elif isinstance(self.payload, ClusterActionScale):
+            payload = self.payload.to_dict()
+        else:
+            payload = self.payload.to_dict()
 
-        field_dict: dict[str, Any] = {}
+
+
+        field_dict: Dict[str, Any] = {}
         field_dict.update({
             "action": action,
             "cronRule": cron_rule,
-            "payload": payload,
         })
         if id is not UNSET:
             field_dict["id"] = id
@@ -97,13 +101,15 @@ class Schedule:
             field_dict["createdbyLastName"] = createdby_last_name
         if cluster_name is not UNSET:
             field_dict["clusterName"] = cluster_name
+        if payload is not UNSET:
+            field_dict["payload"] = payload
 
         return field_dict
 
 
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
+    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         from ..models.cluster_action_scale import ClusterActionScale
         from ..models.cluster_action_start_stop import ClusterActionStartStop
         d = src_dict.copy()
@@ -121,7 +127,19 @@ class Schedule:
 
         cron_rule = d.pop("cronRule")
 
-        def _parse_payload(data: object) -> Union['ClusterActionScale', 'ClusterActionStartStop']:
+        id = d.pop("id", UNSET)
+
+        createdby_id = d.pop("createdbyID", UNSET)
+
+        createdby_first_name = d.pop("createdbyFirstName", UNSET)
+
+        createdby_last_name = d.pop("createdbyLastName", UNSET)
+
+        cluster_name = d.pop("clusterName", UNSET)
+
+        def _parse_payload(data: object) -> Union['ClusterActionScale', 'ClusterActionStartStop', Unset]:
+            if isinstance(data, Unset):
+                return data
             try:
                 if not isinstance(data, dict):
                     raise TypeError()
@@ -140,28 +158,18 @@ class Schedule:
 
             return payload_type_1
 
-        payload = _parse_payload(d.pop("payload"))
+        payload = _parse_payload(d.pop("payload", UNSET))
 
-
-        id = d.pop("id", UNSET)
-
-        createdby_id = d.pop("createdbyID", UNSET)
-
-        createdby_first_name = d.pop("createdbyFirstName", UNSET)
-
-        createdby_last_name = d.pop("createdbyLastName", UNSET)
-
-        cluster_name = d.pop("clusterName", UNSET)
 
         schedule = cls(
             action=action,
             cron_rule=cron_rule,
-            payload=payload,
             id=id,
             createdby_id=createdby_id,
             createdby_first_name=createdby_first_name,
             createdby_last_name=createdby_last_name,
             cluster_name=cluster_name,
+            payload=payload,
         )
 
         return schedule
