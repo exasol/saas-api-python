@@ -90,7 +90,7 @@ def _get_database_id(
     """
     Finds the database id, given the database name.
     """
-    dbs = list_databases.sync(account_id, client=client)
+    dbs = list_databases.sync_detailed(account_id, client=client).parsed
     dbs = list(filter(lambda db: (db.name == database_name) and         # type: ignore
                                  (db.deleted_at is UNSET) and           # type: ignore
                                  (db.deleted_by is UNSET), dbs))        # type: ignore
@@ -199,7 +199,7 @@ class OpenApiAccess:
             ),
         )
         LOG.info(f"Creating database {name}")
-        return create_database.sync(
+        return create_database.sync_detailed(
             self._account_id,
             client=self._client,
             body=openapi.models.CreateDatabase(
@@ -208,7 +208,7 @@ class OpenApiAccess:
                 provider="aws",
                 region=region,
             )
-        )
+        ).parsed
 
     @contextmanager
     def _ignore_failures(self, ignore: bool = False):
@@ -236,10 +236,16 @@ class OpenApiAccess:
     def delete_database(self, database_id: str, ignore_failures=False):
         with self._ignore_failures(ignore_failures) as client:
             return delete_database.sync_detailed(
-                self._account_id, database_id, client=client)
+                self._account_id,
+                database_id,
+                client=client,
+            ).parsed
 
     def list_database_ids(self) -> Iterable[str]:
-        dbs = list_databases.sync(self._account_id, client=self._client) or []
+        dbs = list_databases.sync_detailed(
+            self._account_id,
+            client=self._client,
+        ).parsed or []
         return (db.id for db in dbs)
 
     @contextmanager
@@ -274,11 +280,11 @@ class OpenApiAccess:
             self,
             database_id: str,
     ) -> Optional[openapi.models.database.Database]:
-        return get_database.sync(
+        return get_database.sync_detailed(
             self._account_id,
             database_id,
             client=self._client,
-        )
+        ).parsed
 
     def wait_until_running(
             self,
@@ -353,7 +359,10 @@ class OpenApiAccess:
     def delete_allowed_ip(self, id: str, ignore_failures=False):
         with self._ignore_failures(ignore_failures) as client:
             return delete_allowed_ip.sync_detailed(
-                self._account_id, id, client=client)
+                self._account_id,
+                id,
+                client=client,
+            ).parsed
 
     @contextmanager
     def allowed_ip(
