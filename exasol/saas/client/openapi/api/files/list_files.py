@@ -1,8 +1,6 @@
 from http import HTTPStatus
 from typing import (
     Any,
-    Dict,
-    List,
     Optional,
     Union,
     cast,
@@ -26,14 +24,14 @@ def _get_kwargs(
     account_id: str,
     database_id: str,
 
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     
 
     
 
     
 
-    _kwargs: Dict[str, Any] = {
+    _kwargs: dict[str, Any] = {
         "method": "get",
         "url": "/api/v1/accounts/{account_id}/databases/{database_id}/files".format(account_id=account_id,database_id=database_id,),
     }
@@ -42,8 +40,8 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[List['File']]:
-    if response.status_code == HTTPStatus.OK:
+def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[list['File']]:
+    if response.status_code == 200:
         response_200 = []
         _response_200 = response.json()
         for response_200_item_data in (_response_200):
@@ -60,7 +58,7 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[List['File']]:
+def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[list['File']]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -75,7 +73,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
 
-) -> Response[List['File']]:
+) -> Response[list['File']]:
     """ 
     Args:
         account_id (str):
@@ -86,7 +84,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[List['File']]
+        Response[list['File']]
      """
 
 
@@ -108,7 +106,7 @@ def sync(
     *,
     client: AuthenticatedClient,
 
-) -> Optional[List['File']]:
+) -> Optional[list['File']]:
     """ 
     Args:
         account_id (str):
@@ -119,7 +117,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        List['File']
+        list['File']
      """
 
 
@@ -136,7 +134,7 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
 
-) -> Response[List['File']]:
+) -> Response[list['File']]:
     """ 
     Args:
         account_id (str):
@@ -147,7 +145,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[List['File']]
+        Response[list['File']]
      """
 
 
@@ -169,7 +167,7 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
 
-) -> Optional[List['File']]:
+) -> Optional[list['File']]:
     """ 
     Args:
         account_id (str):
@@ -180,7 +178,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        List['File']
+        list['File']
      """
 
 

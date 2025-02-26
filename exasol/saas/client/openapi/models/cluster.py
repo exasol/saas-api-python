@@ -3,11 +3,8 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
-    Dict,
     Optional,
     TextIO,
-    Tuple,
-    Type,
     TypeVar,
     Union,
     cast,
@@ -64,7 +61,7 @@ class Cluster:
     auto_stop: Union[Unset, 'AutoStop'] = UNSET
 
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         from ..models.auto_stop import AutoStop
         from ..models.cluster_settings import ClusterSettings
         status = self.status.value
@@ -89,12 +86,12 @@ class Cluster:
 
         deleted_by = self.deleted_by
 
-        auto_stop: Union[Unset, Dict[str, Any]] = UNSET
+        auto_stop: Union[Unset, dict[str, Any]] = UNSET
         if not isinstance(self.auto_stop, Unset):
             auto_stop = self.auto_stop.to_dict()
 
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update({
             "status": status,
             "id": id,
@@ -117,7 +114,7 @@ class Cluster:
 
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         from ..models.auto_stop import AutoStop
         from ..models.cluster_settings import ClusterSettings
         d = src_dict.copy()

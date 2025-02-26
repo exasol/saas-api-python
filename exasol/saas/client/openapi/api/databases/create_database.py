@@ -1,8 +1,6 @@
 from http import HTTPStatus
 from typing import (
     Any,
-    Dict,
-    List,
     Optional,
     Union,
     cast,
@@ -27,15 +25,15 @@ def _get_kwargs(
     *,
     body: CreateDatabase,
 
-) -> Dict[str, Any]:
-    headers: Dict[str, Any] = {}
+) -> dict[str, Any]:
+    headers: dict[str, Any] = {}
 
 
     
 
     
 
-    _kwargs: Dict[str, Any] = {
+    _kwargs: dict[str, Any] = {
         "method": "post",
         "url": "/api/v1/accounts/{account_id}/databases".format(account_id=account_id,),
     }

@@ -1,8 +1,6 @@
 from http import HTTPStatus
 from typing import (
     Any,
-    Dict,
-    List,
     Optional,
     Union,
     cast,
@@ -28,28 +26,28 @@ def _get_kwargs(
     account_id: str,
     *,
     year_month: Union[Unset, str] = UNSET,
-    type: Union[Unset, GetUsageType] = UNSET,
+    type_: Union[Unset, GetUsageType] = UNSET,
 
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     
 
     
 
-    params: Dict[str, Any] = {}
+    params: dict[str, Any] = {}
 
     params["yearMonth"] = year_month
 
-    json_type: Union[Unset, str] = UNSET
-    if not isinstance(type, Unset):
-        json_type = type.value
+    json_type_: Union[Unset, str] = UNSET
+    if not isinstance(type_, Unset):
+        json_type_ = type_.value
 
-    params["type"] = json_type
+    params["type"] = json_type_
 
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
 
-    _kwargs: Dict[str, Any] = {
+    _kwargs: dict[str, Any] = {
         "method": "get",
         "url": "/api/v1/accounts/{account_id}/usage".format(account_id=account_id,),
         "params": params,
@@ -60,7 +58,7 @@ def _get_kwargs(
 
 
 def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[Usage]:
-    if response.status_code == HTTPStatus.OK:
+    if response.status_code == 200:
         response_200 = Usage.from_dict(response.json())
 
 
@@ -86,14 +84,14 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     year_month: Union[Unset, str] = UNSET,
-    type: Union[Unset, GetUsageType] = UNSET,
+    type_: Union[Unset, GetUsageType] = UNSET,
 
 ) -> Response[Usage]:
     """ 
     Args:
         account_id (str):
         year_month (Union[Unset, str]):
-        type (Union[Unset, GetUsageType]):
+        type_ (Union[Unset, GetUsageType]):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -107,7 +105,7 @@ def sync_detailed(
     kwargs = _get_kwargs(
         account_id=account_id,
 year_month=year_month,
-type=type,
+type_=type_,
 
     )
 
@@ -122,14 +120,14 @@ def sync(
     *,
     client: AuthenticatedClient,
     year_month: Union[Unset, str] = UNSET,
-    type: Union[Unset, GetUsageType] = UNSET,
+    type_: Union[Unset, GetUsageType] = UNSET,
 
 ) -> Optional[Usage]:
     """ 
     Args:
         account_id (str):
         year_month (Union[Unset, str]):
-        type (Union[Unset, GetUsageType]):
+        type_ (Union[Unset, GetUsageType]):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -144,7 +142,7 @@ def sync(
         account_id=account_id,
 client=client,
 year_month=year_month,
-type=type,
+type_=type_,
 
     ).parsed
 
@@ -153,14 +151,14 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
     year_month: Union[Unset, str] = UNSET,
-    type: Union[Unset, GetUsageType] = UNSET,
+    type_: Union[Unset, GetUsageType] = UNSET,
 
 ) -> Response[Usage]:
     """ 
     Args:
         account_id (str):
         year_month (Union[Unset, str]):
-        type (Union[Unset, GetUsageType]):
+        type_ (Union[Unset, GetUsageType]):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -174,7 +172,7 @@ async def asyncio_detailed(
     kwargs = _get_kwargs(
         account_id=account_id,
 year_month=year_month,
-type=type,
+type_=type_,
 
     )
 
@@ -189,14 +187,14 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
     year_month: Union[Unset, str] = UNSET,
-    type: Union[Unset, GetUsageType] = UNSET,
+    type_: Union[Unset, GetUsageType] = UNSET,
 
 ) -> Optional[Usage]:
     """ 
     Args:
         account_id (str):
         year_month (Union[Unset, str]):
-        type (Union[Unset, GetUsageType]):
+        type_ (Union[Unset, GetUsageType]):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -211,6 +209,6 @@ async def asyncio(
         account_id=account_id,
 client=client,
 year_month=year_month,
-type=type,
+type_=type_,
 
     )).parsed

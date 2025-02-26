@@ -2,12 +2,8 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
-    Dict,
-    List,
     Optional,
     TextIO,
-    Tuple,
-    Type,
     TypeVar,
     Union,
     cast,
@@ -47,10 +43,10 @@ class CreateDatabase:
     provider: str
     region: str
     num_nodes: Union[Unset, int] = UNSET
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         from ..models.create_database_initial_cluster import (
             CreateDatabaseInitialCluster,
         )
@@ -65,7 +61,7 @@ class CreateDatabase:
         num_nodes = self.num_nodes
 
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({
             "name": name,
@@ -81,7 +77,7 @@ class CreateDatabase:
 
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         from ..models.create_database_initial_cluster import (
             CreateDatabaseInitialCluster,
         )
@@ -112,7 +108,7 @@ class CreateDatabase:
         return create_database
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

@@ -2,12 +2,8 @@ from typing import (
     TYPE_CHECKING,
     Any,
     BinaryIO,
-    Dict,
-    List,
     Optional,
     TextIO,
-    Tuple,
-    Type,
     TypeVar,
     cast,
 )
@@ -38,17 +34,17 @@ class Extension:
             name (str):
             description (str):
             category_id (str):
-            installable_versions (List['ExtensionVersion']):
+            installable_versions (list['ExtensionVersion']):
      """
 
     id: str
     name: str
     description: str
     category_id: str
-    installable_versions: List['ExtensionVersion']
+    installable_versions: list['ExtensionVersion']
 
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         from ..models.extension_version import ExtensionVersion
         id = self.id
 
@@ -66,7 +62,7 @@ class Extension:
 
 
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update({
             "id": id,
             "name": name,
@@ -80,7 +76,7 @@ class Extension:
 
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         from ..models.extension_version import ExtensionVersion
         d = src_dict.copy()
         id = d.pop("id")
