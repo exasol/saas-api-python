@@ -235,17 +235,11 @@ class OpenApiAccess:
 
     def delete_database(self, database_id: str, ignore_failures=False):
         with self._ignore_failures(ignore_failures) as client:
-            return delete_database.sync(
-                self._account_id,
-                database_id,
-                client=client,
-            )
+            return delete_database.sync_detailed(
+                self._account_id, database_id, client=client)
 
     def list_database_ids(self) -> Iterable[str]:
-        dbs = list_databases.sync(
-            self._account_id,
-            client=self._client,
-        ) or []
+        dbs = list_databases.sync(self._account_id, client=self._client) or []
         return (db.id for db in dbs)
 
     @contextmanager
@@ -358,11 +352,8 @@ class OpenApiAccess:
 
     def delete_allowed_ip(self, id: str, ignore_failures=False):
         with self._ignore_failures(ignore_failures) as client:
-            return delete_allowed_ip.sync(
-                self._account_id,
-                id,
-                client=client,
-            )
+            return delete_allowed_ip.sync_detailed(
+                self._account_id, id, client=client)
 
     @contextmanager
     def allowed_ip(
