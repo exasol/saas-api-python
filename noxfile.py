@@ -96,7 +96,7 @@ def generate_api(session: Session):
         silent=local_build,
     )
     if local_build:
-        filter_messages(out)
+        filter_messages(str(out))
     shutil.rmtree(DEST_DIR)
     shutil.move("tmp/generated", DEST_DIR)
     if local_build:
