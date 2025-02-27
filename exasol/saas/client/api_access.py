@@ -274,6 +274,8 @@ class OpenApiAccess:
             self,
             database_id: str,
     ) -> Optional[openapi.models.exasol_database.ExasolDatabase]:
+        # Replacing class database.Database by exasol_database.ExasolDatabase
+        # potentially is a breaking change.
         return get_database.sync(
             self._account_id,
             database_id,
