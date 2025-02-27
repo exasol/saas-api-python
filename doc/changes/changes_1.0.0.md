@@ -2,6 +2,8 @@
 
 ## Summary
 
+This release contains a potentially breaking change as class `database.Database` has been replaced with `exasol_database.ExasolDatabase`.
+
 This release updates the Python API generated from file `openapi.json` multiple times:
 
 In the scope of ticket #80 the updated API contains 3 additional fields for object `Schedule`:
