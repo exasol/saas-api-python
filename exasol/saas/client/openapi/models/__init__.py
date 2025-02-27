@@ -16,7 +16,12 @@ from .create_cluster import CreateCluster
 from .create_database import CreateDatabase
 from .create_database_initial_cluster import CreateDatabaseInitialCluster
 from .create_extension_instance import CreateExtensionInstance
+from .database_settings import DatabaseSettings
 from .download_file import DownloadFile
+from .exasol_database import ExasolDatabase
+from .exasol_database_clusters import ExasolDatabaseClusters
+from .exasol_database_integrations_item import ExasolDatabaseIntegrationsItem
+from .exasol_database_settings import ExasolDatabaseSettings
 from .extension import Extension
 from .extension_detail import ExtensionDetail
 from .extension_instance import ExtensionInstance
@@ -64,7 +69,12 @@ __all__ = (
     "CreateDatabase",
     "CreateDatabaseInitialCluster",
     "CreateExtensionInstance",
+    "DatabaseSettings",
     "DownloadFile",
+    "ExasolDatabase",
+    "ExasolDatabaseClusters",
+    "ExasolDatabaseIntegrationsItem",
+    "ExasolDatabaseSettings",
     "Extension",
     "ExtensionDetail",
     "ExtensionInstance",

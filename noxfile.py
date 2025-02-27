@@ -38,6 +38,26 @@ def _download_openapi_json() -> Path:
     return file
 
 
+def filter_messages(buffer: str) -> None:
+    ignored_messages = [
+        "Generating tmp",
+        ("WARNING parsing .*\n\n"
+         "Invalid response status code default"
+         " \(not a valid HTTP status code\),"
+         " response will be omitted from generated client"
+         "\n\n\n"),
+        ("If you believe this was a mistake or this tool is missing"
+         " a feature you need, please open an issue at .*"),
+    ]
+    for m in ignored_messages:
+        buffer = re.sub(m, "", buffer)
+    i = buffer.find("\n")
+    first = buffer[:i]
+    buffer = buffer[i+1:].strip()
+    if buffer:
+        print(f'{first}\n{buffer}')
+
+
 def dependencies(filename: str) -> List[str]:
     def unlimit_max(lib, version):
       version_spec = re.sub(r",.*$", "", version)
@@ -66,14 +86,17 @@ def generate_api(session: Session):
     """
     local_build = "CI" not in os.environ
     filename = _download_openapi_json()
-    session.run(
+    out = session.run(
         "openapi-python-client",
         "generate",
         "--path", str(filename),
+        "--overwrite",
         "--config", "openapi_config.yml",
         "--output-path", "tmp",
         silent=local_build,
     )
+    if local_build:
+        filter_messages(out)
     shutil.rmtree(DEST_DIR)
     shutil.move("tmp/generated", DEST_DIR)
     if local_build:

@@ -13,6 +13,7 @@ from ...client import (
     AuthenticatedClient,
     Client,
 )
+from ...models.exasol_database import ExasolDatabase
 from ...types import (
     UNSET,
     Response,
@@ -38,14 +39,25 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[Any]:
+def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[list['ExasolDatabase']]:
+    if response.status_code == 200:
+        response_200 = []
+        _response_200 = response.json()
+        for response_200_item_data in (_response_200):
+            response_200_item = ExasolDatabase.from_dict(response_200_item_data)
+
+
+
+            response_200.append(response_200_item)
+
+        return response_200
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
     else:
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[Any]:
+def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[list['ExasolDatabase']]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -59,7 +71,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
 
-) -> Response[Any]:
+) -> Response[list['ExasolDatabase']]:
     """ 
     Args:
         account_id (str):
@@ -69,7 +81,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any]
+        Response[list['ExasolDatabase']]
      """
 
 
@@ -84,13 +96,12 @@ def sync_detailed(
 
     return _build_response(client=client, response=response)
 
-
-async def asyncio_detailed(
+def sync(
     account_id: str,
     *,
     client: AuthenticatedClient,
 
-) -> Response[Any]:
+) -> Optional[list['ExasolDatabase']]:
     """ 
     Args:
         account_id (str):
@@ -100,7 +111,32 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any]
+        list['ExasolDatabase']
+     """
+
+
+    return sync_detailed(
+        account_id=account_id,
+client=client,
+
+    ).parsed
+
+async def asyncio_detailed(
+    account_id: str,
+    *,
+    client: AuthenticatedClient,
+
+) -> Response[list['ExasolDatabase']]:
+    """ 
+    Args:
+        account_id (str):
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Response[list['ExasolDatabase']]
      """
 
 
@@ -115,3 +151,27 @@ async def asyncio_detailed(
 
     return _build_response(client=client, response=response)
 
+async def asyncio(
+    account_id: str,
+    *,
+    client: AuthenticatedClient,
+
+) -> Optional[list['ExasolDatabase']]:
+    """ 
+    Args:
+        account_id (str):
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        list['ExasolDatabase']
+     """
+
+
+    return (await asyncio_detailed(
+        account_id=account_id,
+client=client,
+
+    )).parsed

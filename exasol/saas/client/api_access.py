@@ -90,7 +90,7 @@ def _get_database_id(
     """
     Finds the database id, given the database name.
     """
-    dbs = list_databases.sync_detailed(account_id, client=client).parsed
+    dbs = list_databases.sync_detailed(account_id, client=client)
     dbs = list(filter(lambda db: (db.name == database_name) and         # type: ignore
                                  (db.deleted_at is UNSET) and           # type: ignore
                                  (db.deleted_by is UNSET), dbs))        # type: ignore
@@ -185,7 +185,7 @@ class OpenApiAccess:
             cluster_size: str = "XS",
             region: str = "eu-central-1",
             idle_time: timedelta | None = None
-    ) -> Optional[openapi.models.Database]:
+    ) -> Optional[openapi.models.CreateDatabase]:
         def minutes(x: timedelta) -> int:
             return x.seconds // 60
 
@@ -208,7 +208,7 @@ class OpenApiAccess:
                 provider="aws",
                 region=region,
             )
-        ).parsed
+        )
 
     @contextmanager
     def _ignore_failures(self, ignore: bool = False):
@@ -239,13 +239,13 @@ class OpenApiAccess:
                 self._account_id,
                 database_id,
                 client=client,
-            ).parsed
+            )
 
     def list_database_ids(self) -> Iterable[str]:
         dbs = list_databases.sync_detailed(
             self._account_id,
             client=self._client,
-        ).parsed or []
+        ) or []
         return (db.id for db in dbs)
 
     @contextmanager
@@ -279,12 +279,12 @@ class OpenApiAccess:
     def get_database(
             self,
             database_id: str,
-    ) -> Optional[openapi.models.database.Database]:
+    ) -> Optional[openapi.models.exasol_database.ExasolDatabase]:
         return get_database.sync_detailed(
             self._account_id,
             database_id,
             client=self._client,
-        ).parsed
+        )
 
     def wait_until_running(
             self,
@@ -362,7 +362,7 @@ class OpenApiAccess:
                 self._account_id,
                 id,
                 client=client,
-            ).parsed
+            )
 
     @contextmanager
     def allowed_ip(
