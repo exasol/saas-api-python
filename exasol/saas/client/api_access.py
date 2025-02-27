@@ -90,7 +90,7 @@ def _get_database_id(
     """
     Finds the database id, given the database name.
     """
-    dbs = list_databases.sync_detailed(account_id, client=client)
+    dbs = list_databases.sync(account_id, client=client)
     dbs = list(filter(lambda db: (db.name == database_name) and         # type: ignore
                                  (db.deleted_at is UNSET) and           # type: ignore
                                  (db.deleted_by is UNSET), dbs))        # type: ignore
@@ -199,7 +199,7 @@ class OpenApiAccess:
             ),
         )
         LOG.info(f"Creating database {name}")
-        return create_database.sync_detailed(
+        return create_database.sync(
             self._account_id,
             client=self._client,
             body=openapi.models.CreateDatabase(
@@ -235,14 +235,14 @@ class OpenApiAccess:
 
     def delete_database(self, database_id: str, ignore_failures=False):
         with self._ignore_failures(ignore_failures) as client:
-            return delete_database.sync_detailed(
+            return delete_database.sync(
                 self._account_id,
                 database_id,
                 client=client,
             )
 
     def list_database_ids(self) -> Iterable[str]:
-        dbs = list_databases.sync_detailed(
+        dbs = list_databases.sync(
             self._account_id,
             client=self._client,
         ) or []
@@ -280,7 +280,7 @@ class OpenApiAccess:
             self,
             database_id: str,
     ) -> Optional[openapi.models.exasol_database.ExasolDatabase]:
-        return get_database.sync_detailed(
+        return get_database.sync(
             self._account_id,
             database_id,
             client=self._client,
@@ -358,7 +358,7 @@ class OpenApiAccess:
 
     def delete_allowed_ip(self, id: str, ignore_failures=False):
         with self._ignore_failures(ignore_failures) as client:
-            return delete_allowed_ip.sync_detailed(
+            return delete_allowed_ip.sync(
                 self._account_id,
                 id,
                 client=client,
