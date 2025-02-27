@@ -186,6 +186,8 @@ class OpenApiAccess:
             region: str = "eu-central-1",
             idle_time: timedelta | None = None
     ) -> Optional[openapi.models.exasol_database.ExasolDatabase]:
+        # Renaming class database.Database to exasol_database.ExasolDatabase
+        # potentially is a breaking change.
         def minutes(x: timedelta) -> int:
             return x.seconds // 60
 
@@ -274,7 +276,7 @@ class OpenApiAccess:
             self,
             database_id: str,
     ) -> Optional[openapi.models.exasol_database.ExasolDatabase]:
-        # Replacing class database.Database by exasol_database.ExasolDatabase
+        # Renaming class database.Database to exasol_database.ExasolDatabase
         # potentially is a breaking change.
         return get_database.sync(
             self._account_id,
