@@ -1,5 +1,6 @@
 [tool.poetry]
 name = "exasol-saas-api"
+# artificial change
 version = "0.10.0"
 description = "API enabling Python applications connecting to Exasol database SaaS instances and using their SaaS services"
 packages = [ {include = "exasol"}, ]
