@@ -4,6 +4,7 @@ import nox
 import re
 import requests
 import shutil
+import sys
 import toml # type: ignore
 
 from datetime import datetime, timezone
@@ -38,7 +39,7 @@ def _download_openapi_json() -> Path:
     return file
 
 
-def filter_messages(buffer: str) -> None:
+def filter_messages(buffer: str) -> str:
     ignored_messages = [
         "Generating tmp",
         ("WARNING parsing .*\n\n"
@@ -54,8 +55,7 @@ def filter_messages(buffer: str) -> None:
     i = buffer.find("\n")
     first = buffer[:i]
     buffer = buffer[i+1:].strip()
-    if buffer:
-        print(f'{first}\n{buffer}')
+    return f'{first}\n{buffer}' if buffer else ""
 
 
 def dependencies(filename: str) -> List[str]:
@@ -96,7 +96,9 @@ def generate_api(session: Session):
         silent=local_build,
     )
     if local_build:
-        filter_messages(str(out))
+        if unexpected_messages := filter_messages(str(out)):
+            print(unexpected_messages)
+            sys.exit(1)
     shutil.rmtree(DEST_DIR)
     shutil.move("tmp/generated", DEST_DIR)
     if local_build:
