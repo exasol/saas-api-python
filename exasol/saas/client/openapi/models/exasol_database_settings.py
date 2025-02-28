@@ -15,11 +15,11 @@ from ..types import (
     Unset,
 )
 
-T = TypeVar("T", bound="DatabaseSettings")
+T = TypeVar("T", bound="ExasolDatabaseSettings")
 
 
 @_attrs_define
-class DatabaseSettings:
+class ExasolDatabaseSettings:
     """ 
         Attributes:
             offload_enabled (bool):
@@ -67,12 +67,12 @@ class DatabaseSettings:
 
         num_nodes = d.pop("numNodes")
 
-        database_settings = cls(
+        exasol_database_settings = cls(
             offload_enabled=offload_enabled,
             auto_updates_enabled=auto_updates_enabled,
             auto_updates_hard_disabled=auto_updates_hard_disabled,
             num_nodes=num_nodes,
         )
 
-        return database_settings
+        return exasol_database_settings
 

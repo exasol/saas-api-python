@@ -21,31 +21,31 @@ from ..types import (
 )
 
 if TYPE_CHECKING:
-  from ..models.database_clusters import DatabaseClusters
-  from ..models.database_integrations_item import DatabaseIntegrationsItem
-  from ..models.database_settings import DatabaseSettings
+  from ..models.exasol_database_clusters import ExasolDatabaseClusters
+  from ..models.exasol_database_integrations_item import ExasolDatabaseIntegrationsItem
+  from ..models.exasol_database_settings import ExasolDatabaseSettings
 
 
 
 
 
-T = TypeVar("T", bound="Database")
+T = TypeVar("T", bound="ExasolDatabase")
 
 
 @_attrs_define
-class Database:
+class ExasolDatabase:
     """ 
         Attributes:
             status (Status):
             id (str):
             name (str):
-            clusters (DatabaseClusters):
+            clusters (ExasolDatabaseClusters):
             provider (str):
             region (str):
             created_at (datetime.datetime):
             created_by (str):
-            settings (DatabaseSettings):
-            integrations (Union[Unset, list['DatabaseIntegrationsItem']]):
+            settings (ExasolDatabaseSettings):
+            integrations (Union[Unset, list['ExasolDatabaseIntegrationsItem']]):
             deleted_by (Union[Unset, str]):
             deleted_at (Union[Unset, datetime.datetime]):
      """
@@ -53,22 +53,24 @@ class Database:
     status: Status
     id: str
     name: str
-    clusters: 'DatabaseClusters'
+    clusters: 'ExasolDatabaseClusters'
     provider: str
     region: str
     created_at: datetime.datetime
     created_by: str
-    settings: 'DatabaseSettings'
-    integrations: Union[Unset, list['DatabaseIntegrationsItem']] = UNSET
+    settings: 'ExasolDatabaseSettings'
+    integrations: Union[Unset, list['ExasolDatabaseIntegrationsItem']] = UNSET
     deleted_by: Union[Unset, str] = UNSET
     deleted_at: Union[Unset, datetime.datetime] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.database_clusters import DatabaseClusters
-        from ..models.database_integrations_item import DatabaseIntegrationsItem
-        from ..models.database_settings import DatabaseSettings
+        from ..models.exasol_database_clusters import ExasolDatabaseClusters
+        from ..models.exasol_database_integrations_item import (
+            ExasolDatabaseIntegrationsItem,
+        )
+        from ..models.exasol_database_settings import ExasolDatabaseSettings
         status = self.status.value
 
         id = self.id
@@ -129,9 +131,11 @@ class Database:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
-        from ..models.database_clusters import DatabaseClusters
-        from ..models.database_integrations_item import DatabaseIntegrationsItem
-        from ..models.database_settings import DatabaseSettings
+        from ..models.exasol_database_clusters import ExasolDatabaseClusters
+        from ..models.exasol_database_integrations_item import (
+            ExasolDatabaseIntegrationsItem,
+        )
+        from ..models.exasol_database_settings import ExasolDatabaseSettings
         d = src_dict.copy()
         status = Status(d.pop("status"))
 
@@ -142,7 +146,7 @@ class Database:
 
         name = d.pop("name")
 
-        clusters = DatabaseClusters.from_dict(d.pop("clusters"))
+        clusters = ExasolDatabaseClusters.from_dict(d.pop("clusters"))
 
 
 
@@ -158,7 +162,7 @@ class Database:
 
         created_by = d.pop("createdBy")
 
-        settings = DatabaseSettings.from_dict(d.pop("settings"))
+        settings = ExasolDatabaseSettings.from_dict(d.pop("settings"))
 
 
 
@@ -166,7 +170,7 @@ class Database:
         integrations = []
         _integrations = d.pop("integrations", UNSET)
         for integrations_item_data in (_integrations or []):
-            integrations_item = DatabaseIntegrationsItem.from_dict(integrations_item_data)
+            integrations_item = ExasolDatabaseIntegrationsItem.from_dict(integrations_item_data)
 
 
 
@@ -185,7 +189,7 @@ class Database:
 
 
 
-        database = cls(
+        exasol_database = cls(
             status=status,
             id=id,
             name=name,
@@ -201,8 +205,8 @@ class Database:
         )
 
 
-        database.additional_properties = d
-        return database
+        exasol_database.additional_properties = d
+        return exasol_database
 
     @property
     def additional_keys(self) -> list[str]:

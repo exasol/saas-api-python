@@ -16,11 +16,12 @@ from .create_cluster import CreateCluster
 from .create_database import CreateDatabase
 from .create_database_initial_cluster import CreateDatabaseInitialCluster
 from .create_extension_instance import CreateExtensionInstance
-from .database import Database
-from .database_clusters import DatabaseClusters
-from .database_integrations_item import DatabaseIntegrationsItem
 from .database_settings import DatabaseSettings
 from .download_file import DownloadFile
+from .exasol_database import ExasolDatabase
+from .exasol_database_clusters import ExasolDatabaseClusters
+from .exasol_database_integrations_item import ExasolDatabaseIntegrationsItem
+from .exasol_database_settings import ExasolDatabaseSettings
 from .extension import Extension
 from .extension_detail import ExtensionDetail
 from .extension_instance import ExtensionInstance
@@ -36,6 +37,7 @@ from .region import Region
 from .scale_cluster import ScaleCluster
 from .schedule import Schedule
 from .schedule_action_type_0 import ScheduleActionType0
+from .set_auto_updates_database import SetAutoUpdatesDatabase
 from .status import Status
 from .update_allowed_ip import UpdateAllowedIP
 from .update_cluster import UpdateCluster
@@ -67,11 +69,12 @@ __all__ = (
     "CreateDatabase",
     "CreateDatabaseInitialCluster",
     "CreateExtensionInstance",
-    "Database",
-    "DatabaseClusters",
-    "DatabaseIntegrationsItem",
     "DatabaseSettings",
     "DownloadFile",
+    "ExasolDatabase",
+    "ExasolDatabaseClusters",
+    "ExasolDatabaseIntegrationsItem",
+    "ExasolDatabaseSettings",
     "Extension",
     "ExtensionDetail",
     "ExtensionInstance",
@@ -87,6 +90,7 @@ __all__ = (
     "ScaleCluster",
     "Schedule",
     "ScheduleActionType0",
+    "SetAutoUpdatesDatabase",
     "Status",
     "UpdateAllowedIP",
     "UpdateCluster",

@@ -13,7 +13,6 @@ from ...client import (
     AuthenticatedClient,
     Client,
 )
-from ...models.exasol_database import ExasolDatabase
 from ...types import (
     UNSET,
     Response,
@@ -32,28 +31,24 @@ def _get_kwargs(
     
 
     _kwargs: dict[str, Any] = {
-        "method": "get",
-        "url": "/api/v1/accounts/{account_id}/databases/{database_id}".format(account_id=account_id,database_id=database_id,),
+        "method": "put",
+        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/upgrade".format(account_id=account_id,database_id=database_id,),
     }
 
 
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[ExasolDatabase]:
-    if response.status_code == 200:
-        response_200 = ExasolDatabase.from_dict(response.json())
-
-
-
-        return response_200
+def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[Any]:
+    if response.status_code == 204:
+        return None
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
     else:
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[ExasolDatabase]:
+def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[Any]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -68,7 +63,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
 
-) -> Response[ExasolDatabase]:
+) -> Response[Any]:
     """ 
     Args:
         account_id (str):
@@ -79,7 +74,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ExasolDatabase]
+        Response[Any]
      """
 
 
@@ -95,33 +90,6 @@ database_id=database_id,
 
     return _build_response(client=client, response=response)
 
-def sync(
-    account_id: str,
-    database_id: str,
-    *,
-    client: AuthenticatedClient,
-
-) -> Optional[ExasolDatabase]:
-    """ 
-    Args:
-        account_id (str):
-        database_id (str):
-
-    Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
-        httpx.TimeoutException: If the request takes longer than Client.timeout.
-
-    Returns:
-        ExasolDatabase
-     """
-
-
-    return sync_detailed(
-        account_id=account_id,
-database_id=database_id,
-client=client,
-
-    ).parsed
 
 async def asyncio_detailed(
     account_id: str,
@@ -129,7 +97,7 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
 
-) -> Response[ExasolDatabase]:
+) -> Response[Any]:
     """ 
     Args:
         account_id (str):
@@ -140,7 +108,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ExasolDatabase]
+        Response[Any]
      """
 
 
@@ -156,30 +124,3 @@ database_id=database_id,
 
     return _build_response(client=client, response=response)
 
-async def asyncio(
-    account_id: str,
-    database_id: str,
-    *,
-    client: AuthenticatedClient,
-
-) -> Optional[ExasolDatabase]:
-    """ 
-    Args:
-        account_id (str):
-        database_id (str):
-
-    Raises:
-        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
-        httpx.TimeoutException: If the request takes longer than Client.timeout.
-
-    Returns:
-        ExasolDatabase
-     """
-
-
-    return (await asyncio_detailed(
-        account_id=account_id,
-database_id=database_id,
-client=client,
-
-    )).parsed

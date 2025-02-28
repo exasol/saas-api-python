@@ -185,7 +185,7 @@ class OpenApiAccess:
             cluster_size: str = "XS",
             region: str = "eu-central-1",
             idle_time: timedelta | None = None
-    ) -> Optional[openapi.models.Database]:
+    ) -> Optional[openapi.models.exasol_database.ExasolDatabase]:
         def minutes(x: timedelta) -> int:
             return x.seconds // 60
 
@@ -273,7 +273,7 @@ class OpenApiAccess:
     def get_database(
             self,
             database_id: str,
-    ) -> Optional[openapi.models.database.Database]:
+    ) -> Optional[openapi.models.exasol_database.ExasolDatabase]:
         return get_database.sync(
             self._account_id,
             database_id,
