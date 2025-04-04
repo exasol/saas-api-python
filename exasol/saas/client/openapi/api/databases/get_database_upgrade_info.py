@@ -13,7 +13,7 @@ from ...client import (
     AuthenticatedClient,
     Client,
 )
-from ...models.database_settings import DatabaseSettings
+from ...models.database_upgrade_info import DatabaseUpgradeInfo
 from ...types import (
     UNSET,
     Response,
@@ -33,16 +33,16 @@ def _get_kwargs(
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/settings".format(account_id=account_id,database_id=database_id,),
+        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/upgrade".format(account_id=account_id,database_id=database_id,),
     }
 
 
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[DatabaseSettings]:
+def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[DatabaseUpgradeInfo]:
     if response.status_code == 200:
-        response_200 = DatabaseSettings.from_dict(response.json())
+        response_200 = DatabaseUpgradeInfo.from_dict(response.json())
 
 
 
@@ -53,7 +53,7 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[DatabaseSettings]:
+def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[DatabaseUpgradeInfo]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -68,7 +68,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
 
-) -> Response[DatabaseSettings]:
+) -> Response[DatabaseUpgradeInfo]:
     """ 
     Args:
         account_id (str):
@@ -79,7 +79,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[DatabaseSettings]
+        Response[DatabaseUpgradeInfo]
      """
 
 
@@ -101,7 +101,7 @@ def sync(
     *,
     client: AuthenticatedClient,
 
-) -> Optional[DatabaseSettings]:
+) -> Optional[DatabaseUpgradeInfo]:
     """ 
     Args:
         account_id (str):
@@ -112,7 +112,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        DatabaseSettings
+        DatabaseUpgradeInfo
      """
 
 
@@ -129,7 +129,7 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
 
-) -> Response[DatabaseSettings]:
+) -> Response[DatabaseUpgradeInfo]:
     """ 
     Args:
         account_id (str):
@@ -140,7 +140,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[DatabaseSettings]
+        Response[DatabaseUpgradeInfo]
      """
 
 
@@ -162,7 +162,7 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
 
-) -> Optional[DatabaseSettings]:
+) -> Optional[DatabaseUpgradeInfo]:
     """ 
     Args:
         account_id (str):
@@ -173,7 +173,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        DatabaseSettings
+        DatabaseUpgradeInfo
      """
 
 
