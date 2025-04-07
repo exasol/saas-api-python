@@ -6,7 +6,7 @@
         "version": "1.0",
         "download": {
             "source": "https://cloud.exasol.com/openapi.json",
-            "timestamp": "2025-02-27T08:23:39.416074+00:00"
+            "timestamp": "2025-04-04T11:27:52.781680+00:00"
         }
     },
     "servers": [
@@ -1277,7 +1277,7 @@
                 ]
             }
         },
-        "/api/v1/accounts/{accountId}/databases/{databaseId}/database_settings": {
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/settings": {
             "get": {
                 "operationId": "GetDatabaseSettings",
                 "responses": {
@@ -1382,6 +1382,103 @@
                     },
                     "required": true
                 }
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/upgrade": {
+            "get": {
+                "operationId": "GetDatabaseUpgradeInfo",
+                "responses": {
+                    "200": {
+                        "description": "A database upgrade info",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DatabaseUpgradeInfo"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Databases"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            },
+            "put": {
+                "operationId": "UpgradeDatabase",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Databases"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
             }
         },
         "/api/v1/accounts/{accountId}/databases": {
@@ -1534,52 +1631,6 @@
         "/api/v1/accounts/{accountId}/databases/{databaseId}/stop": {
             "put": {
                 "operationId": "StopDatabase",
-                "responses": {
-                    "204": {
-                        "description": "No content"
-                    },
-                    "default": {
-                        "description": "Default api error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ApiError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Databases"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "required": true,
-                        "name": "accountId",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "in": "path",
-                        "required": true,
-                        "name": "databaseId",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "security": [
-                    {
-                        "authorizer": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/accounts/{accountId}/databases/{databaseId}/upgrade": {
-            "put": {
-                "operationId": "UpgradeDatabase",
                 "responses": {
                     "204": {
                         "description": "No content"
@@ -3134,6 +3185,9 @@
                     },
                     "numNodes": {
                         "type": "integer"
+                    },
+                    "streamType": {
+                        "type": "string"
                     }
                 },
                 "additionalProperties": true,
@@ -3223,7 +3277,8 @@
                             "offloadEnabled",
                             "autoUpdatesEnabled",
                             "autoUpdatesHardDisabled",
-                            "numNodes"
+                            "numNodes",
+                            "streamType"
                         ],
                         "properties": {
                             "offloadEnabled": {
@@ -3237,6 +3292,9 @@
                             },
                             "numNodes": {
                                 "type": "integer"
+                            },
+                            "streamType": {
+                                "type": "string"
                             }
                         },
                         "additionalProperties": false,
@@ -3250,7 +3308,8 @@
                     "offloadEnabled",
                     "autoUpdatesEnabled",
                     "autoUpdatesHardDisabled",
-                    "numNodes"
+                    "numNodes",
+                    "streamType"
                 ],
                 "properties": {
                     "offloadEnabled": {
@@ -3264,9 +3323,31 @@
                     },
                     "numNodes": {
                         "type": "integer"
+                    },
+                    "streamType": {
+                        "type": "string"
                     }
                 },
                 "additionalProperties": false,
+                "type": "object"
+            },
+            "DatabaseUpgradeInfo": {
+                "required": [
+                    "currentVersion",
+                    "updateVersion",
+                    "updatePossible"
+                ],
+                "properties": {
+                    "currentVersion": {
+                        "type": "string"
+                    },
+                    "updateVersion": {
+                        "type": "string"
+                    },
+                    "updatePossible": {
+                        "type": "boolean"
+                    }
+                },
                 "type": "object"
             },
             "DownloadFile": {

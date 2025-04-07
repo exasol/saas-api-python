@@ -26,12 +26,14 @@ class DatabaseSettings:
             auto_updates_enabled (bool):
             auto_updates_hard_disabled (bool):
             num_nodes (int):
+            stream_type (str):
      """
 
     offload_enabled: bool
     auto_updates_enabled: bool
     auto_updates_hard_disabled: bool
     num_nodes: int
+    stream_type: str
 
 
     def to_dict(self) -> dict[str, Any]:
@@ -43,6 +45,8 @@ class DatabaseSettings:
 
         num_nodes = self.num_nodes
 
+        stream_type = self.stream_type
+
 
         field_dict: dict[str, Any] = {}
         field_dict.update({
@@ -50,6 +54,7 @@ class DatabaseSettings:
             "autoUpdatesEnabled": auto_updates_enabled,
             "autoUpdatesHardDisabled": auto_updates_hard_disabled,
             "numNodes": num_nodes,
+            "streamType": stream_type,
         })
 
         return field_dict
@@ -67,11 +72,14 @@ class DatabaseSettings:
 
         num_nodes = d.pop("numNodes")
 
+        stream_type = d.pop("streamType")
+
         database_settings = cls(
             offload_enabled=offload_enabled,
             auto_updates_enabled=auto_updates_enabled,
             auto_updates_hard_disabled=auto_updates_hard_disabled,
             num_nodes=num_nodes,
+            stream_type=stream_type,
         )
 
         return database_settings

@@ -36,7 +36,7 @@ def _get_kwargs(
 
     _kwargs: dict[str, Any] = {
         "method": "patch",
-        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/database_settings".format(account_id=account_id,database_id=database_id,),
+        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/settings".format(account_id=account_id,database_id=database_id,),
     }
 
     _body = body.to_dict()
