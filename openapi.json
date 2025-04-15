@@ -6,7 +6,7 @@
         "version": "1.0",
         "download": {
             "source": "https://cloud.exasol.com/openapi.json",
-            "timestamp": "2025-04-04T11:27:52.781680+00:00"
+            "timestamp": "2025-04-15T07:11:02.170830+00:00"
         }
     },
     "servers": [
@@ -3278,7 +3278,8 @@
                             "autoUpdatesEnabled",
                             "autoUpdatesHardDisabled",
                             "numNodes",
-                            "streamType"
+                            "streamType",
+                            "streamDescription"
                         ],
                         "properties": {
                             "offloadEnabled": {
@@ -3295,6 +3296,9 @@
                             },
                             "streamType": {
                                 "type": "string"
+                            },
+                            "streamDescription": {
+                                "type": "string"
                             }
                         },
                         "additionalProperties": false,
@@ -3309,7 +3313,8 @@
                     "autoUpdatesEnabled",
                     "autoUpdatesHardDisabled",
                     "numNodes",
-                    "streamType"
+                    "streamType",
+                    "streamDescription"
                 ],
                 "properties": {
                     "offloadEnabled": {
@@ -3325,6 +3330,9 @@
                         "type": "integer"
                     },
                     "streamType": {
+                        "type": "string"
+                    },
+                    "streamDescription": {
                         "type": "string"
                     }
                 },
