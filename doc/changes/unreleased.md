@@ -16,6 +16,7 @@ Added `streamDescription` to the models below `components` / `schemas`:
 ## Refactorings
 
 * #90: Updated open API client 2025-04-15
+* #92: Updated poetry to 2.1.2
 
 ## Security
 
