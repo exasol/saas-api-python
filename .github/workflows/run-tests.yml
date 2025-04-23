@@ -42,9 +42,8 @@ jobs:
 
       - name: Set coverage name
         id: coverage-suffix
-        if: ${{ ! inputs.slow-tests }}
         run: |          
-          if [ "${{ inputs.slow-tests }}" == "true" ]; then
+          if [[ "${{ inputs.slow-tests }}" == "true" ]]; then
             echo value='fast' >> "$GITHUB_OUTPUT"
           else
             echo value='slow' >> "$GITHUB_OUTPUT"
