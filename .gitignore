@@ -1,4 +1,5 @@
 .html-documentation
+.idea
 __pycache__
 /metrics.json
 /.lint.txt
