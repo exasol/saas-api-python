@@ -19,7 +19,9 @@ jobs:
       - name: Set pytest markers
         id: pytest-markers
         if: ${{ ! inputs.slow-tests }}
-        run: echo slow-tests='-m "not slow"' >> "$GITHUB_OUTPUT"
+        run: |
+           echo slow-tests='-m "not slow"' >> "$GITHUB_OUTPUT"
+           echo coverage-suffix='fast' >> "$GITHUB_OUTPUT"
 
       - name: SCM Checkout
         uses: actions/checkout@v4
@@ -40,18 +42,9 @@ jobs:
           export PROJECT_SHORT_TAG=$(poetry run -- nox -s project:get-short-tag)
           poetry run -- nox -s test:coverage --
 
-      - name: Set coverage name
-        id: coverage-suffix
-        run: |          
-          if [[ "${{ inputs.slow-tests }}" == "true" ]]; then
-            echo value='fast' >> "$GITHUB_OUTPUT"
-          else
-            echo value='slow' >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: coverage-python${{ inputs.python-version }}-${{ steps.coverage-suffix.outputs.value }}
+          name: coverage-python${{ inputs.python-version }}-${{ steps.pytest-markers.outputs.coverage-suffix }}
           path: .coverage
           include-hidden-files: true
