@@ -1,2 +1,14 @@
 project_name_override: "generated"
 post_hooks: []
+
+# openapi.json contains model class "Database" with attribute "settings", from
+# which openapi-python-client generates a module "database_settings"
+# containing class "DatabaseSettings".
+#
+# The following class_override avoids a conflict with class
+# "DatabaseSettings", also contained in openapi.json.
+
+class_overrides:
+  Database:
+    class_name: ExasolDatabase
+    module_name: exasol_database

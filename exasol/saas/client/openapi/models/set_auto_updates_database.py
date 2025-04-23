@@ -15,31 +15,26 @@ from ..types import (
     Unset,
 )
 
-T = TypeVar("T", bound="DatabaseClusters")
+T = TypeVar("T", bound="SetAutoUpdatesDatabase")
 
 
 @_attrs_define
-class DatabaseClusters:
+class SetAutoUpdatesDatabase:
     """ 
         Attributes:
-            total (int):
-            running (int):
+            auto_updates_enabled (bool):
      """
 
-    total: int
-    running: int
+    auto_updates_enabled: bool
 
 
     def to_dict(self) -> dict[str, Any]:
-        total = self.total
-
-        running = self.running
+        auto_updates_enabled = self.auto_updates_enabled
 
 
         field_dict: dict[str, Any] = {}
         field_dict.update({
-            "total": total,
-            "running": running,
+            "autoUpdatesEnabled": auto_updates_enabled,
         })
 
         return field_dict
@@ -49,14 +44,11 @@ class DatabaseClusters:
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         d = src_dict.copy()
-        total = d.pop("total")
+        auto_updates_enabled = d.pop("autoUpdatesEnabled")
 
-        running = d.pop("running")
-
-        database_clusters = cls(
-            total=total,
-            running=running,
+        set_auto_updates_database = cls(
+            auto_updates_enabled=auto_updates_enabled,
         )
 
-        return database_clusters
+        return set_auto_updates_database
 

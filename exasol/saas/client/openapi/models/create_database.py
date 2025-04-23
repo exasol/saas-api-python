@@ -5,6 +5,7 @@ from typing import (
     Optional,
     TextIO,
     TypeVar,
+    Union,
     cast,
 )
 
@@ -34,12 +35,16 @@ class CreateDatabase:
             initial_cluster (CreateDatabaseInitialCluster):
             provider (str):
             region (str):
+            num_nodes (Union[Unset, int]):
+            stream_type (Union[Unset, str]):
      """
 
     name: str
     initial_cluster: 'CreateDatabaseInitialCluster'
     provider: str
     region: str
+    num_nodes: Union[Unset, int] = UNSET
+    stream_type: Union[Unset, str] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
 
@@ -55,6 +60,10 @@ class CreateDatabase:
 
         region = self.region
 
+        num_nodes = self.num_nodes
+
+        stream_type = self.stream_type
+
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -64,6 +73,10 @@ class CreateDatabase:
             "provider": provider,
             "region": region,
         })
+        if num_nodes is not UNSET:
+            field_dict["numNodes"] = num_nodes
+        if stream_type is not UNSET:
+            field_dict["streamType"] = stream_type
 
         return field_dict
 
@@ -86,11 +99,17 @@ class CreateDatabase:
 
         region = d.pop("region")
 
+        num_nodes = d.pop("numNodes", UNSET)
+
+        stream_type = d.pop("streamType", UNSET)
+
         create_database = cls(
             name=name,
             initial_cluster=initial_cluster,
             provider=provider,
             region=region,
+            num_nodes=num_nodes,
+            stream_type=stream_type,
         )
 
 

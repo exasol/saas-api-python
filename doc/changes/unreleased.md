@@ -4,14 +4,15 @@
 
 This release updates the Python API generated from file `openapi.json`.
 
-The updated API contains 3 additional fields for object `Schedule`:
-* `createdbyID`
-* `createdbyFirstName`
-* `createdbyLastName`
+Changes to `open-api.json` in detail:
+
+Added `streamDescription` to the models below `components` / `schemas`:
+
+* `Database` / `properties` / `settings` / `required`
+* `Database` / `properties` / `settings` / `properties`
+* `DatabaseSettings` / `required`
+* `DatabaseSettings` / `properties`
 
 ## Refactorings
 
-* #80: Updated `openapi.json`
-
-## Security
- * #82: Dependencies updated, especially vitualenv (20.26.4 -> 20.29.2), jinja2 (3.1.4 -> 3.1.5)
+* #90: Updated open API client 2025-04-15

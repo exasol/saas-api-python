@@ -13,7 +13,7 @@ from ...client import (
     AuthenticatedClient,
     Client,
 )
-from ...models.exasol_database import ExasolDatabase
+from ...models.database_settings import DatabaseSettings
 from ...types import (
     UNSET,
     Response,
@@ -22,6 +22,7 @@ from ...types import (
 
 def _get_kwargs(
     account_id: str,
+    database_id: str,
 
 ) -> dict[str, Any]:
     
@@ -32,23 +33,18 @@ def _get_kwargs(
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/api/v1/accounts/{account_id}/databases".format(account_id=account_id,),
+        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/settings".format(account_id=account_id,database_id=database_id,),
     }
 
 
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[list['ExasolDatabase']]:
+def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[DatabaseSettings]:
     if response.status_code == 200:
-        response_200 = []
-        _response_200 = response.json()
-        for response_200_item_data in (_response_200):
-            response_200_item = ExasolDatabase.from_dict(response_200_item_data)
+        response_200 = DatabaseSettings.from_dict(response.json())
 
 
-
-            response_200.append(response_200_item)
 
         return response_200
     if client.raise_on_unexpected_status:
@@ -57,7 +53,7 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[list['ExasolDatabase']]:
+def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[DatabaseSettings]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -68,25 +64,28 @@ def _build_response(*, client: Union[AuthenticatedClient, Client], response: htt
 
 def sync_detailed(
     account_id: str,
+    database_id: str,
     *,
     client: AuthenticatedClient,
 
-) -> Response[list['ExasolDatabase']]:
+) -> Response[DatabaseSettings]:
     """ 
     Args:
         account_id (str):
+        database_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[list['ExasolDatabase']]
+        Response[DatabaseSettings]
      """
 
 
     kwargs = _get_kwargs(
         account_id=account_id,
+database_id=database_id,
 
     )
 
@@ -98,50 +97,56 @@ def sync_detailed(
 
 def sync(
     account_id: str,
+    database_id: str,
     *,
     client: AuthenticatedClient,
 
-) -> Optional[list['ExasolDatabase']]:
+) -> Optional[DatabaseSettings]:
     """ 
     Args:
         account_id (str):
+        database_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        list['ExasolDatabase']
+        DatabaseSettings
      """
 
 
     return sync_detailed(
         account_id=account_id,
+database_id=database_id,
 client=client,
 
     ).parsed
 
 async def asyncio_detailed(
     account_id: str,
+    database_id: str,
     *,
     client: AuthenticatedClient,
 
-) -> Response[list['ExasolDatabase']]:
+) -> Response[DatabaseSettings]:
     """ 
     Args:
         account_id (str):
+        database_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[list['ExasolDatabase']]
+        Response[DatabaseSettings]
      """
 
 
     kwargs = _get_kwargs(
         account_id=account_id,
+database_id=database_id,
 
     )
 
@@ -153,25 +158,28 @@ async def asyncio_detailed(
 
 async def asyncio(
     account_id: str,
+    database_id: str,
     *,
     client: AuthenticatedClient,
 
-) -> Optional[list['ExasolDatabase']]:
+) -> Optional[DatabaseSettings]:
     """ 
     Args:
         account_id (str):
+        database_id (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        list['ExasolDatabase']
+        DatabaseSettings
      """
 
 
     return (await asyncio_detailed(
         account_id=account_id,
+database_id=database_id,
 client=client,
 
     )).parsed

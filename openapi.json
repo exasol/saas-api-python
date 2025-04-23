@@ -6,7 +6,7 @@
         "version": "1.0",
         "download": {
             "source": "https://cloud.exasol.com/openapi.json",
-            "timestamp": "2025-02-13T11:29:05.164909+00:00"
+            "timestamp": "2025-04-15T07:11:02.170830+00:00"
         }
     },
     "servers": [
@@ -1265,6 +1265,210 @@
                         "in": "path",
                         "required": true,
                         "name": "instanceId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/settings": {
+            "get": {
+                "operationId": "GetDatabaseSettings",
+                "responses": {
+                    "200": {
+                        "description": "database setting",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DatabaseSettings"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Databases"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            },
+            "patch": {
+                "operationId": "SetAutoUpdatesDatabase",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Databases"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SetAutoUpdatesDatabase"
+                            }
+                        }
+                    },
+                    "required": true
+                }
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/upgrade": {
+            "get": {
+                "operationId": "GetDatabaseUpgradeInfo",
+                "responses": {
+                    "200": {
+                        "description": "A database upgrade info",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DatabaseUpgradeInfo"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Databases"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            },
+            "put": {
+                "operationId": "UpgradeDatabase",
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Databases"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
                         "schema": {
                             "type": "string"
                         }
@@ -2978,6 +3182,12 @@
                     },
                     "region": {
                         "type": "string"
+                    },
+                    "numNodes": {
+                        "type": "integer"
+                    },
+                    "streamType": {
+                        "type": "string"
                     }
                 },
                 "additionalProperties": true,
@@ -3063,21 +3273,89 @@
                         "format": "date-time"
                     },
                     "settings": {
-                        "$ref": "#/components/schemas/DatabaseSettings"
+                        "required": [
+                            "offloadEnabled",
+                            "autoUpdatesEnabled",
+                            "autoUpdatesHardDisabled",
+                            "numNodes",
+                            "streamType",
+                            "streamDescription"
+                        ],
+                        "properties": {
+                            "offloadEnabled": {
+                                "type": "boolean"
+                            },
+                            "autoUpdatesEnabled": {
+                                "type": "boolean"
+                            },
+                            "autoUpdatesHardDisabled": {
+                                "type": "boolean"
+                            },
+                            "numNodes": {
+                                "type": "integer"
+                            },
+                            "streamType": {
+                                "type": "string"
+                            },
+                            "streamDescription": {
+                                "type": "string"
+                            }
+                        },
+                        "additionalProperties": false,
+                        "type": "object"
                     }
                 },
                 "type": "object"
             },
             "DatabaseSettings": {
                 "required": [
-                    "offloadEnabled"
+                    "offloadEnabled",
+                    "autoUpdatesEnabled",
+                    "autoUpdatesHardDisabled",
+                    "numNodes",
+                    "streamType",
+                    "streamDescription"
                 ],
                 "properties": {
                     "offloadEnabled": {
                         "type": "boolean"
+                    },
+                    "autoUpdatesEnabled": {
+                        "type": "boolean"
+                    },
+                    "autoUpdatesHardDisabled": {
+                        "type": "boolean"
+                    },
+                    "numNodes": {
+                        "type": "integer"
+                    },
+                    "streamType": {
+                        "type": "string"
+                    },
+                    "streamDescription": {
+                        "type": "string"
                     }
                 },
                 "additionalProperties": false,
+                "type": "object"
+            },
+            "DatabaseUpgradeInfo": {
+                "required": [
+                    "currentVersion",
+                    "updateVersion",
+                    "updatePossible"
+                ],
+                "properties": {
+                    "currentVersion": {
+                        "type": "string"
+                    },
+                    "updateVersion": {
+                        "type": "string"
+                    },
+                    "updatePossible": {
+                        "type": "boolean"
+                    }
+                },
                 "type": "object"
             },
             "DownloadFile": {
@@ -3271,8 +3549,7 @@
             "Schedule": {
                 "required": [
                     "action",
-                    "cronRule",
-                    "payload"
+                    "cronRule"
                 ],
                 "properties": {
                     "id": {
@@ -3297,7 +3574,8 @@
                                 "enum": [
                                     "ActionClusterStart",
                                     "ActionClusterStop",
-                                    "ActionClusterScale"
+                                    "ActionClusterScale",
+                                    "ActionDatabaseUpgrade"
                                 ]
                             }
                         ]
@@ -3315,6 +3593,18 @@
                                 "$ref": "#/components/schemas/ClusterActionStartStop"
                             }
                         ]
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "SetAutoUpdatesDatabase": {
+                "required": [
+                    "autoUpdatesEnabled"
+                ],
+                "properties": {
+                    "autoUpdatesEnabled": {
+                        "type": "boolean"
                     }
                 },
                 "additionalProperties": false,

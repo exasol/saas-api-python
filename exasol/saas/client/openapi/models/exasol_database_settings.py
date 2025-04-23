@@ -15,11 +15,11 @@ from ..types import (
     Unset,
 )
 
-T = TypeVar("T", bound="DatabaseSettings")
+T = TypeVar("T", bound="ExasolDatabaseSettings")
 
 
 @_attrs_define
-class DatabaseSettings:
+class ExasolDatabaseSettings:
     """ 
         Attributes:
             offload_enabled (bool):
@@ -81,7 +81,7 @@ class DatabaseSettings:
 
         stream_description = d.pop("streamDescription")
 
-        database_settings = cls(
+        exasol_database_settings = cls(
             offload_enabled=offload_enabled,
             auto_updates_enabled=auto_updates_enabled,
             auto_updates_hard_disabled=auto_updates_hard_disabled,
@@ -90,5 +90,5 @@ class DatabaseSettings:
             stream_description=stream_description,
         )
 
-        return database_settings
+        return exasol_database_settings
 

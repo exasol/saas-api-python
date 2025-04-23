@@ -10,8 +10,8 @@ on:
     types: [opened, reopened]
   workflow_dispatch:
   schedule:
-    # "At 2 am UTC on every day." (https://crontab.guru)
-    - cron: "0 2 * * *"
+    # "At 2 am UTC on Monday." (https://crontab.guru)
+    - cron: "0 2 * * 1"
 
 jobs:
 
@@ -31,8 +31,8 @@ jobs:
           poetry-version: 2.0.1
           python-version: "3.10"
 
-      - name: Run Nox Task check-api-outdated
-        run: poetry run nox -s check-api-outdated
+      - name: Run Nox Task api:check-outdated
+        run: poetry run nox -s api:check-outdated
 
       - name: Report Failure Status to Slack Channel
         if: ${{ failure() && github.event_name == 'schedule' }}

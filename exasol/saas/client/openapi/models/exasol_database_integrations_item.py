@@ -16,11 +16,11 @@ from ..types import (
     Unset,
 )
 
-T = TypeVar("T", bound="DatabaseIntegrationsItem")
+T = TypeVar("T", bound="ExasolDatabaseIntegrationsItem")
 
 
 @_attrs_define
-class DatabaseIntegrationsItem:
+class ExasolDatabaseIntegrationsItem:
     """ 
         Attributes:
             id (str):
@@ -64,15 +64,15 @@ class DatabaseIntegrationsItem:
 
         url = d.pop("url", UNSET)
 
-        database_integrations_item = cls(
+        exasol_database_integrations_item = cls(
             id=id,
             name=name,
             url=url,
         )
 
 
-        database_integrations_item.additional_properties = d
-        return database_integrations_item
+        exasol_database_integrations_item.additional_properties = d
+        return exasol_database_integrations_item
 
     @property
     def additional_keys(self) -> list[str]:

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "exasol-saas-api"
-version = "0.10.0"
+version = "1.1.0"
 description = "API enabling Python applications connecting to Exasol database SaaS instances and using their SaaS services"
 packages = [ {include = "exasol"}, ]
 authors = [ "Christoph Kuhnke <christoph.kuhnke@exasol.com>" ]
