@@ -109,7 +109,7 @@ def _get_database_id(
             lambda db: (db.name == database_name)  # type: ignore
             and (db.deleted_at is UNSET)  # type: ignore
             and (db.deleted_by is UNSET),
-            dbs, # type: ignore
+            dbs,  # type: ignore
         )
     )  # type: ignore
     if not dbs:
