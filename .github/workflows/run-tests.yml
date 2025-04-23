@@ -21,7 +21,7 @@ jobs:
         if: ${{ ! inputs.slow-tests }}
         run: |
            echo slow-tests='-m "not slow"' >> "$GITHUB_OUTPUT"
-           echo coverage-suffix='fast' >> "$GITHUB_OUTPUT"
+           echo coverage-suffix='-fast' >> "$GITHUB_OUTPUT"
 
       - name: SCM Checkout
         uses: actions/checkout@v4
@@ -45,6 +45,6 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: coverage-python${{ inputs.python-version }}-${{ steps.pytest-markers.outputs.coverage-suffix }}
+          name: coverage-python${{ inputs.python-version }}${{ steps.pytest-markers.outputs.coverage-suffix }}
           path: .coverage
           include-hidden-files: true
