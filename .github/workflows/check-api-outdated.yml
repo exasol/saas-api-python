@@ -32,7 +32,7 @@ jobs:
           python-version: "3.10"
 
       - name: Run Nox Task api:check-outdated
-        run: poetry run nox -s api:check-outdated
+        run: poetry run -- nox -s api:check-outdated
 
       - name: Report Failure Status to Slack Channel
         if: ${{ failure() && github.event_name == 'schedule' }}

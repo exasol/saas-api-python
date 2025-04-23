@@ -38,8 +38,8 @@ jobs:
           PYTEST_ADDOPTS: '-o log_cli=true -o log_cli_level=INFO ${{ steps.pytest-markers.outputs.slow-tests }}'
         run: |
           echo "PYTEST_ADDOPTS = $PYTEST_ADDOPTS"
-          export PROJECT_SHORT_TAG=$(poetry run nox -s project:get-short-tag)
-          poetry run nox -s test:coverage -- --
+          export PROJECT_SHORT_TAG=$(poetry run -- nox -s project:get-short-tag)
+          poetry run -- nox -s test:coverage --
 
       - name: Set coverage name
         id: coverage-suffix
