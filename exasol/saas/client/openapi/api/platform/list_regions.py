@@ -22,31 +22,24 @@ from ...types import (
 
 def _get_kwargs(
     platform: str,
-
 ) -> dict[str, Any]:
-    
-
-    
-
-    
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/api/v1/platforms/{platform}/regions".format(platform=platform,),
+        "url": f"/api/v1/platforms/{platform}/regions",
     }
-
 
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[list['Region']]:
+def _parse_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Optional[list["Region"]]:
     if response.status_code == 200:
         response_200 = []
         _response_200 = response.json()
-        for response_200_item_data in (_response_200):
+        for response_200_item_data in _response_200:
             response_200_item = Region.from_dict(response_200_item_data)
-
-
 
             response_200.append(response_200_item)
 
@@ -57,7 +50,9 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[list['Region']]:
+def _build_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Response[list["Region"]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -70,9 +65,8 @@ def sync_detailed(
     platform: str,
     *,
     client: AuthenticatedClient,
-
-) -> Response[list['Region']]:
-    """ 
+) -> Response[list["Region"]]:
+    """
     Args:
         platform (str):
 
@@ -82,12 +76,10 @@ def sync_detailed(
 
     Returns:
         Response[list['Region']]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         platform=platform,
-
     )
 
     response = client.get_httpx_client().request(
@@ -96,13 +88,13 @@ def sync_detailed(
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     platform: str,
     *,
     client: AuthenticatedClient,
-
-) -> Optional[list['Region']]:
-    """ 
+) -> Optional[list["Region"]]:
+    """
     Args:
         platform (str):
 
@@ -112,22 +104,20 @@ def sync(
 
     Returns:
         list['Region']
-     """
-
+    """
 
     return sync_detailed(
         platform=platform,
-client=client,
-
+        client=client,
     ).parsed
+
 
 async def asyncio_detailed(
     platform: str,
     *,
     client: AuthenticatedClient,
-
-) -> Response[list['Region']]:
-    """ 
+) -> Response[list["Region"]]:
+    """
     Args:
         platform (str):
 
@@ -137,27 +127,23 @@ async def asyncio_detailed(
 
     Returns:
         Response[list['Region']]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         platform=platform,
-
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
 
 async def asyncio(
     platform: str,
     *,
     client: AuthenticatedClient,
-
-) -> Optional[list['Region']]:
-    """ 
+) -> Optional[list["Region"]]:
+    """
     Args:
         platform (str):
 
@@ -167,11 +153,11 @@ async def asyncio(
 
     Returns:
         list['Region']
-     """
+    """
 
-
-    return (await asyncio_detailed(
-        platform=platform,
-client=client,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            platform=platform,
+            client=client,
+        )
+    ).parsed

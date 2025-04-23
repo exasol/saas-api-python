@@ -24,28 +24,21 @@ def _get_kwargs(
     account_id: str,
     database_id: str,
     key: str,
-
 ) -> dict[str, Any]:
-    
-
-    
-
-    
 
     _kwargs: dict[str, Any] = {
         "method": "post",
-        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/files/{key}".format(account_id=account_id,database_id=database_id,key=key,),
+        "url": f"/api/v1/accounts/{account_id}/databases/{database_id}/files/{key}",
     }
-
 
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[UploadFile]:
+def _parse_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Optional[UploadFile]:
     if response.status_code == 200:
         response_200 = UploadFile.from_dict(response.json())
-
-
 
         return response_200
     if client.raise_on_unexpected_status:
@@ -54,7 +47,9 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[UploadFile]:
+def _build_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Response[UploadFile]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -69,9 +64,8 @@ def sync_detailed(
     key: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Response[UploadFile]:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -83,14 +77,12 @@ def sync_detailed(
 
     Returns:
         Response[UploadFile]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-database_id=database_id,
-key=key,
-
+        database_id=database_id,
+        key=key,
     )
 
     response = client.get_httpx_client().request(
@@ -99,15 +91,15 @@ key=key,
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     account_id: str,
     database_id: str,
     key: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Optional[UploadFile]:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -119,16 +111,15 @@ def sync(
 
     Returns:
         UploadFile
-     """
-
+    """
 
     return sync_detailed(
         account_id=account_id,
-database_id=database_id,
-key=key,
-client=client,
-
+        database_id=database_id,
+        key=key,
+        client=client,
     ).parsed
+
 
 async def asyncio_detailed(
     account_id: str,
@@ -136,9 +127,8 @@ async def asyncio_detailed(
     key: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Response[UploadFile]:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -150,21 +140,18 @@ async def asyncio_detailed(
 
     Returns:
         Response[UploadFile]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-database_id=database_id,
-key=key,
-
+        database_id=database_id,
+        key=key,
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
 
 async def asyncio(
     account_id: str,
@@ -172,9 +159,8 @@ async def asyncio(
     key: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Optional[UploadFile]:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -186,13 +172,13 @@ async def asyncio(
 
     Returns:
         UploadFile
-     """
+    """
 
-
-    return (await asyncio_detailed(
-        account_id=account_id,
-database_id=database_id,
-key=key,
-client=client,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            account_id=account_id,
+            database_id=database_id,
+            key=key,
+            client=client,
+        )
+    ).parsed

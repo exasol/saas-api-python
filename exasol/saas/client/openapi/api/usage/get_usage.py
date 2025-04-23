@@ -27,11 +27,7 @@ def _get_kwargs(
     *,
     year_month: Union[Unset, str] = UNSET,
     type_: Union[Unset, GetUsageType] = UNSET,
-
 ) -> dict[str, Any]:
-    
-
-    
 
     params: dict[str, Any] = {}
 
@@ -43,25 +39,22 @@ def _get_kwargs(
 
     params["type"] = json_type_
 
-
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
-
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/api/v1/accounts/{account_id}/usage".format(account_id=account_id,),
+        "url": f"/api/v1/accounts/{account_id}/usage",
         "params": params,
     }
-
 
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[Usage]:
+def _parse_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Optional[Usage]:
     if response.status_code == 200:
         response_200 = Usage.from_dict(response.json())
-
-
 
         return response_200
     if client.raise_on_unexpected_status:
@@ -70,7 +63,9 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[Usage]:
+def _build_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Response[Usage]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -85,9 +80,8 @@ def sync_detailed(
     client: AuthenticatedClient,
     year_month: Union[Unset, str] = UNSET,
     type_: Union[Unset, GetUsageType] = UNSET,
-
 ) -> Response[Usage]:
-    """ 
+    """
     Args:
         account_id (str):
         year_month (Union[Unset, str]):
@@ -99,14 +93,12 @@ def sync_detailed(
 
     Returns:
         Response[Usage]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-year_month=year_month,
-type_=type_,
-
+        year_month=year_month,
+        type_=type_,
     )
 
     response = client.get_httpx_client().request(
@@ -115,15 +107,15 @@ type_=type_,
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     account_id: str,
     *,
     client: AuthenticatedClient,
     year_month: Union[Unset, str] = UNSET,
     type_: Union[Unset, GetUsageType] = UNSET,
-
 ) -> Optional[Usage]:
-    """ 
+    """
     Args:
         account_id (str):
         year_month (Union[Unset, str]):
@@ -135,16 +127,15 @@ def sync(
 
     Returns:
         Usage
-     """
-
+    """
 
     return sync_detailed(
         account_id=account_id,
-client=client,
-year_month=year_month,
-type_=type_,
-
+        client=client,
+        year_month=year_month,
+        type_=type_,
     ).parsed
+
 
 async def asyncio_detailed(
     account_id: str,
@@ -152,9 +143,8 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     year_month: Union[Unset, str] = UNSET,
     type_: Union[Unset, GetUsageType] = UNSET,
-
 ) -> Response[Usage]:
-    """ 
+    """
     Args:
         account_id (str):
         year_month (Union[Unset, str]):
@@ -166,21 +156,18 @@ async def asyncio_detailed(
 
     Returns:
         Response[Usage]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-year_month=year_month,
-type_=type_,
-
+        year_month=year_month,
+        type_=type_,
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
 
 async def asyncio(
     account_id: str,
@@ -188,9 +175,8 @@ async def asyncio(
     client: AuthenticatedClient,
     year_month: Union[Unset, str] = UNSET,
     type_: Union[Unset, GetUsageType] = UNSET,
-
 ) -> Optional[Usage]:
-    """ 
+    """
     Args:
         account_id (str):
         year_month (Union[Unset, str]):
@@ -202,13 +188,13 @@ async def asyncio(
 
     Returns:
         Usage
-     """
+    """
 
-
-    return (await asyncio_detailed(
-        account_id=account_id,
-client=client,
-year_month=year_month,
-type_=type_,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            account_id=account_id,
+            client=client,
+            year_month=year_month,
+            type_=type_,
+        )
+    ).parsed

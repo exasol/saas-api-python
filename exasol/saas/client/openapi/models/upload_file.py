@@ -20,26 +20,24 @@ T = TypeVar("T", bound="UploadFile")
 
 @_attrs_define
 class UploadFile:
-    """ 
-        Attributes:
-            url (str):
-     """
+    """
+    Attributes:
+        url (str):
+    """
 
     url: str
-
 
     def to_dict(self) -> dict[str, Any]:
         url = self.url
 
-
         field_dict: dict[str, Any] = {}
-        field_dict.update({
-            "url": url,
-        })
+        field_dict.update(
+            {
+                "url": url,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
@@ -51,4 +49,3 @@ class UploadFile:
         )
 
         return upload_file
-

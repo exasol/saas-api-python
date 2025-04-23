@@ -1,10 +1,16 @@
+from datetime import (
+    datetime,
+    timedelta,
+)
+
 import pytest
+from tenacity import RetryError
 
 from exasol.saas.client import PROMISING_STATES
-from tenacity import RetryError
-from datetime import datetime, timedelta
-
-from exasol.saas.client.api_access import wait_for_delete_clearance, get_connection_params
+from exasol.saas.client.api_access import (
+    get_connection_params,
+    wait_for_delete_clearance,
+)
 
 
 def test_lifecycle(api_access, database_name):
@@ -22,8 +28,7 @@ def test_lifecycle(api_access, database_name):
     with testee.database(database_name, ignore_delete_failure=True) as db:
         start = datetime.now()
         # verify state and clusters of created database
-        assert db.status in PROMISING_STATES and \
-            db.clusters.total == 1
+        assert db.status in PROMISING_STATES and db.clusters.total == 1
 
         # verify database is listed
         assert db.id in testee.list_database_ids()
@@ -49,5 +54,4 @@ def test_get_connection(api_access, database_name):
     with api_access.database(database_name) as db:
         clusters = api_access.clusters(db.id)
         connection = api_access.get_connection(db.id, clusters[0].id)
-        assert connection.db_username is not None and \
-            connection.port == 8563
+        assert connection.db_username is not None and connection.port == 8563

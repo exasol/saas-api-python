@@ -17,10 +17,7 @@ from ..types import (
 )
 
 if TYPE_CHECKING:
-  from ..models.extension_version import ExtensionVersion
-
-
-
+    from ..models.extension_version import ExtensionVersion
 
 
 T = TypeVar("T", bound="Extension")
@@ -28,24 +25,24 @@ T = TypeVar("T", bound="Extension")
 
 @_attrs_define
 class Extension:
-    """ 
-        Attributes:
-            id (str):
-            name (str):
-            description (str):
-            category_id (str):
-            installable_versions (list['ExtensionVersion']):
-     """
+    """
+    Attributes:
+        id (str):
+        name (str):
+        description (str):
+        category_id (str):
+        installable_versions (list['ExtensionVersion']):
+    """
 
     id: str
     name: str
     description: str
     category_id: str
-    installable_versions: list['ExtensionVersion']
-
+    installable_versions: list["ExtensionVersion"]
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.extension_version import ExtensionVersion
+
         id = self.id
 
         name = self.name
@@ -59,25 +56,23 @@ class Extension:
             installable_versions_item = installable_versions_item_data.to_dict()
             installable_versions.append(installable_versions_item)
 
-
-
-
         field_dict: dict[str, Any] = {}
-        field_dict.update({
-            "id": id,
-            "name": name,
-            "description": description,
-            "categoryId": category_id,
-            "installableVersions": installable_versions,
-        })
+        field_dict.update(
+            {
+                "id": id,
+                "name": name,
+                "description": description,
+                "categoryId": category_id,
+                "installableVersions": installable_versions,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         from ..models.extension_version import ExtensionVersion
+
         d = src_dict.copy()
         id = d.pop("id")
 
@@ -89,13 +84,12 @@ class Extension:
 
         installable_versions = []
         _installable_versions = d.pop("installableVersions")
-        for installable_versions_item_data in (_installable_versions):
-            installable_versions_item = ExtensionVersion.from_dict(installable_versions_item_data)
-
-
+        for installable_versions_item_data in _installable_versions:
+            installable_versions_item = ExtensionVersion.from_dict(
+                installable_versions_item_data
+            )
 
             installable_versions.append(installable_versions_item)
-
 
         extension = cls(
             id=id,
@@ -106,4 +100,3 @@ class Extension:
         )
 
         return extension
-

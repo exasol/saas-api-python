@@ -20,19 +20,18 @@ T = TypeVar("T", bound="Region")
 
 @_attrs_define
 class Region:
-    """ 
-        Attributes:
-            id (str):
-            name (str):
-            price_multiplier (float):
-            storage_price (float):
-     """
+    """
+    Attributes:
+        id (str):
+        name (str):
+        price_multiplier (float):
+        storage_price (float):
+    """
 
     id: str
     name: str
     price_multiplier: float
     storage_price: float
-
 
     def to_dict(self) -> dict[str, Any]:
         id = self.id
@@ -43,18 +42,17 @@ class Region:
 
         storage_price = self.storage_price
 
-
         field_dict: dict[str, Any] = {}
-        field_dict.update({
-            "id": id,
-            "name": name,
-            "priceMultiplier": price_multiplier,
-            "storagePrice": storage_price,
-        })
+        field_dict.update(
+            {
+                "id": id,
+                "name": name,
+                "priceMultiplier": price_multiplier,
+                "storagePrice": storage_price,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
@@ -75,4 +73,3 @@ class Region:
         )
 
         return region
-

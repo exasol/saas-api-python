@@ -21,16 +21,16 @@ T = TypeVar("T", bound="UsageCluster")
 
 @_attrs_define
 class UsageCluster:
-    """ 
-        Attributes:
-            id (str):
-            size (str):
-            name (str):
-            compute (Union[Unset, float]):
-            out_same_region (Union[Unset, float]):
-            out_different_region (Union[Unset, float]):
-            out_internet (Union[Unset, float]):
-     """
+    """
+    Attributes:
+        id (str):
+        size (str):
+        name (str):
+        compute (Union[Unset, float]):
+        out_same_region (Union[Unset, float]):
+        out_different_region (Union[Unset, float]):
+        out_internet (Union[Unset, float]):
+    """
 
     id: str
     size: str
@@ -39,7 +39,6 @@ class UsageCluster:
     out_same_region: Union[Unset, float] = UNSET
     out_different_region: Union[Unset, float] = UNSET
     out_internet: Union[Unset, float] = UNSET
-
 
     def to_dict(self) -> dict[str, Any]:
         id = self.id
@@ -56,13 +55,14 @@ class UsageCluster:
 
         out_internet = self.out_internet
 
-
         field_dict: dict[str, Any] = {}
-        field_dict.update({
-            "id": id,
-            "size": size,
-            "name": name,
-        })
+        field_dict.update(
+            {
+                "id": id,
+                "size": size,
+                "name": name,
+            }
+        )
         if compute is not UNSET:
             field_dict["compute"] = compute
         if out_same_region is not UNSET:
@@ -73,8 +73,6 @@ class UsageCluster:
             field_dict["outInternet"] = out_internet
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
@@ -104,4 +102,3 @@ class UsageCluster:
         )
 
         return usage_cluster
-

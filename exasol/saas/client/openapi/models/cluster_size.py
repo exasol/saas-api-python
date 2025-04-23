@@ -20,15 +20,15 @@ T = TypeVar("T", bound="ClusterSize")
 
 @_attrs_define
 class ClusterSize:
-    """ 
-        Attributes:
-            size (str):
-            price (float):
-            vcpu (float):
-            ram (float):
-            is_default (bool):
-            name (str):
-     """
+    """
+    Attributes:
+        size (str):
+        price (float):
+        vcpu (float):
+        ram (float):
+        is_default (bool):
+        name (str):
+    """
 
     size: str
     price: float
@@ -36,7 +36,6 @@ class ClusterSize:
     ram: float
     is_default: bool
     name: str
-
 
     def to_dict(self) -> dict[str, Any]:
         size = self.size
@@ -51,20 +50,19 @@ class ClusterSize:
 
         name = self.name
 
-
         field_dict: dict[str, Any] = {}
-        field_dict.update({
-            "size": size,
-            "price": price,
-            "vcpu": vcpu,
-            "ram": ram,
-            "isDefault": is_default,
-            "name": name,
-        })
+        field_dict.update(
+            {
+                "size": size,
+                "price": price,
+                "vcpu": vcpu,
+                "ram": ram,
+                "isDefault": is_default,
+                "name": name,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
@@ -91,4 +89,3 @@ class ClusterSize:
         )
 
         return cluster_size
-

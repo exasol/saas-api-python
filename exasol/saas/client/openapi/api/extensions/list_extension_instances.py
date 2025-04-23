@@ -26,39 +26,30 @@ def _get_kwargs(
     database_id: str,
     extension_id: str,
     extension_version: str,
-
 ) -> dict[str, Any]:
-    
-
-    
-
-    
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/extensions/{extension_id}/{extension_version}/instances".format(account_id=account_id,database_id=database_id,extension_id=extension_id,extension_version=extension_version,),
+        "url": f"/api/v1/accounts/{account_id}/databases/{database_id}/extensions/{extension_id}/{extension_version}/instances",
     }
-
 
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[Union[ApiError, list['ExtensionInstance']]]:
+def _parse_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Optional[Union[ApiError, list["ExtensionInstance"]]]:
     if response.status_code == 200:
         response_200 = []
         _response_200 = response.json()
-        for response_200_item_data in (_response_200):
+        for response_200_item_data in _response_200:
             response_200_item = ExtensionInstance.from_dict(response_200_item_data)
-
-
 
             response_200.append(response_200_item)
 
         return response_200
     if response.status_code == 422:
         response_422 = ApiError.from_dict(response.json())
-
-
 
         return response_422
     if client.raise_on_unexpected_status:
@@ -67,7 +58,9 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[Union[ApiError, list['ExtensionInstance']]]:
+def _build_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Response[Union[ApiError, list["ExtensionInstance"]]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -83,9 +76,8 @@ def sync_detailed(
     extension_version: str,
     *,
     client: AuthenticatedClient,
-
-) -> Response[Union[ApiError, list['ExtensionInstance']]]:
-    """ 
+) -> Response[Union[ApiError, list["ExtensionInstance"]]]:
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -98,15 +90,13 @@ def sync_detailed(
 
     Returns:
         Response[Union[ApiError, list['ExtensionInstance']]]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-database_id=database_id,
-extension_id=extension_id,
-extension_version=extension_version,
-
+        database_id=database_id,
+        extension_id=extension_id,
+        extension_version=extension_version,
     )
 
     response = client.get_httpx_client().request(
@@ -115,6 +105,7 @@ extension_version=extension_version,
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     account_id: str,
     database_id: str,
@@ -122,9 +113,8 @@ def sync(
     extension_version: str,
     *,
     client: AuthenticatedClient,
-
-) -> Optional[Union[ApiError, list['ExtensionInstance']]]:
-    """ 
+) -> Optional[Union[ApiError, list["ExtensionInstance"]]]:
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -137,17 +127,16 @@ def sync(
 
     Returns:
         Union[ApiError, list['ExtensionInstance']]
-     """
-
+    """
 
     return sync_detailed(
         account_id=account_id,
-database_id=database_id,
-extension_id=extension_id,
-extension_version=extension_version,
-client=client,
-
+        database_id=database_id,
+        extension_id=extension_id,
+        extension_version=extension_version,
+        client=client,
     ).parsed
+
 
 async def asyncio_detailed(
     account_id: str,
@@ -156,9 +145,8 @@ async def asyncio_detailed(
     extension_version: str,
     *,
     client: AuthenticatedClient,
-
-) -> Response[Union[ApiError, list['ExtensionInstance']]]:
-    """ 
+) -> Response[Union[ApiError, list["ExtensionInstance"]]]:
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -171,22 +159,19 @@ async def asyncio_detailed(
 
     Returns:
         Response[Union[ApiError, list['ExtensionInstance']]]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-database_id=database_id,
-extension_id=extension_id,
-extension_version=extension_version,
-
+        database_id=database_id,
+        extension_id=extension_id,
+        extension_version=extension_version,
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
 
 async def asyncio(
     account_id: str,
@@ -195,9 +180,8 @@ async def asyncio(
     extension_version: str,
     *,
     client: AuthenticatedClient,
-
-) -> Optional[Union[ApiError, list['ExtensionInstance']]]:
-    """ 
+) -> Optional[Union[ApiError, list["ExtensionInstance"]]]:
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -210,14 +194,14 @@ async def asyncio(
 
     Returns:
         Union[ApiError, list['ExtensionInstance']]
-     """
+    """
 
-
-    return (await asyncio_detailed(
-        account_id=account_id,
-database_id=database_id,
-extension_id=extension_id,
-extension_version=extension_version,
-client=client,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            account_id=account_id,
+            database_id=database_id,
+            extension_id=extension_id,
+            extension_version=extension_version,
+            client=client,
+        )
+    ).parsed

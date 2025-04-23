@@ -21,11 +21,8 @@ from ..types import (
 )
 
 if TYPE_CHECKING:
-  from ..models.auto_stop import AutoStop
-  from ..models.cluster_settings import ClusterSettings
-
-
-
+    from ..models.auto_stop import AutoStop
+    from ..models.cluster_settings import ClusterSettings
 
 
 T = TypeVar("T", bound="Cluster")
@@ -33,20 +30,20 @@ T = TypeVar("T", bound="Cluster")
 
 @_attrs_define
 class Cluster:
-    """ 
-        Attributes:
-            status (Status):
-            id (str):
-            name (str):
-            size (str):
-            created_at (datetime.datetime):
-            created_by (str):
-            main_cluster (bool):
-            settings (ClusterSettings):
-            deleted_at (Union[Unset, datetime.datetime]):
-            deleted_by (Union[Unset, str]):
-            auto_stop (Union[Unset, AutoStop]):
-     """
+    """
+    Attributes:
+        status (Status):
+        id (str):
+        name (str):
+        size (str):
+        created_at (datetime.datetime):
+        created_by (str):
+        main_cluster (bool):
+        settings (ClusterSettings):
+        deleted_at (Union[Unset, datetime.datetime]):
+        deleted_by (Union[Unset, str]):
+        auto_stop (Union[Unset, AutoStop]):
+    """
 
     status: Status
     id: str
@@ -55,15 +52,15 @@ class Cluster:
     created_at: datetime.datetime
     created_by: str
     main_cluster: bool
-    settings: 'ClusterSettings'
+    settings: "ClusterSettings"
     deleted_at: Union[Unset, datetime.datetime] = UNSET
     deleted_by: Union[Unset, str] = UNSET
-    auto_stop: Union[Unset, 'AutoStop'] = UNSET
-
+    auto_stop: Union[Unset, "AutoStop"] = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.auto_stop import AutoStop
         from ..models.cluster_settings import ClusterSettings
+
         status = self.status.value
 
         id = self.id
@@ -90,18 +87,19 @@ class Cluster:
         if not isinstance(self.auto_stop, Unset):
             auto_stop = self.auto_stop.to_dict()
 
-
         field_dict: dict[str, Any] = {}
-        field_dict.update({
-            "status": status,
-            "id": id,
-            "name": name,
-            "size": size,
-            "createdAt": created_at,
-            "createdBy": created_by,
-            "mainCluster": main_cluster,
-            "settings": settings,
-        })
+        field_dict.update(
+            {
+                "status": status,
+                "id": id,
+                "name": name,
+                "size": size,
+                "createdAt": created_at,
+                "createdBy": created_by,
+                "mainCluster": main_cluster,
+                "settings": settings,
+            }
+        )
         if deleted_at is not UNSET:
             field_dict["deletedAt"] = deleted_at
         if deleted_by is not UNSET:
@@ -111,17 +109,13 @@ class Cluster:
 
         return field_dict
 
-
-
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         from ..models.auto_stop import AutoStop
         from ..models.cluster_settings import ClusterSettings
+
         d = src_dict.copy()
         status = Status(d.pop("status"))
-
-
-
 
         id = d.pop("id")
 
@@ -131,39 +125,27 @@ class Cluster:
 
         created_at = isoparse(d.pop("createdAt"))
 
-
-
-
         created_by = d.pop("createdBy")
 
         main_cluster = d.pop("mainCluster")
 
         settings = ClusterSettings.from_dict(d.pop("settings"))
 
-
-
-
         _deleted_at = d.pop("deletedAt", UNSET)
         deleted_at: Union[Unset, datetime.datetime]
-        if isinstance(_deleted_at,  Unset):
+        if isinstance(_deleted_at, Unset):
             deleted_at = UNSET
         else:
             deleted_at = isoparse(_deleted_at)
-
-
-
 
         deleted_by = d.pop("deletedBy", UNSET)
 
         _auto_stop = d.pop("autoStop", UNSET)
         auto_stop: Union[Unset, AutoStop]
-        if isinstance(_auto_stop,  Unset):
+        if isinstance(_auto_stop, Unset):
             auto_stop = UNSET
         else:
             auto_stop = AutoStop.from_dict(_auto_stop)
-
-
-
 
         cluster = cls(
             status=status,
@@ -180,4 +162,3 @@ class Cluster:
         )
 
         return cluster
-

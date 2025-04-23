@@ -27,11 +27,7 @@ def _get_kwargs(
     filter_: Union[Unset, str] = UNSET,
     next_: Union[Unset, int] = UNSET,
     limit: Union[Unset, int] = UNSET,
-
 ) -> dict[str, Any]:
-    
-
-    
 
     params: dict[str, Any] = {}
 
@@ -41,28 +37,25 @@ def _get_kwargs(
 
     params["limit"] = limit
 
-
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
-
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/api/v1/accounts/{account_id}/users".format(account_id=account_id,),
+        "url": f"/api/v1/accounts/{account_id}/users",
         "params": params,
     }
-
 
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[list['User']]:
+def _parse_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Optional[list["User"]]:
     if response.status_code == 200:
         response_200 = []
         _response_200 = response.json()
-        for response_200_item_data in (_response_200):
+        for response_200_item_data in _response_200:
             response_200_item = User.from_dict(response_200_item_data)
-
-
 
             response_200.append(response_200_item)
 
@@ -73,7 +66,9 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[list['User']]:
+def _build_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Response[list["User"]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -89,9 +84,8 @@ def sync_detailed(
     filter_: Union[Unset, str] = UNSET,
     next_: Union[Unset, int] = UNSET,
     limit: Union[Unset, int] = UNSET,
-
-) -> Response[list['User']]:
-    """ 
+) -> Response[list["User"]]:
+    """
     Args:
         account_id (str):
         filter_ (Union[Unset, str]):
@@ -104,15 +98,13 @@ def sync_detailed(
 
     Returns:
         Response[list['User']]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-filter_=filter_,
-next_=next_,
-limit=limit,
-
+        filter_=filter_,
+        next_=next_,
+        limit=limit,
     )
 
     response = client.get_httpx_client().request(
@@ -121,6 +113,7 @@ limit=limit,
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     account_id: str,
     *,
@@ -128,9 +121,8 @@ def sync(
     filter_: Union[Unset, str] = UNSET,
     next_: Union[Unset, int] = UNSET,
     limit: Union[Unset, int] = UNSET,
-
-) -> Optional[list['User']]:
-    """ 
+) -> Optional[list["User"]]:
+    """
     Args:
         account_id (str):
         filter_ (Union[Unset, str]):
@@ -143,17 +135,16 @@ def sync(
 
     Returns:
         list['User']
-     """
-
+    """
 
     return sync_detailed(
         account_id=account_id,
-client=client,
-filter_=filter_,
-next_=next_,
-limit=limit,
-
+        client=client,
+        filter_=filter_,
+        next_=next_,
+        limit=limit,
     ).parsed
+
 
 async def asyncio_detailed(
     account_id: str,
@@ -162,9 +153,8 @@ async def asyncio_detailed(
     filter_: Union[Unset, str] = UNSET,
     next_: Union[Unset, int] = UNSET,
     limit: Union[Unset, int] = UNSET,
-
-) -> Response[list['User']]:
-    """ 
+) -> Response[list["User"]]:
+    """
     Args:
         account_id (str):
         filter_ (Union[Unset, str]):
@@ -177,22 +167,19 @@ async def asyncio_detailed(
 
     Returns:
         Response[list['User']]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-filter_=filter_,
-next_=next_,
-limit=limit,
-
+        filter_=filter_,
+        next_=next_,
+        limit=limit,
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
 
 async def asyncio(
     account_id: str,
@@ -201,9 +188,8 @@ async def asyncio(
     filter_: Union[Unset, str] = UNSET,
     next_: Union[Unset, int] = UNSET,
     limit: Union[Unset, int] = UNSET,
-
-) -> Optional[list['User']]:
-    """ 
+) -> Optional[list["User"]]:
+    """
     Args:
         account_id (str):
         filter_ (Union[Unset, str]):
@@ -216,14 +202,14 @@ async def asyncio(
 
     Returns:
         list['User']
-     """
+    """
 
-
-    return (await asyncio_detailed(
-        account_id=account_id,
-client=client,
-filter_=filter_,
-next_=next_,
-limit=limit,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            account_id=account_id,
+            client=client,
+            filter_=filter_,
+            next_=next_,
+            limit=limit,
+        )
+    ).parsed

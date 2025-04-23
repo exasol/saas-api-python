@@ -18,11 +18,8 @@ from ..types import (
 )
 
 if TYPE_CHECKING:
-  from ..models.auto_stop import AutoStop
-  from ..models.cluster_settings_update import ClusterSettingsUpdate
-
-
-
+    from ..models.auto_stop import AutoStop
+    from ..models.cluster_settings_update import ClusterSettingsUpdate
 
 
 T = TypeVar("T", bound="CreateCluster")
@@ -30,23 +27,23 @@ T = TypeVar("T", bound="CreateCluster")
 
 @_attrs_define
 class CreateCluster:
-    """ 
-        Attributes:
-            name (str):
-            size (str):
-            auto_stop (Union[Unset, AutoStop]):
-            settings (Union[Unset, ClusterSettingsUpdate]):
-     """
+    """
+    Attributes:
+        name (str):
+        size (str):
+        auto_stop (Union[Unset, AutoStop]):
+        settings (Union[Unset, ClusterSettingsUpdate]):
+    """
 
     name: str
     size: str
-    auto_stop: Union[Unset, 'AutoStop'] = UNSET
-    settings: Union[Unset, 'ClusterSettingsUpdate'] = UNSET
-
+    auto_stop: Union[Unset, "AutoStop"] = UNSET
+    settings: Union[Unset, "ClusterSettingsUpdate"] = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.auto_stop import AutoStop
         from ..models.cluster_settings_update import ClusterSettingsUpdate
+
         name = self.name
 
         size = self.size
@@ -59,12 +56,13 @@ class CreateCluster:
         if not isinstance(self.settings, Unset):
             settings = self.settings.to_dict()
 
-
         field_dict: dict[str, Any] = {}
-        field_dict.update({
-            "name": name,
-            "size": size,
-        })
+        field_dict.update(
+            {
+                "name": name,
+                "size": size,
+            }
+        )
         if auto_stop is not UNSET:
             field_dict["autoStop"] = auto_stop
         if settings is not UNSET:
@@ -72,12 +70,11 @@ class CreateCluster:
 
         return field_dict
 
-
-
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         from ..models.auto_stop import AutoStop
         from ..models.cluster_settings_update import ClusterSettingsUpdate
+
         d = src_dict.copy()
         name = d.pop("name")
 
@@ -85,23 +82,17 @@ class CreateCluster:
 
         _auto_stop = d.pop("autoStop", UNSET)
         auto_stop: Union[Unset, AutoStop]
-        if isinstance(_auto_stop,  Unset):
+        if isinstance(_auto_stop, Unset):
             auto_stop = UNSET
         else:
             auto_stop = AutoStop.from_dict(_auto_stop)
 
-
-
-
         _settings = d.pop("settings", UNSET)
         settings: Union[Unset, ClusterSettingsUpdate]
-        if isinstance(_settings,  Unset):
+        if isinstance(_settings, Unset):
             settings = UNSET
         else:
             settings = ClusterSettingsUpdate.from_dict(_settings)
-
-
-
 
         create_cluster = cls(
             name=name,
@@ -111,4 +102,3 @@ class CreateCluster:
         )
 
         return create_cluster
-

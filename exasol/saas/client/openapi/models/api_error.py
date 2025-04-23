@@ -21,18 +21,18 @@ T = TypeVar("T", bound="ApiError")
 
 @_attrs_define
 class ApiError:
-    """ 
-        Attributes:
-            status (float):
-            message (str):
-            request_id (str):
-            path (str):
-            method (str):
-            log_id (str):
-            handler (str):
-            timestamp (str):
-            causes (Union[Unset, Any]):
-     """
+    """
+    Attributes:
+        status (float):
+        message (str):
+        request_id (str):
+        path (str):
+        method (str):
+        log_id (str):
+        handler (str):
+        timestamp (str):
+        causes (Union[Unset, Any]):
+    """
 
     status: float
     message: str
@@ -43,7 +43,6 @@ class ApiError:
     handler: str
     timestamp: str
     causes: Union[Unset, Any] = UNSET
-
 
     def to_dict(self) -> dict[str, Any]:
         status = self.status
@@ -64,24 +63,23 @@ class ApiError:
 
         causes = self.causes
 
-
         field_dict: dict[str, Any] = {}
-        field_dict.update({
-            "status": status,
-            "message": message,
-            "requestId": request_id,
-            "path": path,
-            "method": method,
-            "logId": log_id,
-            "handler": handler,
-            "timestamp": timestamp,
-        })
+        field_dict.update(
+            {
+                "status": status,
+                "message": message,
+                "requestId": request_id,
+                "path": path,
+                "method": method,
+                "logId": log_id,
+                "handler": handler,
+                "timestamp": timestamp,
+            }
+        )
         if causes is not UNSET:
             field_dict["causes"] = causes
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
@@ -117,4 +115,3 @@ class ApiError:
         )
 
         return api_error
-

@@ -20,15 +20,15 @@ T = TypeVar("T", bound="DatabaseSettings")
 
 @_attrs_define
 class DatabaseSettings:
-    """ 
-        Attributes:
-            offload_enabled (bool):
-            auto_updates_enabled (bool):
-            auto_updates_hard_disabled (bool):
-            num_nodes (int):
-            stream_type (str):
-            stream_description (str):
-     """
+    """
+    Attributes:
+        offload_enabled (bool):
+        auto_updates_enabled (bool):
+        auto_updates_hard_disabled (bool):
+        num_nodes (int):
+        stream_type (str):
+        stream_description (str):
+    """
 
     offload_enabled: bool
     auto_updates_enabled: bool
@@ -36,7 +36,6 @@ class DatabaseSettings:
     num_nodes: int
     stream_type: str
     stream_description: str
-
 
     def to_dict(self) -> dict[str, Any]:
         offload_enabled = self.offload_enabled
@@ -51,20 +50,19 @@ class DatabaseSettings:
 
         stream_description = self.stream_description
 
-
         field_dict: dict[str, Any] = {}
-        field_dict.update({
-            "offloadEnabled": offload_enabled,
-            "autoUpdatesEnabled": auto_updates_enabled,
-            "autoUpdatesHardDisabled": auto_updates_hard_disabled,
-            "numNodes": num_nodes,
-            "streamType": stream_type,
-            "streamDescription": stream_description,
-        })
+        field_dict.update(
+            {
+                "offloadEnabled": offload_enabled,
+                "autoUpdatesEnabled": auto_updates_enabled,
+                "autoUpdatesHardDisabled": auto_updates_hard_disabled,
+                "numNodes": num_nodes,
+                "streamType": stream_type,
+                "streamDescription": stream_description,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
@@ -91,4 +89,3 @@ class DatabaseSettings:
         )
 
         return database_settings
-

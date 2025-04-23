@@ -20,26 +20,24 @@ T = TypeVar("T", bound="SetAutoUpdatesDatabase")
 
 @_attrs_define
 class SetAutoUpdatesDatabase:
-    """ 
-        Attributes:
-            auto_updates_enabled (bool):
-     """
+    """
+    Attributes:
+        auto_updates_enabled (bool):
+    """
 
     auto_updates_enabled: bool
-
 
     def to_dict(self) -> dict[str, Any]:
         auto_updates_enabled = self.auto_updates_enabled
 
-
         field_dict: dict[str, Any] = {}
-        field_dict.update({
-            "autoUpdatesEnabled": auto_updates_enabled,
-        })
+        field_dict.update(
+            {
+                "autoUpdatesEnabled": auto_updates_enabled,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
@@ -51,4 +49,3 @@ class SetAutoUpdatesDatabase:
         )
 
         return set_auto_updates_database
-

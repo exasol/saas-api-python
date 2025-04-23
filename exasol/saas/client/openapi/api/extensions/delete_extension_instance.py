@@ -25,24 +25,19 @@ def _get_kwargs(
     extension_id: str,
     extension_version: str,
     instance_id: str,
-
 ) -> dict[str, Any]:
-    
-
-    
-
-    
 
     _kwargs: dict[str, Any] = {
         "method": "delete",
-        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/extensions/{extension_id}/{extension_version}/instances/{instance_id}".format(account_id=account_id,database_id=database_id,extension_id=extension_id,extension_version=extension_version,instance_id=instance_id,),
+        "url": f"/api/v1/accounts/{account_id}/databases/{database_id}/extensions/{extension_id}/{extension_version}/instances/{instance_id}",
     }
-
 
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[Any]:
+def _parse_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Optional[Any]:
     if response.status_code == 204:
         return None
     if client.raise_on_unexpected_status:
@@ -51,7 +46,9 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[Any]:
+def _build_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Response[Any]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -68,9 +65,8 @@ def sync_detailed(
     instance_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Response[Any]:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -84,16 +80,14 @@ def sync_detailed(
 
     Returns:
         Response[Any]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-database_id=database_id,
-extension_id=extension_id,
-extension_version=extension_version,
-instance_id=instance_id,
-
+        database_id=database_id,
+        extension_id=extension_id,
+        extension_version=extension_version,
+        instance_id=instance_id,
     )
 
     response = client.get_httpx_client().request(
@@ -111,9 +105,8 @@ async def asyncio_detailed(
     instance_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Response[Any]:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -127,21 +120,16 @@ async def asyncio_detailed(
 
     Returns:
         Response[Any]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-database_id=database_id,
-extension_id=extension_id,
-extension_version=extension_version,
-instance_id=instance_id,
-
+        database_id=database_id,
+        extension_id=extension_id,
+        extension_version=extension_version,
+        instance_id=instance_id,
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
-

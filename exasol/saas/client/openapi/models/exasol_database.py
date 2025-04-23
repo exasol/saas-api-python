@@ -21,12 +21,11 @@ from ..types import (
 )
 
 if TYPE_CHECKING:
-  from ..models.exasol_database_clusters import ExasolDatabaseClusters
-  from ..models.exasol_database_integrations_item import ExasolDatabaseIntegrationsItem
-  from ..models.exasol_database_settings import ExasolDatabaseSettings
-
-
-
+    from ..models.exasol_database_clusters import ExasolDatabaseClusters
+    from ..models.exasol_database_integrations_item import (
+        ExasolDatabaseIntegrationsItem,
+    )
+    from ..models.exasol_database_settings import ExasolDatabaseSettings
 
 
 T = TypeVar("T", bound="ExasolDatabase")
@@ -34,36 +33,35 @@ T = TypeVar("T", bound="ExasolDatabase")
 
 @_attrs_define
 class ExasolDatabase:
-    """ 
-        Attributes:
-            status (Status):
-            id (str):
-            name (str):
-            clusters (ExasolDatabaseClusters):
-            provider (str):
-            region (str):
-            created_at (datetime.datetime):
-            created_by (str):
-            settings (ExasolDatabaseSettings):
-            integrations (Union[Unset, list['ExasolDatabaseIntegrationsItem']]):
-            deleted_by (Union[Unset, str]):
-            deleted_at (Union[Unset, datetime.datetime]):
-     """
+    """
+    Attributes:
+        status (Status):
+        id (str):
+        name (str):
+        clusters (ExasolDatabaseClusters):
+        provider (str):
+        region (str):
+        created_at (datetime.datetime):
+        created_by (str):
+        settings (ExasolDatabaseSettings):
+        integrations (Union[Unset, list['ExasolDatabaseIntegrationsItem']]):
+        deleted_by (Union[Unset, str]):
+        deleted_at (Union[Unset, datetime.datetime]):
+    """
 
     status: Status
     id: str
     name: str
-    clusters: 'ExasolDatabaseClusters'
+    clusters: "ExasolDatabaseClusters"
     provider: str
     region: str
     created_at: datetime.datetime
     created_by: str
-    settings: 'ExasolDatabaseSettings'
-    integrations: Union[Unset, list['ExasolDatabaseIntegrationsItem']] = UNSET
+    settings: "ExasolDatabaseSettings"
+    integrations: Union[Unset, list["ExasolDatabaseIntegrationsItem"]] = UNSET
     deleted_by: Union[Unset, str] = UNSET
     deleted_at: Union[Unset, datetime.datetime] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
-
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.exasol_database_clusters import ExasolDatabaseClusters
@@ -71,6 +69,7 @@ class ExasolDatabase:
             ExasolDatabaseIntegrationsItem,
         )
         from ..models.exasol_database_settings import ExasolDatabaseSettings
+
         status = self.status.value
 
         id = self.id
@@ -96,28 +95,27 @@ class ExasolDatabase:
                 integrations_item = integrations_item_data.to_dict()
                 integrations.append(integrations_item)
 
-
-
         deleted_by = self.deleted_by
 
         deleted_at: Union[Unset, str] = UNSET
         if not isinstance(self.deleted_at, Unset):
             deleted_at = self.deleted_at.isoformat()
 
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update({
-            "status": status,
-            "id": id,
-            "name": name,
-            "clusters": clusters,
-            "provider": provider,
-            "region": region,
-            "createdAt": created_at,
-            "createdBy": created_by,
-            "settings": settings,
-        })
+        field_dict.update(
+            {
+                "status": status,
+                "id": id,
+                "name": name,
+                "clusters": clusters,
+                "provider": provider,
+                "region": region,
+                "createdAt": created_at,
+                "createdBy": created_by,
+                "settings": settings,
+            }
+        )
         if integrations is not UNSET:
             field_dict["integrations"] = integrations
         if deleted_by is not UNSET:
@@ -127,8 +125,6 @@ class ExasolDatabase:
 
         return field_dict
 
-
-
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         from ..models.exasol_database_clusters import ExasolDatabaseClusters
@@ -136,11 +132,9 @@ class ExasolDatabase:
             ExasolDatabaseIntegrationsItem,
         )
         from ..models.exasol_database_settings import ExasolDatabaseSettings
+
         d = src_dict.copy()
         status = Status(d.pop("status"))
-
-
-
 
         id = d.pop("id")
 
@@ -148,46 +142,33 @@ class ExasolDatabase:
 
         clusters = ExasolDatabaseClusters.from_dict(d.pop("clusters"))
 
-
-
-
         provider = d.pop("provider")
 
         region = d.pop("region")
 
         created_at = isoparse(d.pop("createdAt"))
 
-
-
-
         created_by = d.pop("createdBy")
 
         settings = ExasolDatabaseSettings.from_dict(d.pop("settings"))
 
-
-
-
         integrations = []
         _integrations = d.pop("integrations", UNSET)
-        for integrations_item_data in (_integrations or []):
-            integrations_item = ExasolDatabaseIntegrationsItem.from_dict(integrations_item_data)
-
-
+        for integrations_item_data in _integrations or []:
+            integrations_item = ExasolDatabaseIntegrationsItem.from_dict(
+                integrations_item_data
+            )
 
             integrations.append(integrations_item)
-
 
         deleted_by = d.pop("deletedBy", UNSET)
 
         _deleted_at = d.pop("deletedAt", UNSET)
         deleted_at: Union[Unset, datetime.datetime]
-        if isinstance(_deleted_at,  Unset):
+        if isinstance(_deleted_at, Unset):
             deleted_at = UNSET
         else:
             deleted_at = isoparse(_deleted_at)
-
-
-
 
         exasol_database = cls(
             status=status,
@@ -203,7 +184,6 @@ class ExasolDatabase:
             deleted_by=deleted_by,
             deleted_at=deleted_at,
         )
-
 
         exasol_database.additional_properties = d
         return exasol_database

@@ -25,22 +25,15 @@ def _get_kwargs(
     account_id: str,
     *,
     body: CreateAllowedIP,
-
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
-
-    
-
-    
-
     _kwargs: dict[str, Any] = {
         "method": "post",
-        "url": "/api/v1/accounts/{account_id}/security/allowlist_ip".format(account_id=account_id,),
+        "url": f"/api/v1/accounts/{account_id}/security/allowlist_ip",
     }
 
     _body = body.to_dict()
-
 
     _kwargs["json"] = _body
     headers["Content-Type"] = "application/json"
@@ -49,11 +42,11 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[AllowedIP]:
+def _parse_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Optional[AllowedIP]:
     if response.status_code == 200:
         response_200 = AllowedIP.from_dict(response.json())
-
-
 
         return response_200
     if client.raise_on_unexpected_status:
@@ -62,7 +55,9 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[AllowedIP]:
+def _build_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Response[AllowedIP]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -76,9 +71,8 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     body: CreateAllowedIP,
-
 ) -> Response[AllowedIP]:
-    """ 
+    """
     Args:
         account_id (str):
         body (CreateAllowedIP):
@@ -89,13 +83,11 @@ def sync_detailed(
 
     Returns:
         Response[AllowedIP]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-body=body,
-
+        body=body,
     )
 
     response = client.get_httpx_client().request(
@@ -104,14 +96,14 @@ body=body,
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     account_id: str,
     *,
     client: AuthenticatedClient,
     body: CreateAllowedIP,
-
 ) -> Optional[AllowedIP]:
-    """ 
+    """
     Args:
         account_id (str):
         body (CreateAllowedIP):
@@ -122,24 +114,22 @@ def sync(
 
     Returns:
         AllowedIP
-     """
-
+    """
 
     return sync_detailed(
         account_id=account_id,
-client=client,
-body=body,
-
+        client=client,
+        body=body,
     ).parsed
+
 
 async def asyncio_detailed(
     account_id: str,
     *,
     client: AuthenticatedClient,
     body: CreateAllowedIP,
-
 ) -> Response[AllowedIP]:
-    """ 
+    """
     Args:
         account_id (str):
         body (CreateAllowedIP):
@@ -150,29 +140,25 @@ async def asyncio_detailed(
 
     Returns:
         Response[AllowedIP]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-body=body,
-
+        body=body,
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
 
 async def asyncio(
     account_id: str,
     *,
     client: AuthenticatedClient,
     body: CreateAllowedIP,
-
 ) -> Optional[AllowedIP]:
-    """ 
+    """
     Args:
         account_id (str):
         body (CreateAllowedIP):
@@ -183,12 +169,12 @@ async def asyncio(
 
     Returns:
         AllowedIP
-     """
+    """
 
-
-    return (await asyncio_detailed(
-        account_id=account_id,
-client=client,
-body=body,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            account_id=account_id,
+            client=client,
+            body=body,
+        )
+    ).parsed
