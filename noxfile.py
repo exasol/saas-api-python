@@ -115,7 +115,7 @@ def generate_api(session: Session):
     if local_build:
         session.run("poetry", "add", *dependencies("tmp/pyproject.toml"))
     shutil.rmtree("tmp")
-    session.run("isort", "-q", DEST_DIR)
+    fix(session)
 
 
 @nox.session(name="api:check-outdated", python=False)
