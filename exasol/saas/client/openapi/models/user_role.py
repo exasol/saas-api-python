@@ -20,31 +20,29 @@ T = TypeVar("T", bound="UserRole")
 
 @_attrs_define
 class UserRole:
-    """ 
-        Attributes:
-            id (str):
-            name (str):
-     """
+    """
+    Attributes:
+        id (str):
+        name (str):
+    """
 
     id: str
     name: str
-
 
     def to_dict(self) -> dict[str, Any]:
         id = self.id
 
         name = self.name
 
-
         field_dict: dict[str, Any] = {}
-        field_dict.update({
-            "id": id,
-            "name": name,
-        })
+        field_dict.update(
+            {
+                "id": id,
+                "name": name,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
@@ -59,4 +57,3 @@ class UserRole:
         )
 
         return user_role
-

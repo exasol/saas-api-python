@@ -17,7 +17,7 @@ jobs:
 
   check-api-outdated:
     name: Check API Outdated
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
 
@@ -26,13 +26,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Python & Poetry Environment
-        uses: exasol/python-toolbox/.github/actions/python-environment@0.20.0
+        uses: exasol/python-toolbox/.github/actions/python-environment@1.0.1
         with:
-          poetry-version: 2.0.1
           python-version: "3.10"
 
       - name: Run Nox Task api:check-outdated
-        run: poetry run nox -s api:check-outdated
+        run: poetry run -- nox -s api:check-outdated
 
       - name: Report Failure Status to Slack Channel
         if: ${{ failure() && github.event_name == 'schedule' }}

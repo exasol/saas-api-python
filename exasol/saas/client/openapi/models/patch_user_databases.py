@@ -21,44 +21,36 @@ T = TypeVar("T", bound="PatchUserDatabases")
 
 @_attrs_define
 class PatchUserDatabases:
-    """ 
-        Attributes:
-            delete (list[str]):
-            add (list[str]):
-     """
+    """
+    Attributes:
+        delete (list[str]):
+        add (list[str]):
+    """
 
     delete: list[str]
     add: list[str]
 
-
     def to_dict(self) -> dict[str, Any]:
         delete = self.delete
 
-
-
         add = self.add
 
-
-
-
         field_dict: dict[str, Any] = {}
-        field_dict.update({
-            "delete": delete,
-            "add": add,
-        })
+        field_dict.update(
+            {
+                "delete": delete,
+                "add": add,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         d = src_dict.copy()
         delete = cast(list[str], d.pop("delete"))
 
-
         add = cast(list[str], d.pop("add"))
-
 
         patch_user_databases = cls(
             delete=delete,
@@ -66,4 +58,3 @@ class PatchUserDatabases:
         )
 
         return patch_user_databases
-

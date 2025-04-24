@@ -23,28 +23,21 @@ from ...types import (
 def _get_kwargs(
     account_id: str,
     user_id: str,
-
 ) -> dict[str, Any]:
-    
-
-    
-
-    
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/api/v1/internal/accounts/{account_id}/users/{user_id}".format(account_id=account_id,user_id=user_id,),
+        "url": f"/api/v1/internal/accounts/{account_id}/users/{user_id}",
     }
-
 
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[User]:
+def _parse_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Optional[User]:
     if response.status_code == 200:
         response_200 = User.from_dict(response.json())
-
-
 
         return response_200
     if client.raise_on_unexpected_status:
@@ -53,7 +46,9 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[User]:
+def _build_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Response[User]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -67,9 +62,8 @@ def sync_detailed(
     user_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Response[User]:
-    """ 
+    """
     Args:
         account_id (str):
         user_id (str):
@@ -80,13 +74,11 @@ def sync_detailed(
 
     Returns:
         Response[User]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-user_id=user_id,
-
+        user_id=user_id,
     )
 
     response = client.get_httpx_client().request(
@@ -95,14 +87,14 @@ user_id=user_id,
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     account_id: str,
     user_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Optional[User]:
-    """ 
+    """
     Args:
         account_id (str):
         user_id (str):
@@ -113,24 +105,22 @@ def sync(
 
     Returns:
         User
-     """
-
+    """
 
     return sync_detailed(
         account_id=account_id,
-user_id=user_id,
-client=client,
-
+        user_id=user_id,
+        client=client,
     ).parsed
+
 
 async def asyncio_detailed(
     account_id: str,
     user_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Response[User]:
-    """ 
+    """
     Args:
         account_id (str):
         user_id (str):
@@ -141,29 +131,25 @@ async def asyncio_detailed(
 
     Returns:
         Response[User]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-user_id=user_id,
-
+        user_id=user_id,
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
 
 async def asyncio(
     account_id: str,
     user_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Optional[User]:
-    """ 
+    """
     Args:
         account_id (str):
         user_id (str):
@@ -174,12 +160,12 @@ async def asyncio(
 
     Returns:
         User
-     """
+    """
 
-
-    return (await asyncio_detailed(
-        account_id=account_id,
-user_id=user_id,
-client=client,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            account_id=account_id,
+            user_id=user_id,
+            client=client,
+        )
+    ).parsed

@@ -7,7 +7,7 @@ saas-api-python includes a file `.pre-commit-config.yaml`.
 The following command installs the pre-commit hooks, see also [framework pre-commmit](https://pre-commit.com/) and Git documentation on [Customizing Git Git Hooks](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks):
 
 ```shell
-poetry run pre-commit install
+poetry run -- pre-commit install
 ```
 
 When the hooks are installed, then git will run each of the hooks on the resp. stage, e.g. before executing a commit.
@@ -22,7 +22,7 @@ See also [API Documentation](https://docs.exasol.com/saas/administration/rest_ap
 In order to regenerate the model layer please use the following command line:
 
 ```shell
-poetry run nox -s api:generate
+poetry run -- nox -s api:generate
 ```
 
 ### Check API Outdated
@@ -44,7 +44,7 @@ but can also be done manually by calling the nox task `api:generate`, and commit
 Before commiting, you might want to run the nox task `api:check-outdated` locally to see if it passed or if there are further problems:
 
 ```shell
-poetry run nox -s api:check-outdated
+poetry run -- nox -s api:check-outdated
 ```
 
 another cause for the check failing might be a python-toolbox update changing the linting/code formating. This can result in formatting tools
@@ -116,7 +116,7 @@ The invocation depends on your setup:
 * When calling `poetry` directly for one-time usage, then you need to add _two_ double-dashes `-- --` to terminate arguments to poetry and nox before arguments to the nox-session.
 
 ```shell
-poetry run nox -s release:prepare -- -- <version>
+poetry run -- nox -s release:prepare -- <version>
 ```
 
 #### Scenario a) Prepare a Release from Branch `main`
@@ -144,7 +144,7 @@ Please note that creating a pull request on GitHub requires
 If you prefer to create the pull request manually or cannot provide one of the prerequisites, you can add command line option `--no-pr`:
 
 ```shell
-poetry run nox -s release:prepare -- -- <version> --no-pr
+poetry run -- nox -s release:prepare -- <version> --no-pr
 ```
 
 #### Scenario b) Prepare a Release from Another Branch
@@ -152,7 +152,7 @@ poetry run nox -s release:prepare -- -- <version> --no-pr
 In case you currently are already working on a branch other than `main`, please ensure to have all changes commited and add command line option `--no-branch`:
 
 ```shell
-poetry run nox -s release:prepare -- -- <version> --no-pr --no-branch
+poetry run -- nox -s release:prepare -- <version> --no-pr --no-branch
 ```
 
 ### Finalize and Publish the Release

@@ -24,28 +24,21 @@ def _get_kwargs(
     account_id: str,
     database_id: str,
     cluster_id: str,
-
 ) -> dict[str, Any]:
-    
-
-    
-
-    
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/clusters/{cluster_id}/connect".format(account_id=account_id,database_id=database_id,cluster_id=cluster_id,),
+        "url": f"/api/v1/accounts/{account_id}/databases/{database_id}/clusters/{cluster_id}/connect",
     }
-
 
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[ClusterConnection]:
+def _parse_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Optional[ClusterConnection]:
     if response.status_code == 200:
         response_200 = ClusterConnection.from_dict(response.json())
-
-
 
         return response_200
     if client.raise_on_unexpected_status:
@@ -54,7 +47,9 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[ClusterConnection]:
+def _build_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Response[ClusterConnection]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -69,9 +64,8 @@ def sync_detailed(
     cluster_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Response[ClusterConnection]:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -83,14 +77,12 @@ def sync_detailed(
 
     Returns:
         Response[ClusterConnection]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-database_id=database_id,
-cluster_id=cluster_id,
-
+        database_id=database_id,
+        cluster_id=cluster_id,
     )
 
     response = client.get_httpx_client().request(
@@ -99,15 +91,15 @@ cluster_id=cluster_id,
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     account_id: str,
     database_id: str,
     cluster_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Optional[ClusterConnection]:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -119,16 +111,15 @@ def sync(
 
     Returns:
         ClusterConnection
-     """
-
+    """
 
     return sync_detailed(
         account_id=account_id,
-database_id=database_id,
-cluster_id=cluster_id,
-client=client,
-
+        database_id=database_id,
+        cluster_id=cluster_id,
+        client=client,
     ).parsed
+
 
 async def asyncio_detailed(
     account_id: str,
@@ -136,9 +127,8 @@ async def asyncio_detailed(
     cluster_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Response[ClusterConnection]:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -150,21 +140,18 @@ async def asyncio_detailed(
 
     Returns:
         Response[ClusterConnection]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-database_id=database_id,
-cluster_id=cluster_id,
-
+        database_id=database_id,
+        cluster_id=cluster_id,
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
 
 async def asyncio(
     account_id: str,
@@ -172,9 +159,8 @@ async def asyncio(
     cluster_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Optional[ClusterConnection]:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -186,13 +172,13 @@ async def asyncio(
 
     Returns:
         ClusterConnection
-     """
+    """
 
-
-    return (await asyncio_detailed(
-        account_id=account_id,
-database_id=database_id,
-cluster_id=cluster_id,
-client=client,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            account_id=account_id,
+            database_id=database_id,
+            cluster_id=cluster_id,
+            client=client,
+        )
+    ).parsed

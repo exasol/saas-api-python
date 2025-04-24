@@ -20,31 +20,29 @@ T = TypeVar("T", bound="ExasolDatabaseClusters")
 
 @_attrs_define
 class ExasolDatabaseClusters:
-    """ 
-        Attributes:
-            total (int):
-            running (int):
-     """
+    """
+    Attributes:
+        total (int):
+        running (int):
+    """
 
     total: int
     running: int
-
 
     def to_dict(self) -> dict[str, Any]:
         total = self.total
 
         running = self.running
 
-
         field_dict: dict[str, Any] = {}
-        field_dict.update({
-            "total": total,
-            "running": running,
-        })
+        field_dict.update(
+            {
+                "total": total,
+                "running": running,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
@@ -59,4 +57,3 @@ class ExasolDatabaseClusters:
         )
 
         return exasol_database_clusters
-

@@ -23,14 +23,8 @@ from ...types import (
 def _get_kwargs(
     *,
     body: UpdateProfile,
-
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
-
-
-    
-
-    
 
     _kwargs: dict[str, Any] = {
         "method": "put",
@@ -39,7 +33,6 @@ def _get_kwargs(
 
     _body = body.to_dict()
 
-
     _kwargs["json"] = _body
     headers["Content-Type"] = "application/json"
 
@@ -47,7 +40,9 @@ def _get_kwargs(
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[Any]:
+def _parse_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Optional[Any]:
     if response.status_code == 204:
         return None
     if client.raise_on_unexpected_status:
@@ -56,7 +51,9 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[Any]:
+def _build_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Response[Any]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -69,9 +66,8 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     body: UpdateProfile,
-
 ) -> Response[Any]:
-    """ 
+    """
     Args:
         body (UpdateProfile):
 
@@ -81,12 +77,10 @@ def sync_detailed(
 
     Returns:
         Response[Any]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         body=body,
-
     )
 
     response = client.get_httpx_client().request(
@@ -100,9 +94,8 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
     body: UpdateProfile,
-
 ) -> Response[Any]:
-    """ 
+    """
     Args:
         body (UpdateProfile):
 
@@ -112,17 +105,12 @@ async def asyncio_detailed(
 
     Returns:
         Response[Any]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         body=body,
-
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
-

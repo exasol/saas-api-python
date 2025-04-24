@@ -20,31 +20,29 @@ T = TypeVar("T", bound="ClusterActionScale")
 
 @_attrs_define
 class ClusterActionScale:
-    """ 
-        Attributes:
-            cluster_id (str):
-            size (str):
-     """
+    """
+    Attributes:
+        cluster_id (str):
+        size (str):
+    """
 
     cluster_id: str
     size: str
-
 
     def to_dict(self) -> dict[str, Any]:
         cluster_id = self.cluster_id
 
         size = self.size
 
-
         field_dict: dict[str, Any] = {}
-        field_dict.update({
-            "clusterId": cluster_id,
-            "size": size,
-        })
+        field_dict.update(
+            {
+                "clusterId": cluster_id,
+                "size": size,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
@@ -59,4 +57,3 @@ class ClusterActionScale:
         )
 
         return cluster_action_scale
-

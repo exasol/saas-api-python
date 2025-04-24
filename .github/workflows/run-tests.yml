@@ -13,21 +13,22 @@ on:
 jobs:
 
   tests-job:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Set pytest markers
         id: pytest-markers
         if: ${{ ! inputs.slow-tests }}
-        run: echo slow-tests='-m "not slow"' >> "$GITHUB_OUTPUT"
+        run: |
+           echo slow-tests='-m "not slow"' >> "$GITHUB_OUTPUT"
+           echo coverage-suffix='-fast' >> "$GITHUB_OUTPUT"
 
       - name: SCM Checkout
         uses: actions/checkout@v4
 
       - name: Setup Python & Poetry Environment
-        uses: exasol/python-toolbox/.github/actions/python-environment@0.20.0
+        uses: exasol/python-toolbox/.github/actions/python-environment@1.0.1
         with:
-          poetry-version: 2.0.1
           python-version: ${{ inputs.python-version }}
 
       - name: Run Tests and Calculate Coverage
@@ -38,12 +39,12 @@ jobs:
           PYTEST_ADDOPTS: '-o log_cli=true -o log_cli_level=INFO ${{ steps.pytest-markers.outputs.slow-tests }}'
         run: |
           echo "PYTEST_ADDOPTS = $PYTEST_ADDOPTS"
-          export PROJECT_SHORT_TAG=$(poetry run nox -s project:get-short-tag)
-          poetry run nox -s test:coverage -- --
+          export PROJECT_SHORT_TAG=$(poetry run -- nox -s project:get-short-tag)
+          poetry run -- nox -s test:coverage --
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
-          name: .coverage
+          name: coverage-python${{ inputs.python-version }}${{ steps.pytest-markers.outputs.coverage-suffix }}
           path: .coverage
-          overwrite: true
+          include-hidden-files: true

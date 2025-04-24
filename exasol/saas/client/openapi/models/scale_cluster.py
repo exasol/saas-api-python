@@ -20,26 +20,24 @@ T = TypeVar("T", bound="ScaleCluster")
 
 @_attrs_define
 class ScaleCluster:
-    """ 
-        Attributes:
-            size (str):
-     """
+    """
+    Attributes:
+        size (str):
+    """
 
     size: str
-
 
     def to_dict(self) -> dict[str, Any]:
         size = self.size
 
-
         field_dict: dict[str, Any] = {}
-        field_dict.update({
-            "size": size,
-        })
+        field_dict.update(
+            {
+                "size": size,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
@@ -51,4 +49,3 @@ class ScaleCluster:
         )
 
         return scale_cluster
-

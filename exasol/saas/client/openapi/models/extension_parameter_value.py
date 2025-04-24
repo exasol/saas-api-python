@@ -20,31 +20,29 @@ T = TypeVar("T", bound="ExtensionParameterValue")
 
 @_attrs_define
 class ExtensionParameterValue:
-    """ 
-        Attributes:
-            id (str):
-            value (str):
-     """
+    """
+    Attributes:
+        id (str):
+        value (str):
+    """
 
     id: str
     value: str
-
 
     def to_dict(self) -> dict[str, Any]:
         id = self.id
 
         value = self.value
 
-
         field_dict: dict[str, Any] = {}
-        field_dict.update({
-            "id": id,
-            "value": value,
-        })
+        field_dict.update(
+            {
+                "id": id,
+                "value": value,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
@@ -59,4 +57,3 @@ class ExtensionParameterValue:
         )
 
         return extension_parameter_value
-

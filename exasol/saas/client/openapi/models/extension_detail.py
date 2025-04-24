@@ -17,10 +17,7 @@ from ..types import (
 )
 
 if TYPE_CHECKING:
-  from ..models.extension_parameter_definitions import ExtensionParameterDefinitions
-
-
-
+    from ..models.extension_parameter_definitions import ExtensionParameterDefinitions
 
 
 T = TypeVar("T", bound="ExtensionDetail")
@@ -28,22 +25,22 @@ T = TypeVar("T", bound="ExtensionDetail")
 
 @_attrs_define
 class ExtensionDetail:
-    """ 
-        Attributes:
-            id (str):
-            version (str):
-            parameter_definitions (list['ExtensionParameterDefinitions']):
-     """
+    """
+    Attributes:
+        id (str):
+        version (str):
+        parameter_definitions (list['ExtensionParameterDefinitions']):
+    """
 
     id: str
     version: str
-    parameter_definitions: list['ExtensionParameterDefinitions']
-
+    parameter_definitions: list["ExtensionParameterDefinitions"]
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.extension_parameter_definitions import (
             ExtensionParameterDefinitions,
         )
+
         id = self.id
 
         version = self.version
@@ -53,25 +50,23 @@ class ExtensionDetail:
             parameter_definitions_item = parameter_definitions_item_data.to_dict()
             parameter_definitions.append(parameter_definitions_item)
 
-
-
-
         field_dict: dict[str, Any] = {}
-        field_dict.update({
-            "id": id,
-            "version": version,
-            "parameterDefinitions": parameter_definitions,
-        })
+        field_dict.update(
+            {
+                "id": id,
+                "version": version,
+                "parameterDefinitions": parameter_definitions,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         from ..models.extension_parameter_definitions import (
             ExtensionParameterDefinitions,
         )
+
         d = src_dict.copy()
         id = d.pop("id")
 
@@ -79,13 +74,12 @@ class ExtensionDetail:
 
         parameter_definitions = []
         _parameter_definitions = d.pop("parameterDefinitions")
-        for parameter_definitions_item_data in (_parameter_definitions):
-            parameter_definitions_item = ExtensionParameterDefinitions.from_dict(parameter_definitions_item_data)
-
-
+        for parameter_definitions_item_data in _parameter_definitions:
+            parameter_definitions_item = ExtensionParameterDefinitions.from_dict(
+                parameter_definitions_item_data
+            )
 
             parameter_definitions.append(parameter_definitions_item)
-
 
         extension_detail = cls(
             id=id,
@@ -94,4 +88,3 @@ class ExtensionDetail:
         )
 
         return extension_detail
-

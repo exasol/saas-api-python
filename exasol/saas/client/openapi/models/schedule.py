@@ -19,11 +19,8 @@ from ..types import (
 )
 
 if TYPE_CHECKING:
-  from ..models.cluster_action_scale import ClusterActionScale
-  from ..models.cluster_action_start_stop import ClusterActionStartStop
-
-
-
+    from ..models.cluster_action_scale import ClusterActionScale
+    from ..models.cluster_action_start_stop import ClusterActionStartStop
 
 
 T = TypeVar("T", bound="Schedule")
@@ -31,17 +28,17 @@ T = TypeVar("T", bound="Schedule")
 
 @_attrs_define
 class Schedule:
-    """ 
-        Attributes:
-            action (ScheduleActionType0):
-            cron_rule (str): cron rule in format: <minute> <hour> <day> <month> <weekday>
-            id (Union[Unset, str]):
-            createdby_id (Union[Unset, str]):
-            createdby_first_name (Union[Unset, str]):
-            createdby_last_name (Union[Unset, str]):
-            cluster_name (Union[Unset, str]):
-            payload (Union['ClusterActionScale', 'ClusterActionStartStop', Unset]):
-     """
+    """
+    Attributes:
+        action (ScheduleActionType0):
+        cron_rule (str): cron rule in format: <minute> <hour> <day> <month> <weekday>
+        id (Union[Unset, str]):
+        createdby_id (Union[Unset, str]):
+        createdby_first_name (Union[Unset, str]):
+        createdby_last_name (Union[Unset, str]):
+        cluster_name (Union[Unset, str]):
+        payload (Union['ClusterActionScale', 'ClusterActionStartStop', Unset]):
+    """
 
     action: ScheduleActionType0
     cron_rule: str
@@ -50,16 +47,15 @@ class Schedule:
     createdby_first_name: Union[Unset, str] = UNSET
     createdby_last_name: Union[Unset, str] = UNSET
     cluster_name: Union[Unset, str] = UNSET
-    payload: Union['ClusterActionScale', 'ClusterActionStartStop', Unset] = UNSET
-
+    payload: Union["ClusterActionScale", "ClusterActionStartStop", Unset] = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.cluster_action_scale import ClusterActionScale
         from ..models.cluster_action_start_stop import ClusterActionStartStop
+
         action: str
         if isinstance(self.action, ScheduleActionType0):
             action = self.action.value
-
 
         cron_rule = self.cron_rule
 
@@ -81,13 +77,13 @@ class Schedule:
         else:
             payload = self.payload.to_dict()
 
-
-
         field_dict: dict[str, Any] = {}
-        field_dict.update({
-            "action": action,
-            "cronRule": cron_rule,
-        })
+        field_dict.update(
+            {
+                "action": action,
+                "cronRule": cron_rule,
+            }
+        )
         if id is not UNSET:
             field_dict["id"] = id
         if createdby_id is not UNSET:
@@ -103,24 +99,21 @@ class Schedule:
 
         return field_dict
 
-
-
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
         from ..models.cluster_action_scale import ClusterActionScale
         from ..models.cluster_action_start_stop import ClusterActionStartStop
+
         d = src_dict.copy()
+
         def _parse_action(data: object) -> ScheduleActionType0:
             if not isinstance(data, str):
                 raise TypeError()
             action_type_0 = ScheduleActionType0(data)
 
-
-
             return action_type_0
 
         action = _parse_action(d.pop("action"))
-
 
         cron_rule = d.pop("cronRule")
 
@@ -134,7 +127,9 @@ class Schedule:
 
         cluster_name = d.pop("clusterName", UNSET)
 
-        def _parse_payload(data: object) -> Union['ClusterActionScale', 'ClusterActionStartStop', Unset]:
+        def _parse_payload(
+            data: object,
+        ) -> Union["ClusterActionScale", "ClusterActionStartStop", Unset]:
             if isinstance(data, Unset):
                 return data
             try:
@@ -142,21 +137,16 @@ class Schedule:
                     raise TypeError()
                 payload_type_0 = ClusterActionScale.from_dict(data)
 
-
-
                 return payload_type_0
-            except: # noqa: E722
+            except:  # noqa: E722
                 pass
             if not isinstance(data, dict):
                 raise TypeError()
             payload_type_1 = ClusterActionStartStop.from_dict(data)
 
-
-
             return payload_type_1
 
         payload = _parse_payload(d.pop("payload", UNSET))
-
 
         schedule = cls(
             action=action,
@@ -170,4 +160,3 @@ class Schedule:
         )
 
         return schedule
-

@@ -21,17 +21,16 @@ T = TypeVar("T", bound="ExtensionParameterDefinitions")
 
 @_attrs_define
 class ExtensionParameterDefinitions:
-    """ 
-        Attributes:
-            id (str):
-            name (str):
-            raw_definition (Union[Unset, Any]):
-     """
+    """
+    Attributes:
+        id (str):
+        name (str):
+        raw_definition (Union[Unset, Any]):
+    """
 
     id: str
     name: str
     raw_definition: Union[Unset, Any] = UNSET
-
 
     def to_dict(self) -> dict[str, Any]:
         id = self.id
@@ -40,18 +39,17 @@ class ExtensionParameterDefinitions:
 
         raw_definition = self.raw_definition
 
-
         field_dict: dict[str, Any] = {}
-        field_dict.update({
-            "id": id,
-            "name": name,
-        })
+        field_dict.update(
+            {
+                "id": id,
+                "name": name,
+            }
+        )
         if raw_definition is not UNSET:
             field_dict["rawDefinition"] = raw_definition
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
@@ -69,4 +67,3 @@ class ExtensionParameterDefinitions:
         )
 
         return extension_parameter_definitions
-

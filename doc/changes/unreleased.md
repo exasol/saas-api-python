@@ -16,3 +16,8 @@ Added `streamDescription` to the models below `components` / `schemas`:
 ## Refactorings
 
 * #90: Updated open API client 2025-04-15
+* #92: Updated poetry to 2.1.2
+
+## Security
+
+* #92: Dependencies updated, especially jinja2 (3.1.5 -> 3.1.6)

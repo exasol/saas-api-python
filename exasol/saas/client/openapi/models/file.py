@@ -24,23 +24,22 @@ T = TypeVar("T", bound="File")
 
 @_attrs_define
 class File:
-    """ 
-        Attributes:
-            name (str):
-            type_ (str):
-            path (str):
-            last_modified (datetime.datetime):
-            size (Union[Unset, int]):
-            children (Union[Unset, list['File']]):
-     """
+    """
+    Attributes:
+        name (str):
+        type_ (str):
+        path (str):
+        last_modified (datetime.datetime):
+        size (Union[Unset, int]):
+        children (Union[Unset, list['File']]):
+    """
 
     name: str
     type_: str
     path: str
     last_modified: datetime.datetime
     size: Union[Unset, int] = UNSET
-    children: Union[Unset, list['File']] = UNSET
-
+    children: Union[Unset, list["File"]] = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         name = self.name
@@ -60,24 +59,21 @@ class File:
                 children_item = children_item_data.to_dict()
                 children.append(children_item)
 
-
-
-
         field_dict: dict[str, Any] = {}
-        field_dict.update({
-            "name": name,
-            "type": type_,
-            "path": path,
-            "lastModified": last_modified,
-        })
+        field_dict.update(
+            {
+                "name": name,
+                "type": type_,
+                "path": path,
+                "lastModified": last_modified,
+            }
+        )
         if size is not UNSET:
             field_dict["size"] = size
         if children is not UNSET:
             field_dict["children"] = children
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
@@ -90,20 +86,14 @@ class File:
 
         last_modified = isoparse(d.pop("lastModified"))
 
-
-
-
         size = d.pop("size", UNSET)
 
         children = []
         _children = d.pop("children", UNSET)
-        for children_item_data in (_children or []):
+        for children_item_data in _children or []:
             children_item = File.from_dict(children_item_data)
 
-
-
             children.append(children_item)
-
 
         file = cls(
             name=name,
@@ -115,4 +105,3 @@ class File:
         )
 
         return file
-

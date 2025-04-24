@@ -22,31 +22,24 @@ from ...types import (
 
 def _get_kwargs(
     account_id: str,
-
 ) -> dict[str, Any]:
-    
-
-    
-
-    
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/api/v1/accounts/{account_id}/databases".format(account_id=account_id,),
+        "url": f"/api/v1/accounts/{account_id}/databases",
     }
-
 
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[list['ExasolDatabase']]:
+def _parse_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Optional[list["ExasolDatabase"]]:
     if response.status_code == 200:
         response_200 = []
         _response_200 = response.json()
-        for response_200_item_data in (_response_200):
+        for response_200_item_data in _response_200:
             response_200_item = ExasolDatabase.from_dict(response_200_item_data)
-
-
 
             response_200.append(response_200_item)
 
@@ -57,7 +50,9 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[list['ExasolDatabase']]:
+def _build_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Response[list["ExasolDatabase"]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -70,9 +65,8 @@ def sync_detailed(
     account_id: str,
     *,
     client: AuthenticatedClient,
-
-) -> Response[list['ExasolDatabase']]:
-    """ 
+) -> Response[list["ExasolDatabase"]]:
+    """
     Args:
         account_id (str):
 
@@ -82,12 +76,10 @@ def sync_detailed(
 
     Returns:
         Response[list['ExasolDatabase']]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-
     )
 
     response = client.get_httpx_client().request(
@@ -96,13 +88,13 @@ def sync_detailed(
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     account_id: str,
     *,
     client: AuthenticatedClient,
-
-) -> Optional[list['ExasolDatabase']]:
-    """ 
+) -> Optional[list["ExasolDatabase"]]:
+    """
     Args:
         account_id (str):
 
@@ -112,22 +104,20 @@ def sync(
 
     Returns:
         list['ExasolDatabase']
-     """
-
+    """
 
     return sync_detailed(
         account_id=account_id,
-client=client,
-
+        client=client,
     ).parsed
+
 
 async def asyncio_detailed(
     account_id: str,
     *,
     client: AuthenticatedClient,
-
-) -> Response[list['ExasolDatabase']]:
-    """ 
+) -> Response[list["ExasolDatabase"]]:
+    """
     Args:
         account_id (str):
 
@@ -137,27 +127,23 @@ async def asyncio_detailed(
 
     Returns:
         Response[list['ExasolDatabase']]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
 
 async def asyncio(
     account_id: str,
     *,
     client: AuthenticatedClient,
-
-) -> Optional[list['ExasolDatabase']]:
-    """ 
+) -> Optional[list["ExasolDatabase"]]:
+    """
     Args:
         account_id (str):
 
@@ -167,11 +153,11 @@ async def asyncio(
 
     Returns:
         list['ExasolDatabase']
-     """
+    """
 
-
-    return (await asyncio_detailed(
-        account_id=account_id,
-client=client,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            account_id=account_id,
+            client=client,
+        )
+    ).parsed
