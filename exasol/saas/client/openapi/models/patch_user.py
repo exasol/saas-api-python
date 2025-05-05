@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -60,10 +61,10 @@ class PatchUser:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.patch_user_databases import PatchUserDatabases
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         role_id = d.pop("roleID", UNSET)
 
         _databases = d.pop("databases", UNSET)

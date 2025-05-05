@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -100,11 +101,11 @@ class Schedule:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.cluster_action_scale import ClusterActionScale
         from ..models.cluster_action_start_stop import ClusterActionStartStop
 
-        d = src_dict.copy()
+        d = dict(src_dict)
 
         def _parse_action(data: object) -> ScheduleActionType0:
             if not isinstance(data, str):
