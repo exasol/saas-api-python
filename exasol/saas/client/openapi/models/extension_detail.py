@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -62,12 +63,12 @@ class ExtensionDetail:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.extension_parameter_definitions import (
             ExtensionParameterDefinitions,
         )
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         id = d.pop("id")
 
         version = d.pop("version")

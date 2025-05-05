@@ -21,3 +21,4 @@ Added `streamDescription` to the models below `components` / `schemas`:
 ## Security
 
 * #92: Dependencies updated, especially jinja2 (3.1.5 -> 3.1.6)
+* #94: Fixed vulnerability CVE-2025-43859 in transitive dependency h11

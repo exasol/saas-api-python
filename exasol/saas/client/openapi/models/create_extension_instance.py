@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -50,10 +51,10 @@ class CreateExtensionInstance:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.extension_parameter_value import ExtensionParameterValue
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         parameter_values = []
         _parameter_values = d.pop("parameterValues")
         for parameter_values_item_data in _parameter_values:

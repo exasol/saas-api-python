@@ -1,4 +1,5 @@
 import datetime
+from collections.abc import Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -115,11 +116,11 @@ class User:
         return field_dict
 
     @classmethod
-    def from_dict(cls: type[T], src_dict: dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.user_database import UserDatabase
         from ..models.user_role import UserRole
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         email = d.pop("email")
 
         id = d.pop("id")
