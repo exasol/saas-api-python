@@ -6,6 +6,7 @@ from typing import (
     Optional,
     TextIO,
     TypeVar,
+    Union,
 )
 
 from attrs import define as _attrs_define
@@ -16,11 +17,11 @@ from ..types import (
     Unset,
 )
 
-T = TypeVar("T", bound="ClusterSize")
+T = TypeVar("T", bound="ClusterSize1")
 
 
 @_attrs_define
-class ClusterSize:
+class ClusterSize1:
     """
     Attributes:
         size (str):
@@ -29,6 +30,7 @@ class ClusterSize:
         ram (float):
         is_default (bool):
         name (str):
+        family (Union[Unset, str]):
     """
 
     size: str
@@ -37,6 +39,7 @@ class ClusterSize:
     ram: float
     is_default: bool
     name: str
+    family: Union[Unset, str] = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         size = self.size
@@ -51,6 +54,8 @@ class ClusterSize:
 
         name = self.name
 
+        family = self.family
+
         field_dict: dict[str, Any] = {}
         field_dict.update(
             {
@@ -62,6 +67,8 @@ class ClusterSize:
                 "name": name,
             }
         )
+        if family is not UNSET:
+            field_dict["family"] = family
 
         return field_dict
 
@@ -80,13 +87,16 @@ class ClusterSize:
 
         name = d.pop("name")
 
-        cluster_size = cls(
+        family = d.pop("family", UNSET)
+
+        cluster_size_1 = cls(
             size=size,
             price=price,
             vcpu=vcpu,
             ram=ram,
             is_default=is_default,
             name=name,
+            family=family,
         )
 
-        return cluster_size
+        return cluster_size_1

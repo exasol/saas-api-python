@@ -6,7 +6,7 @@
         "version": "1.0",
         "download": {
             "source": "https://cloud.exasol.com/openapi.json",
-            "timestamp": "2025-05-05T14:28:43.300548+00:00"
+            "timestamp": "2025-05-16T07:11:47.085448+00:00"
         }
     },
     "servers": [
@@ -2278,7 +2278,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/ClusterSize"
+                                        "$ref": "#/components/schemas/ClusterSize1"
                                     }
                                 }
                             }
@@ -3068,38 +3068,6 @@
                 "additionalProperties": false,
                 "type": "object"
             },
-            "ClusterSize": {
-                "required": [
-                    "size",
-                    "price",
-                    "vcpu",
-                    "ram",
-                    "isDefault",
-                    "name"
-                ],
-                "properties": {
-                    "size": {
-                        "type": "string"
-                    },
-                    "price": {
-                        "type": "number"
-                    },
-                    "vcpu": {
-                        "type": "number"
-                    },
-                    "ram": {
-                        "type": "number"
-                    },
-                    "isDefault": {
-                        "type": "boolean"
-                    },
-                    "name": {
-                        "type": "string"
-                    }
-                },
-                "additionalProperties": false,
-                "type": "object"
-            },
             "ConnectionIPs": {
                 "required": [
                     "private",
@@ -3706,6 +3674,41 @@
                             "$ref": "#/components/schemas/ExtensionParameterValue"
                         },
                         "type": "array"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "ClusterSize1": {
+                "required": [
+                    "size",
+                    "price",
+                    "vcpu",
+                    "ram",
+                    "isDefault",
+                    "name"
+                ],
+                "properties": {
+                    "size": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "number"
+                    },
+                    "vcpu": {
+                        "type": "number"
+                    },
+                    "ram": {
+                        "type": "number"
+                    },
+                    "isDefault": {
+                        "type": "boolean"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "family": {
+                        "type": "string"
                     }
                 },
                 "additionalProperties": false,
