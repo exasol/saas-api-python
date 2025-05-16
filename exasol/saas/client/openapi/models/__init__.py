@@ -9,7 +9,7 @@ from .cluster_action_start_stop import ClusterActionStartStop
 from .cluster_connection import ClusterConnection
 from .cluster_settings import ClusterSettings
 from .cluster_settings_update import ClusterSettingsUpdate
-from .cluster_size import ClusterSize
+from .cluster_size_1 import ClusterSize1
 from .connection_i_ps import ConnectionIPs
 from .create_allowed_ip import CreateAllowedIP
 from .create_cluster import CreateCluster
@@ -63,7 +63,7 @@ __all__ = (
     "ClusterConnection",
     "ClusterSettings",
     "ClusterSettingsUpdate",
-    "ClusterSize",
+    "ClusterSize1",
     "ConnectionIPs",
     "CreateAllowedIP",
     "CreateCluster",

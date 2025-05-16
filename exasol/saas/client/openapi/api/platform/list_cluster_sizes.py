@@ -13,7 +13,7 @@ from ...client import (
     AuthenticatedClient,
     Client,
 )
-from ...models.cluster_size import ClusterSize
+from ...models.cluster_size_1 import ClusterSize1
 from ...types import (
     UNSET,
     Response,
@@ -34,12 +34,12 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[list["ClusterSize"]]:
+) -> Optional[list["ClusterSize1"]]:
     if response.status_code == 200:
         response_200 = []
         _response_200 = response.json()
         for response_200_item_data in _response_200:
-            response_200_item = ClusterSize.from_dict(response_200_item_data)
+            response_200_item = ClusterSize1.from_dict(response_200_item_data)
 
             response_200.append(response_200_item)
 
@@ -52,7 +52,7 @@ def _parse_response(
 
 def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[list["ClusterSize"]]:
+) -> Response[list["ClusterSize1"]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -65,7 +65,7 @@ def sync_detailed(
     platform: str,
     *,
     client: AuthenticatedClient,
-) -> Response[list["ClusterSize"]]:
+) -> Response[list["ClusterSize1"]]:
     """
     Args:
         platform (str):
@@ -75,7 +75,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[list['ClusterSize']]
+        Response[list['ClusterSize1']]
     """
 
     kwargs = _get_kwargs(
@@ -93,7 +93,7 @@ def sync(
     platform: str,
     *,
     client: AuthenticatedClient,
-) -> Optional[list["ClusterSize"]]:
+) -> Optional[list["ClusterSize1"]]:
     """
     Args:
         platform (str):
@@ -103,7 +103,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        list['ClusterSize']
+        list['ClusterSize1']
     """
 
     return sync_detailed(
@@ -116,7 +116,7 @@ async def asyncio_detailed(
     platform: str,
     *,
     client: AuthenticatedClient,
-) -> Response[list["ClusterSize"]]:
+) -> Response[list["ClusterSize1"]]:
     """
     Args:
         platform (str):
@@ -126,7 +126,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[list['ClusterSize']]
+        Response[list['ClusterSize1']]
     """
 
     kwargs = _get_kwargs(
@@ -142,7 +142,7 @@ async def asyncio(
     platform: str,
     *,
     client: AuthenticatedClient,
-) -> Optional[list["ClusterSize"]]:
+) -> Optional[list["ClusterSize1"]]:
     """
     Args:
         platform (str):
@@ -152,7 +152,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        list['ClusterSize']
+        list['ClusterSize1']
     """
 
     return (
