@@ -202,7 +202,8 @@ class OpenApiAccess:
         self,
         name: str,
         cluster_size: str = "XS",
-        region: str = "eu-central-1",
+        # region: str = "eu-central-1",
+        region: str = "us-east-1",
         idle_time: timedelta | None = None,
     ) -> openapi.models.exasol_database.ExasolDatabase | None:
         def minutes(x: timedelta) -> int:
@@ -303,7 +304,7 @@ class OpenApiAccess:
     def wait_until_running(
         self,
         database_id: str,
-        timeout: timedelta = timedelta(minutes=30),
+        timeout: timedelta = timedelta(minutes=60),
         interval: timedelta = timedelta(minutes=2),
     ):
         success = [

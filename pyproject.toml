@@ -1,6 +1,6 @@
 [project]
 name = "exasol-saas-api"
-version = "2.0.0"
+version = "2.0.1"
 description = "API enabling Python applications connecting to Exasol database SaaS instances and using their SaaS services"
 authors = [
     {name="Christoph Kuhnke", email="christoph.kuhnke@exasol.com"},
