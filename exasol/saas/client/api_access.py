@@ -303,7 +303,7 @@ class OpenApiAccess:
     def wait_until_running(
         self,
         database_id: str,
-        timeout: timedelta = timedelta(minutes=30),
+        timeout: timedelta = timedelta(minutes=60),
         interval: timedelta = timedelta(minutes=2),
     ):
         success = [
