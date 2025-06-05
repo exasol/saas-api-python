@@ -202,7 +202,8 @@ class OpenApiAccess:
         self,
         name: str,
         cluster_size: str = "XS",
-        region: str = "eu-central-1",
+        # region: str = "eu-central-1",
+        region: str = "us-east-1",
         idle_time: timedelta | None = None,
     ) -> openapi.models.exasol_database.ExasolDatabase | None:
         def minutes(x: timedelta) -> int:
