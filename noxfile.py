@@ -66,7 +66,7 @@ def filter_messages(buffer: str) -> str:
     return f"{first}\n{buffer}" if buffer else ""
 
 
-def dependencies(filename: str) -> List[str]:
+def dependencies(filename: str) -> list[str]:
     def unlimit_max(lib, version):
         version_spec = re.sub(r",.*$", "", version)
         return f"{lib}@{version_spec}"
