@@ -92,11 +92,6 @@ force_grid_wrap = 2
 [tool.pylint.master]
 fail-under = 7.5
 output-format = "colorized,json:.lint.json,text:.lint.txt"
-ignore = [
-    "noxfile.py",
-    "version.py",
-    "noxconfig.py",
-]
 ignore-paths = [
     ".*/exasol/saas/client/openapi/.*",
     ".*/test/.*",
@@ -105,7 +100,6 @@ ignore-paths = [
 
 [[tool.mypy.overrides]]
 module = [
-    "exasol.toolbox.nox.tasks",
     "exasol.saas.client.openapi.*",
     "test.conftest.*",
     "test.*",
