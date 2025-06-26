@@ -118,6 +118,11 @@ ignore_missing_imports = true
 max-line-length = 88
 max-module-lines = 800
 
+[tool.sonar]
+projectKey = "com.exasol:saas-api-python"
+hostUrl = "https://sonarcloud.io"
+organization = "exasol"
+
 
 [tool.poetry.scripts]
 tbx = 'exasol.toolbox.tools.tbx:CLI'

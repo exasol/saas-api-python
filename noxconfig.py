@@ -9,6 +9,7 @@ ROOT_DIR = Path(__file__).parent
 class Config:
     root: Path = ROOT_DIR
     doc: Path = ROOT_DIR / "doc"
+    source: Path = Path("exasol/saas")
     version_file: Path = ROOT_DIR / "version.py"
     path_filters: Iterable[str] = ("dist", ".eggs", "venv")
 
