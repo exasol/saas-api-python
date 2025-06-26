@@ -1,4 +1,7 @@
-from collections.abc import Mapping
+from collections.abc import (
+    Generator,
+    Mapping,
+)
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -36,6 +39,7 @@ class UpdateProfile:
         last_name = self.last_name
 
         field_dict: dict[str, Any] = {}
+
         field_dict.update(
             {
                 "firstName": first_name,

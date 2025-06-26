@@ -1,4 +1,7 @@
-from collections.abc import Mapping
+from collections.abc import (
+    Generator,
+    Mapping,
+)
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -50,6 +53,7 @@ class PatchUser:
         db_username = self.db_username
 
         field_dict: dict[str, Any] = {}
+
         field_dict.update({})
         if role_id is not UNSET:
             field_dict["roleID"] = role_id

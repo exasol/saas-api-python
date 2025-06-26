@@ -1,4 +1,7 @@
-from collections.abc import Mapping
+from collections.abc import (
+    Generator,
+    Mapping,
+)
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -36,6 +39,7 @@ class AutoStop:
         idle_time = self.idle_time
 
         field_dict: dict[str, Any] = {}
+
         field_dict.update(
             {
                 "enabled": enabled,
