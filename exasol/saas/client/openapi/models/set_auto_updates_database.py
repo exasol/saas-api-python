@@ -1,4 +1,7 @@
-from collections.abc import Mapping
+from collections.abc import (
+    Generator,
+    Mapping,
+)
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -32,6 +35,7 @@ class SetAutoUpdatesDatabase:
         auto_updates_enabled = self.auto_updates_enabled
 
         field_dict: dict[str, Any] = {}
+
         field_dict.update(
             {
                 "autoUpdatesEnabled": auto_updates_enabled,

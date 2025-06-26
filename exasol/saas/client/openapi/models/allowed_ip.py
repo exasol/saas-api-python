@@ -1,5 +1,8 @@
 import datetime
-from collections.abc import Mapping
+from collections.abc import (
+    Generator,
+    Mapping,
+)
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -62,6 +65,7 @@ class AllowedIP:
             deleted_at = self.deleted_at.isoformat()
 
         field_dict: dict[str, Any] = {}
+
         field_dict.update(
             {
                 "id": id,

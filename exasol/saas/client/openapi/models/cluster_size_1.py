@@ -1,4 +1,7 @@
-from collections.abc import Mapping
+from collections.abc import (
+    Generator,
+    Mapping,
+)
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -57,6 +60,7 @@ class ClusterSize1:
         family = self.family
 
         field_dict: dict[str, Any] = {}
+
         field_dict.update(
             {
                 "size": size,
