@@ -1,12 +1,11 @@
 name: CI
 
 on:
-  push:
-    branches-ignore:
-      - "github-pages/*"
-      - "gh-pages/*"
-      - "main"
-      - "master"
+  pull_request:
+      types: [opened, synchronize, reopened]
+  schedule:
+    # At 00:00 on every 7th day-of-month from 1 through 31. (https://crontab.guru)
+    - cron: "0 0 1/7 * *"
 
 jobs:
 
@@ -14,15 +13,21 @@ jobs:
     name: Checks
     uses: ./.github/workflows/checks.yml
     secrets: inherit
+    permissions:
+      contents: read
 
   metrics:
     needs: [ ci-job ]
     uses: ./.github/workflows/report.yml
+    permissions:
+      contents: read
 
   gate-1:
     name: Gate 1 - Regular CI
     needs: [ ci-job ]
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     steps:
       - name: Branch Protection
         run: true
@@ -30,6 +35,8 @@ jobs:
   slow-test-detection:
     name: Run Slow or Expensive Tests (e.g. SaaS)?
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     steps:
       - name: Detect Slow Tests
         run: true
@@ -41,6 +48,8 @@ jobs:
     uses: ./.github/workflows/run-tests.yml
     needs: [ slow-test-detection ]
     secrets: inherit
+    permissions:
+      contents: read
     with:
       slow-tests: true
       python-version: "3.10"
@@ -49,6 +58,8 @@ jobs:
     name: Gate 2 - Allow Merge
     runs-on: ubuntu-24.04
     needs: [ run-slow-tests ]
+    permissions:
+      contents: read
     steps:
       - name: Branch Protection
         run: true
