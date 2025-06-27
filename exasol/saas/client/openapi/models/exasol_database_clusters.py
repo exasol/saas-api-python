@@ -1,4 +1,7 @@
-from collections.abc import Mapping
+from collections.abc import (
+    Generator,
+    Mapping,
+)
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -36,6 +39,7 @@ class ExasolDatabaseClusters:
         running = self.running
 
         field_dict: dict[str, Any] = {}
+
         field_dict.update(
             {
                 "total": total,

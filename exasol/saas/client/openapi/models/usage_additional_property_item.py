@@ -1,4 +1,7 @@
-from collections.abc import Mapping
+from collections.abc import (
+    Generator,
+    Mapping,
+)
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -55,6 +58,7 @@ class UsageAdditionalPropertyItem:
         used_storage = self.used_storage
 
         field_dict: dict[str, Any] = {}
+
         field_dict.update(
             {
                 "id": id,

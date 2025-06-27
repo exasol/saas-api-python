@@ -1,4 +1,7 @@
-from collections.abc import Mapping
+from collections.abc import (
+    Generator,
+    Mapping,
+)
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -44,6 +47,7 @@ class ExtensionVersion:
         installed = self.installed
 
         field_dict: dict[str, Any] = {}
+
         field_dict.update(
             {
                 "version": version,

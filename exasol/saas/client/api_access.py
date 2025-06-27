@@ -4,6 +4,7 @@ import datetime as dt
 import getpass
 import logging
 import time
+from collections.abc import Iterable
 from contextlib import contextmanager
 from datetime import (
     datetime,
@@ -11,7 +12,6 @@ from datetime import (
 )
 from typing import (
     Any,
-    Iterable,
     List,
     Optional,
 )

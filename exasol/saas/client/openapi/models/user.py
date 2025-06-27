@@ -1,5 +1,8 @@
 import datetime
-from collections.abc import Mapping
+from collections.abc import (
+    Generator,
+    Mapping,
+)
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -93,6 +96,7 @@ class User:
         db_username = self.db_username
 
         field_dict: dict[str, Any] = {}
+
         field_dict.update(
             {
                 "email": email,

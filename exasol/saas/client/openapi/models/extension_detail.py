@@ -1,4 +1,7 @@
-from collections.abc import Mapping
+from collections.abc import (
+    Generator,
+    Mapping,
+)
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -52,6 +55,7 @@ class ExtensionDetail:
             parameter_definitions.append(parameter_definitions_item)
 
         field_dict: dict[str, Any] = {}
+
         field_dict.update(
             {
                 "id": id,
