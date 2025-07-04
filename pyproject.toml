@@ -1,6 +1,7 @@
 [project]
 name = "exasol-saas-api"
 version = "2.2.0"
+requires-python = ">=3.10.0,<4.0"
 description = "API enabling Python applications connecting to Exasol database SaaS instances and using their SaaS services"
 authors = [
     {name="Christoph Kuhnke", email="christoph.kuhnke@exasol.com"},
@@ -10,7 +11,7 @@ maintainers = [
 ]
 readme = "README.md"
 license = "MIT"
-dynamic = ["classifiers"]
+dynamic = ["classifiers", "dependencies"]
 
 [project.urls]
 Homepage = "https://github.com/exasol/saas-api-python"
@@ -28,7 +29,6 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.10.0"
 requests = "^2.32.4"
 types-requests = "^2.31.0.6"
 ifaddr = "^0.2.0"
@@ -47,7 +47,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1.1"
 pytest-mock = "^3.7.0"
-exasol-toolbox = "^1.5.0"
+exasol-toolbox = "^1.6.0"
 openapi-python-client = ">=0.21.5"
 pyexasol = ">=0.25.0"
 toml = "^0.10.2"
