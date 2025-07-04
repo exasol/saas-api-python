@@ -10,11 +10,7 @@ from datetime import (
     datetime,
     timedelta,
 )
-from typing import (
-    Any,
-    List,
-    Optional,
-)
+from typing import Any
 
 from tenacity import (
     TryAgain,
@@ -84,9 +80,9 @@ class DatabaseDeleteTimeout(Exception):
 
 
 def create_saas_client(
-    host: str,
-    pat: str,
-    raise_on_unexpected_status: bool = True,
+        host: str,
+        pat: str,
+        raise_on_unexpected_status: bool = True,
 ) -> openapi.AuthenticatedClient:
     return openapi.AuthenticatedClient(
         base_url=host,
@@ -96,9 +92,9 @@ def create_saas_client(
 
 
 def _get_database_id(
-    account_id: str,
-    client: openapi.AuthenticatedClient,
-    database_name: str,
+        account_id: str,
+        client: openapi.AuthenticatedClient,
+        database_name: str,
 ) -> str:
     """
     Finds the database id, given the database name.
@@ -107,8 +103,8 @@ def _get_database_id(
     dbs = list(
         filter(
             lambda db: (db.name == database_name)  # type: ignore
-            and (db.deleted_at is UNSET)  # type: ignore
-            and (db.deleted_by is UNSET),
+                       and (db.deleted_at is UNSET)  # type: ignore
+                       and (db.deleted_by is UNSET),
             dbs,  # type: ignore
         )
     )  # type: ignore
@@ -118,10 +114,10 @@ def _get_database_id(
 
 
 def get_database_id(
-    host: str,
-    account_id: str,
-    pat: str,
-    database_name: str,
+        host: str,
+        account_id: str,
+        pat: str,
+        database_name: str,
 ) -> str:
     """
     Finds the database id, given the database name.
@@ -137,11 +133,11 @@ def get_database_id(
 
 
 def get_connection_params(
-    host: str,
-    account_id: str,
-    pat: str,
-    database_id: str | None = None,
-    database_name: str | None = None,
+        host: str,
+        account_id: str,
+        pat: str,
+        database_id: str | None = None,
+        database_name: str | None = None,
 ) -> dict[str, Any]:
     """
     Gets the database connection parameters, such as those required by pyexasol:
@@ -173,7 +169,8 @@ def get_connection_params(
                 account_id, client, database_name=database_name
             )
         clusters = list_clusters.sync(account_id, database_id, client=client)
-        cluster_id = next(filter(lambda cl: cl.main_cluster, clusters)).id  # type: ignore
+        cluster_id = next(
+            filter(lambda cl: cl.main_cluster, clusters)).id  # type: ignore
         connections = get_cluster_connection.sync(
             account_id, database_id, cluster_id, client=client
         )
@@ -199,11 +196,11 @@ class OpenApiAccess:
         self._account_id = account_id
 
     def create_database(
-        self,
-        name: str,
-        cluster_size: str = "XS",
-        region: str = "eu-central-1",
-        idle_time: timedelta | None = None,
+            self,
+            name: str,
+            cluster_size: str = "XS",
+            region: str = "eu-central-1",
+            idle_time: timedelta | None = None,
     ) -> openapi.models.exasol_database.ExasolDatabase | None:
         def minutes(x: timedelta) -> int:
             return x.seconds // 60
@@ -237,10 +234,10 @@ class OpenApiAccess:
         self._client.raise_on_unexpected_status = before
 
     def wait_until_deleted(
-        self,
-        database_id: str,
-        timeout: timedelta = timedelta(seconds=1),
-        interval: timedelta = timedelta(minutes=1),
+            self,
+            database_id: str,
+            timeout: timedelta = timedelta(seconds=1),
+            interval: timedelta = timedelta(minutes=1),
     ):
         @retry(wait=wait_fixed(interval), stop=stop_after_delay(timeout))
         def still_exists() -> bool:
@@ -264,11 +261,11 @@ class OpenApiAccess:
 
     @contextmanager
     def database(
-        self,
-        name: str,
-        keep: bool = False,
-        ignore_delete_failure: bool = False,
-        idle_time: timedelta | None = None,
+            self,
+            name: str,
+            keep: bool = False,
+            ignore_delete_failure: bool = False,
+            idle_time: timedelta | None = None,
     ):
         db = None
         start = datetime.now()
@@ -291,8 +288,8 @@ class OpenApiAccess:
                 LOG.info(f"Keeping database {db_repr} as keep = {keep}")
 
     def get_database(
-        self,
-        database_id: str,
+            self,
+            database_id: str,
     ) -> openapi.models.exasol_database.ExasolDatabase | None:
         return get_database.sync(
             self._account_id,
@@ -301,10 +298,10 @@ class OpenApiAccess:
         )
 
     def wait_until_running(
-        self,
-        database_id: str,
-        timeout: timedelta = timedelta(minutes=30),
-        interval: timedelta = timedelta(minutes=2),
+            self,
+            database_id: str,
+            timeout: timedelta = timedelta(minutes=30),
+            interval: timedelta = timedelta(minutes=2),
     ):
         success = [
             Status.RUNNING,
@@ -322,8 +319,8 @@ class OpenApiAccess:
             raise DatabaseStartupFailure()
 
     def clusters(
-        self,
-        database_id: str,
+            self,
+            database_id: str,
     ) -> list[openapi.models.Cluster] | None:
         return list_clusters.sync(
             self._account_id,
@@ -332,9 +329,9 @@ class OpenApiAccess:
         )
 
     def get_connection(
-        self,
-        database_id: str,
-        cluster_id: str,
+            self,
+            database_id: str,
+            cluster_id: str,
     ) -> openapi.models.ClusterConnection | None:
         return get_cluster_connection.sync(
             self._account_id,
@@ -345,17 +342,17 @@ class OpenApiAccess:
 
     def list_allowed_ip_ids(self) -> Iterable[str]:
         ips = (
-            list_allowed_i_ps.sync(
-                self._account_id,
-                client=self._client,
-            )
-            or []
+                list_allowed_i_ps.sync(
+                    self._account_id,
+                    client=self._client,
+                )
+                or []
         )
         return (x.id for x in ips)
 
     def add_allowed_ip(
-        self,
-        cidr_ip: str = "0.0.0.0/0",
+            self,
+            cidr_ip: str = "0.0.0.0/0",
     ) -> openapi.models.allowed_ip.AllowedIP | None:
         """
         Suggested values for cidr_ip:
@@ -379,10 +376,10 @@ class OpenApiAccess:
 
     @contextmanager
     def allowed_ip(
-        self,
-        cidr_ip: str = "0.0.0.0/0",
-        keep: bool = False,
-        ignore_delete_failure: bool = False,
+            self,
+            cidr_ip: str = "0.0.0.0/0",
+            keep: bool = False,
+            ignore_delete_failure: bool = False,
     ):
         ip = None
         try:
