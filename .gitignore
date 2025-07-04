@@ -6,3 +6,4 @@ __pycache__
 /.lint.json
 /.coverage
 TAGS
+.sonar

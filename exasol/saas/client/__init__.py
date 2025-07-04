@@ -2,9 +2,7 @@
 Package openapi contains the API generated from the JSON definition.
 """
 
-from dataclasses import dataclass
 from datetime import (
-    datetime,
     timedelta,
 )
 from typing import Final

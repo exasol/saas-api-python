@@ -16,13 +16,6 @@ jobs:
     permissions:
       contents: read
 
-  metrics:
-    needs: [ ci-job ]
-    uses: ./.github/workflows/report.yml
-    secrets: inherit
-    permissions:
-      contents: read
-
   gate-1:
     name: Gate 1 - Regular CI
     needs: [ ci-job ]
@@ -54,6 +47,13 @@ jobs:
     with:
       slow-tests: true
       python-version: "3.10"
+
+  metrics:
+    needs: [ ci-job, run-slow-tests ]
+    uses: ./.github/workflows/report.yml
+    secrets: inherit
+    permissions:
+      contents: read
 
   gate-2:
     name: Gate 2 - Allow Merge

@@ -10,11 +10,7 @@ from datetime import (
     datetime,
     timedelta,
 )
-from typing import (
-    Any,
-    List,
-    Optional,
-)
+from typing import Any
 
 from tenacity import (
     TryAgain,
@@ -173,7 +169,9 @@ def get_connection_params(
                 account_id, client, database_name=database_name
             )
         clusters = list_clusters.sync(account_id, database_id, client=client)
-        cluster_id = next(filter(lambda cl: cl.main_cluster, clusters)).id  # type: ignore
+        cluster_id = next(
+            filter(lambda cl: cl.main_cluster, clusters)  # type: ignore
+        ).id
         connections = get_cluster_connection.sync(
             account_id, database_id, cluster_id, client=client
         )
