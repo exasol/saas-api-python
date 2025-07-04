@@ -114,3 +114,9 @@ max-module-lines = 800
 
 [tool.poetry.scripts]
 tbx = 'exasol.toolbox.tools.tbx:CLI'
+
+[tool.sonar]
+projectKey = "com.exasol:saas-api-python"
+hostUrl = "https://sonarcloud.io"
+organization = "exasol"
+exclusions = "exasol/saas/client/openapi/*"
