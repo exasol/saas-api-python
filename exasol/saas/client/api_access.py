@@ -170,8 +170,8 @@ def get_connection_params(
             )
         clusters = list_clusters.sync(account_id, database_id, client=client)
         cluster_id = next(
-            filter(lambda cl: cl.main_cluster, clusters)
-        ).id  # type: ignore
+            filter(lambda cl: cl.main_cluster, clusters)  # type: ignore
+        ).id
         connections = get_cluster_connection.sync(
             account_id, database_id, cluster_id, client=client
         )
