@@ -119,4 +119,4 @@ tbx = 'exasol.toolbox.tools.tbx:CLI'
 projectKey = "com.exasol:saas-api-python"
 hostUrl = "https://sonarcloud.io"
 organization = "exasol"
-exclusions = "exasol/saas/client/openapi/*"
+exclusions = "exasol/saas/client/openapi/**/*"
