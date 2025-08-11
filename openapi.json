@@ -6,7 +6,7 @@
         "version": "1.0",
         "download": {
             "source": "https://cloud.exasol.com/openapi.json",
-            "timestamp": "2025-06-26T11:37:16.532441+00:00"
+            "timestamp": "2025-08-11T06:11:17.721349+00:00"
         }
     },
     "servers": [
@@ -1634,6 +1634,103 @@
                 "responses": {
                     "204": {
                         "description": "No content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Databases"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/dlhc-activate": {
+            "get": {
+                "operationId": "GetDlhcActivateStatus",
+                "responses": {
+                    "200": {
+                        "description": "dlhc activate status",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DlhcActivateStatus"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Databases"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            },
+            "post": {
+                "operationId": "DlhcActivate",
+                "responses": {
+                    "202": {
+                        "description": "Request accepted for processing; activation is in progress"
                     },
                     "default": {
                         "description": "Default api error",
@@ -3322,6 +3419,21 @@
                     },
                     "updatePossible": {
                         "type": "boolean"
+                    }
+                },
+                "type": "object"
+            },
+            "DlhcActivateStatus": {
+                "required": [
+                    "status",
+                    "created_at"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string"
                     }
                 },
                 "type": "object"

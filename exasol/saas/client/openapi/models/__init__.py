@@ -18,6 +18,7 @@ from .create_database_initial_cluster import CreateDatabaseInitialCluster
 from .create_extension_instance import CreateExtensionInstance
 from .database_settings import DatabaseSettings
 from .database_upgrade_info import DatabaseUpgradeInfo
+from .dlhc_activate_status import DlhcActivateStatus
 from .download_file import DownloadFile
 from .exasol_database import ExasolDatabase
 from .exasol_database_clusters import ExasolDatabaseClusters
@@ -72,6 +73,7 @@ __all__ = (
     "CreateExtensionInstance",
     "DatabaseSettings",
     "DatabaseUpgradeInfo",
+    "DlhcActivateStatus",
     "DownloadFile",
     "ExasolDatabase",
     "ExasolDatabaseClusters",
