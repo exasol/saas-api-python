@@ -6,7 +6,7 @@
         "version": "1.0",
         "download": {
             "source": "https://cloud.exasol.com/openapi.json",
-            "timestamp": "2025-08-11T06:11:17.721349+00:00"
+            "timestamp": "2025-09-22T08:35:51.065579+00:00"
         }
     },
     "servers": [
@@ -3267,8 +3267,7 @@
                     "provider",
                     "region",
                     "createdAt",
-                    "createdBy",
-                    "settings"
+                    "createdBy"
                 ],
                 "properties": {
                     "status": {
@@ -3336,38 +3335,6 @@
                     "deletedAt": {
                         "type": "string",
                         "format": "date-time"
-                    },
-                    "settings": {
-                        "required": [
-                            "offloadEnabled",
-                            "autoUpdatesEnabled",
-                            "autoUpdatesHardDisabled",
-                            "numNodes",
-                            "streamType",
-                            "streamDescription"
-                        ],
-                        "properties": {
-                            "offloadEnabled": {
-                                "type": "boolean"
-                            },
-                            "autoUpdatesEnabled": {
-                                "type": "boolean"
-                            },
-                            "autoUpdatesHardDisabled": {
-                                "type": "boolean"
-                            },
-                            "numNodes": {
-                                "type": "integer"
-                            },
-                            "streamType": {
-                                "type": "string"
-                            },
-                            "streamDescription": {
-                                "type": "string"
-                            }
-                        },
-                        "additionalProperties": false,
-                        "type": "object"
                     }
                 },
                 "type": "object"

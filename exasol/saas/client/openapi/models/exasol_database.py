@@ -29,7 +29,6 @@ if TYPE_CHECKING:
     from ..models.exasol_database_integrations_item import (
         ExasolDatabaseIntegrationsItem,
     )
-    from ..models.exasol_database_settings import ExasolDatabaseSettings
 
 
 T = TypeVar("T", bound="ExasolDatabase")
@@ -47,7 +46,6 @@ class ExasolDatabase:
         region (str):
         created_at (datetime.datetime):
         created_by (str):
-        settings (ExasolDatabaseSettings):
         integrations (Union[Unset, list['ExasolDatabaseIntegrationsItem']]):
         deleted_by (Union[Unset, str]):
         deleted_at (Union[Unset, datetime.datetime]):
@@ -61,7 +59,6 @@ class ExasolDatabase:
     region: str
     created_at: datetime.datetime
     created_by: str
-    settings: "ExasolDatabaseSettings"
     integrations: Union[Unset, list["ExasolDatabaseIntegrationsItem"]] = UNSET
     deleted_by: Union[Unset, str] = UNSET
     deleted_at: Union[Unset, datetime.datetime] = UNSET
@@ -72,7 +69,6 @@ class ExasolDatabase:
         from ..models.exasol_database_integrations_item import (
             ExasolDatabaseIntegrationsItem,
         )
-        from ..models.exasol_database_settings import ExasolDatabaseSettings
 
         status = self.status.value
 
@@ -89,8 +85,6 @@ class ExasolDatabase:
         created_at = self.created_at.isoformat()
 
         created_by = self.created_by
-
-        settings = self.settings.to_dict()
 
         integrations: Union[Unset, list[dict[str, Any]]] = UNSET
         if not isinstance(self.integrations, Unset):
@@ -117,7 +111,6 @@ class ExasolDatabase:
                 "region": region,
                 "createdAt": created_at,
                 "createdBy": created_by,
-                "settings": settings,
             }
         )
         if integrations is not UNSET:
@@ -135,7 +128,6 @@ class ExasolDatabase:
         from ..models.exasol_database_integrations_item import (
             ExasolDatabaseIntegrationsItem,
         )
-        from ..models.exasol_database_settings import ExasolDatabaseSettings
 
         d = dict(src_dict)
         status = Status(d.pop("status"))
@@ -153,8 +145,6 @@ class ExasolDatabase:
         created_at = isoparse(d.pop("createdAt"))
 
         created_by = d.pop("createdBy")
-
-        settings = ExasolDatabaseSettings.from_dict(d.pop("settings"))
 
         integrations = []
         _integrations = d.pop("integrations", UNSET)
@@ -183,7 +173,6 @@ class ExasolDatabase:
             region=region,
             created_at=created_at,
             created_by=created_by,
-            settings=settings,
             integrations=integrations,
             deleted_by=deleted_by,
             deleted_at=deleted_at,
