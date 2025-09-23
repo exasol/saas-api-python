@@ -23,7 +23,6 @@ from .download_file import DownloadFile
 from .exasol_database import ExasolDatabase
 from .exasol_database_clusters import ExasolDatabaseClusters
 from .exasol_database_integrations_item import ExasolDatabaseIntegrationsItem
-from .exasol_database_settings import ExasolDatabaseSettings
 from .extension import Extension
 from .extension_detail import ExtensionDetail
 from .extension_instance import ExtensionInstance
@@ -78,7 +77,6 @@ __all__ = (
     "ExasolDatabase",
     "ExasolDatabaseClusters",
     "ExasolDatabaseIntegrationsItem",
-    "ExasolDatabaseSettings",
     "Extension",
     "ExtensionDetail",
     "ExtensionInstance",
