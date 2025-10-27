@@ -38,7 +38,7 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Union[ApiError, list["ExtensionInstance"]]]:
+) -> Union[ApiError, list["ExtensionInstance"]]:
     if response.status_code == 200:
         response_200 = []
         _response_200 = response.json()
@@ -48,14 +48,15 @@ def _parse_response(
             response_200.append(response_200_item)
 
         return response_200
+
     if response.status_code == 422:
         response_422 = ApiError.from_dict(response.json())
 
         return response_422
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+
+    response_default = ApiError.from_dict(response.json())
+
+    return response_default
 
 
 def _build_response(

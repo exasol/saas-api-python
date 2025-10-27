@@ -38,7 +38,10 @@ from exasol.saas.client.openapi.api.security import (
     delete_allowed_ip,
     list_allowed_i_ps,
 )
-from exasol.saas.client.openapi.models.status import Status
+from exasol.saas.client.openapi.models import (
+    ApiError,
+    Status,
+)
 from exasol.saas.client.openapi.types import UNSET
 
 LOG = logging.getLogger(__name__)
@@ -77,6 +80,11 @@ class DatabaseDeleteTimeout(Exception):
     If deletion of a SaaS database instance was requested but during the
     specified timeout it was still reported in the list of existing databases.
     """
+
+
+class OpenApiError(RuntimeError):
+    def __init__(self, message: str, error: ApiError | None):
+        super().__init__(f"{message}: {error.message}." if error else message)
 
 
 def create_saas_client(
@@ -172,17 +180,21 @@ def get_connection_params(
         cluster_id = next(
             filter(lambda cl: cl.main_cluster, clusters)  # type: ignore
         ).id
-        connections = get_cluster_connection.sync(
+        connection = get_cluster_connection.sync(
             account_id, database_id, cluster_id, client=client
         )
-        if connections is None:
-            raise RuntimeError("Failed to get the SaaS connection data.")
-        connection_params = {
-            "dsn": f"{connections.dns}:{connections.port}",
-            "user": connections.db_username,
+        if connection is None or isinstance(connection, ApiError):
+            raise OpenApiError(
+                "Failed to get the connection data to"
+                f" host {host}, account {account_id},"
+                f" database with ID {database_id} named {database_name}",
+                connection,
+            )
+        return {
+            "dsn": f"{connection.dns}:{connection.port}",
+            "user": connection.db_username,
             "password": pat,
         }
-        return connection_params
 
 
 class OpenApiAccess:
@@ -200,9 +212,9 @@ class OpenApiAccess:
         self,
         name: str,
         cluster_size: str = "XS",
-        region: str = "eu-central-1",
         idle_time: timedelta | None = None,
-    ) -> openapi.models.exasol_database.ExasolDatabase | None:
+        region: str = "eu-central-1",
+    ) -> openapi.models.ExasolDatabase | None:
         def minutes(x: timedelta) -> int:
             return x.seconds // 60
 
@@ -216,7 +228,7 @@ class OpenApiAccess:
             ),
         )
         LOG.info(f"Creating database {name}")
-        return create_database.sync(
+        result = create_database.sync(
             self._account_id,
             client=self._client,
             body=openapi.models.CreateDatabase(
@@ -227,6 +239,9 @@ class OpenApiAccess:
                 stream_type="feature-release",
             ),
         )
+        if isinstance(result, ApiError):
+            raise OpenApiError(f"Failed to create database {name}", result)
+        return result
 
     @contextmanager
     def _ignore_failures(self, ignore: bool = False):
@@ -259,6 +274,8 @@ class OpenApiAccess:
 
     def list_database_ids(self) -> Iterable[str]:
         dbs = list_databases.sync(self._account_id, client=self._client) or []
+        if isinstance(dbs, ApiError):
+            raise OpenApiError("Failed to list databases", dbs)
         return (db.id for db in dbs)
 
     @contextmanager
@@ -292,12 +309,15 @@ class OpenApiAccess:
     def get_database(
         self,
         database_id: str,
-    ) -> openapi.models.exasol_database.ExasolDatabase | None:
-        return get_database.sync(
+    ) -> openapi.models.ExasolDatabase | None:
+        result = get_database.sync(
             self._account_id,
             database_id,
             client=self._client,
         )
+        if isinstance(result, ApiError):
+            raise OpenApiError(f"Failed to get database {database_id}", result)
+        return result
 
     def wait_until_running(
         self,
@@ -324,23 +344,35 @@ class OpenApiAccess:
         self,
         database_id: str,
     ) -> list[openapi.models.Cluster] | None:
-        return list_clusters.sync(
+        result = list_clusters.sync(
             self._account_id,
             database_id,
             client=self._client,
         )
+        if isinstance(result, ApiError):
+            raise OpenApiError(
+                f"Failed to list clusters of database {database_id}", result
+            )
+        return result
 
     def get_connection(
         self,
         database_id: str,
         cluster_id: str,
     ) -> openapi.models.ClusterConnection | None:
-        return get_cluster_connection.sync(
+        result = get_cluster_connection.sync(
             self._account_id,
             database_id,
             cluster_id,
             client=self._client,
         )
+        if isinstance(result, ApiError):
+            raise OpenApiError(
+                "Failed to retrieve a connection to "
+                f"database {database_id} cluster {cluster_id}",
+                result,
+            )
+        return result
 
     def list_allowed_ip_ids(self) -> Iterable[str]:
         ips = (
@@ -350,12 +382,14 @@ class OpenApiAccess:
             )
             or []
         )
+        if isinstance(ips, ApiError):
+            raise OpenApiError("Failed to retrieve the list of allowed ips", ips)
         return (x.id for x in ips)
 
     def add_allowed_ip(
         self,
         cidr_ip: str = "0.0.0.0/0",
-    ) -> openapi.models.allowed_ip.AllowedIP | None:
+    ) -> openapi.models.AllowedIP | None:
         """
         Suggested values for cidr_ip:
         * 185.17.207.78/32
@@ -366,11 +400,14 @@ class OpenApiAccess:
             name=timestamp_name(),
             cidr_ip=cidr_ip,
         )
-        return add_allowed_ip.sync(
+        result = add_allowed_ip.sync(
             self._account_id,
             client=self._client,
             body=rule,
         )
+        if isinstance(result, ApiError):
+            raise OpenApiError(f"Failed to add allowed IP address {cidr_ip}", result)
+        return result
 
     def delete_allowed_ip(self, id: str, ignore_failures=False):
         with self._ignore_failures(ignore_failures) as client:
