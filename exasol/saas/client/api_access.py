@@ -84,7 +84,7 @@ class DatabaseDeleteTimeout(Exception):
 
 class OpenApiError(RuntimeError):
     def __init__(self, message: str, error: ApiError | None):
-        super().__init__(f'{message}: {error.message}.' if error else message)
+        super().__init__(f"{message}: {error.message}." if error else message)
 
 
 def create_saas_client(
@@ -188,7 +188,7 @@ def get_connection_params(
                 "Failed to get the connection data to"
                 f" host {host}, account {account_id},"
                 f" database with ID {database_id} named {database_name}",
-                connection
+                connection,
             )
         return {
             "dsn": f"{connection.dns}:{connection.port}",
