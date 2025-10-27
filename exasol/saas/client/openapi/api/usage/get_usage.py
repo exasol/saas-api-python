@@ -13,6 +13,7 @@ from ...client import (
     AuthenticatedClient,
     Client,
 )
+from ...models.api_error import ApiError
 from ...models.get_usage_type import GetUsageType
 from ...models.usage import Usage
 from ...types import (
@@ -52,20 +53,20 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Usage]:
+) -> Union[ApiError, Usage]:
     if response.status_code == 200:
         response_200 = Usage.from_dict(response.json())
 
         return response_200
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+
+    response_default = ApiError.from_dict(response.json())
+
+    return response_default
 
 
 def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Usage]:
+) -> Response[Union[ApiError, Usage]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -80,7 +81,7 @@ def sync_detailed(
     client: AuthenticatedClient,
     year_month: Union[Unset, str] = UNSET,
     type_: Union[Unset, GetUsageType] = UNSET,
-) -> Response[Usage]:
+) -> Response[Union[ApiError, Usage]]:
     """
     Args:
         account_id (str):
@@ -92,7 +93,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Usage]
+        Response[Union[ApiError, Usage]]
     """
 
     kwargs = _get_kwargs(
@@ -114,7 +115,7 @@ def sync(
     client: AuthenticatedClient,
     year_month: Union[Unset, str] = UNSET,
     type_: Union[Unset, GetUsageType] = UNSET,
-) -> Optional[Usage]:
+) -> Optional[Union[ApiError, Usage]]:
     """
     Args:
         account_id (str):
@@ -126,7 +127,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Usage
+        Union[ApiError, Usage]
     """
 
     return sync_detailed(
@@ -143,7 +144,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     year_month: Union[Unset, str] = UNSET,
     type_: Union[Unset, GetUsageType] = UNSET,
-) -> Response[Usage]:
+) -> Response[Union[ApiError, Usage]]:
     """
     Args:
         account_id (str):
@@ -155,7 +156,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Usage]
+        Response[Union[ApiError, Usage]]
     """
 
     kwargs = _get_kwargs(
@@ -175,7 +176,7 @@ async def asyncio(
     client: AuthenticatedClient,
     year_month: Union[Unset, str] = UNSET,
     type_: Union[Unset, GetUsageType] = UNSET,
-) -> Optional[Usage]:
+) -> Optional[Union[ApiError, Usage]]:
     """
     Args:
         account_id (str):
@@ -187,7 +188,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Usage
+        Union[ApiError, Usage]
     """
 
     return (

@@ -13,6 +13,7 @@ from ...client import (
     AuthenticatedClient,
     Client,
 )
+from ...models.api_error import ApiError
 from ...types import (
     UNSET,
     Response,
@@ -34,18 +35,19 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Any]:
+) -> Union[Any, ApiError]:
     if response.status_code == 202:
-        return None
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+        response_202 = cast(Any, None)
+        return response_202
+
+    response_default = ApiError.from_dict(response.json())
+
+    return response_default
 
 
 def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Any]:
+) -> Response[Union[Any, ApiError]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -59,7 +61,7 @@ def sync_detailed(
     database_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[Any]:
+) -> Response[Union[Any, ApiError]]:
     """
     Args:
         account_id (str):
@@ -70,7 +72,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any]
+        Response[Union[Any, ApiError]]
     """
 
     kwargs = _get_kwargs(
@@ -85,12 +87,12 @@ def sync_detailed(
     return _build_response(client=client, response=response)
 
 
-async def asyncio_detailed(
+def sync(
     account_id: str,
     database_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[Any]:
+) -> Optional[Union[Any, ApiError]]:
     """
     Args:
         account_id (str):
@@ -101,7 +103,33 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any]
+        Union[Any, ApiError]
+    """
+
+    return sync_detailed(
+        account_id=account_id,
+        database_id=database_id,
+        client=client,
+    ).parsed
+
+
+async def asyncio_detailed(
+    account_id: str,
+    database_id: str,
+    *,
+    client: AuthenticatedClient,
+) -> Response[Union[Any, ApiError]]:
+    """
+    Args:
+        account_id (str):
+        database_id (str):
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Response[Union[Any, ApiError]]
     """
 
     kwargs = _get_kwargs(
@@ -112,3 +140,31 @@ async def asyncio_detailed(
     response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
+
+async def asyncio(
+    account_id: str,
+    database_id: str,
+    *,
+    client: AuthenticatedClient,
+) -> Optional[Union[Any, ApiError]]:
+    """
+    Args:
+        account_id (str):
+        database_id (str):
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Union[Any, ApiError]
+    """
+
+    return (
+        await asyncio_detailed(
+            account_id=account_id,
+            database_id=database_id,
+            client=client,
+        )
+    ).parsed

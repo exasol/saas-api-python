@@ -13,6 +13,7 @@ from ...client import (
     AuthenticatedClient,
     Client,
 )
+from ...models.api_error import ApiError
 from ...models.create_database import CreateDatabase
 from ...models.exasol_database import ExasolDatabase
 from ...types import (
@@ -43,20 +44,20 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[ExasolDatabase]:
+) -> Union[ApiError, ExasolDatabase]:
     if response.status_code == 200:
         response_200 = ExasolDatabase.from_dict(response.json())
 
         return response_200
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+
+    response_default = ApiError.from_dict(response.json())
+
+    return response_default
 
 
 def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[ExasolDatabase]:
+) -> Response[Union[ApiError, ExasolDatabase]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -70,7 +71,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     body: CreateDatabase,
-) -> Response[ExasolDatabase]:
+) -> Response[Union[ApiError, ExasolDatabase]]:
     """
     Args:
         account_id (str):
@@ -81,7 +82,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ExasolDatabase]
+        Response[Union[ApiError, ExasolDatabase]]
     """
 
     kwargs = _get_kwargs(
@@ -101,7 +102,7 @@ def sync(
     *,
     client: AuthenticatedClient,
     body: CreateDatabase,
-) -> Optional[ExasolDatabase]:
+) -> Optional[Union[ApiError, ExasolDatabase]]:
     """
     Args:
         account_id (str):
@@ -112,7 +113,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ExasolDatabase
+        Union[ApiError, ExasolDatabase]
     """
 
     return sync_detailed(
@@ -127,7 +128,7 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
     body: CreateDatabase,
-) -> Response[ExasolDatabase]:
+) -> Response[Union[ApiError, ExasolDatabase]]:
     """
     Args:
         account_id (str):
@@ -138,7 +139,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ExasolDatabase]
+        Response[Union[ApiError, ExasolDatabase]]
     """
 
     kwargs = _get_kwargs(
@@ -156,7 +157,7 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
     body: CreateDatabase,
-) -> Optional[ExasolDatabase]:
+) -> Optional[Union[ApiError, ExasolDatabase]]:
     """
     Args:
         account_id (str):
@@ -167,7 +168,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ExasolDatabase
+        Union[ApiError, ExasolDatabase]
     """
 
     return (

@@ -14,6 +14,7 @@ from ...client import (
     Client,
 )
 from ...models.api_error import ApiError
+from ...models.update_schedule_state import UpdateScheduleState
 from ...types import (
     UNSET,
     Response,
@@ -22,14 +23,23 @@ from ...types import (
 
 def _get_kwargs(
     account_id: str,
-    allowlist_ip_id: str,
+    database_id: str,
+    action_id: str,
+    *,
+    body: UpdateScheduleState,
 ) -> dict[str, Any]:
+    headers: dict[str, Any] = {}
 
     _kwargs: dict[str, Any] = {
-        "method": "delete",
-        "url": f"/api/v1/accounts/{account_id}/security/allowlist_ip/{allowlist_ip_id}",
+        "method": "patch",
+        "url": f"/api/v1/accounts/{account_id}/databases/{database_id}/schedules/{action_id}/state",
     }
 
+    _kwargs["json"] = body.value
+
+    headers["Content-Type"] = "application/json"
+
+    _kwargs["headers"] = headers
     return _kwargs
 
 
@@ -58,14 +68,18 @@ def _build_response(
 
 def sync_detailed(
     account_id: str,
-    allowlist_ip_id: str,
+    database_id: str,
+    action_id: str,
     *,
     client: AuthenticatedClient,
+    body: UpdateScheduleState,
 ) -> Response[Union[Any, ApiError]]:
     """
     Args:
         account_id (str):
-        allowlist_ip_id (str):
+        database_id (str):
+        action_id (str):
+        body (UpdateScheduleState):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -77,7 +91,9 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         account_id=account_id,
-        allowlist_ip_id=allowlist_ip_id,
+        database_id=database_id,
+        action_id=action_id,
+        body=body,
     )
 
     response = client.get_httpx_client().request(
@@ -89,14 +105,18 @@ def sync_detailed(
 
 def sync(
     account_id: str,
-    allowlist_ip_id: str,
+    database_id: str,
+    action_id: str,
     *,
     client: AuthenticatedClient,
+    body: UpdateScheduleState,
 ) -> Optional[Union[Any, ApiError]]:
     """
     Args:
         account_id (str):
-        allowlist_ip_id (str):
+        database_id (str):
+        action_id (str):
+        body (UpdateScheduleState):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -108,21 +128,27 @@ def sync(
 
     return sync_detailed(
         account_id=account_id,
-        allowlist_ip_id=allowlist_ip_id,
+        database_id=database_id,
+        action_id=action_id,
         client=client,
+        body=body,
     ).parsed
 
 
 async def asyncio_detailed(
     account_id: str,
-    allowlist_ip_id: str,
+    database_id: str,
+    action_id: str,
     *,
     client: AuthenticatedClient,
+    body: UpdateScheduleState,
 ) -> Response[Union[Any, ApiError]]:
     """
     Args:
         account_id (str):
-        allowlist_ip_id (str):
+        database_id (str):
+        action_id (str):
+        body (UpdateScheduleState):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -134,7 +160,9 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         account_id=account_id,
-        allowlist_ip_id=allowlist_ip_id,
+        database_id=database_id,
+        action_id=action_id,
+        body=body,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -144,14 +172,18 @@ async def asyncio_detailed(
 
 async def asyncio(
     account_id: str,
-    allowlist_ip_id: str,
+    database_id: str,
+    action_id: str,
     *,
     client: AuthenticatedClient,
+    body: UpdateScheduleState,
 ) -> Optional[Union[Any, ApiError]]:
     """
     Args:
         account_id (str):
-        allowlist_ip_id (str):
+        database_id (str):
+        action_id (str):
+        body (UpdateScheduleState):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -164,7 +196,9 @@ async def asyncio(
     return (
         await asyncio_detailed(
             account_id=account_id,
-            allowlist_ip_id=allowlist_ip_id,
+            database_id=database_id,
+            action_id=action_id,
             client=client,
+            body=body,
         )
     ).parsed

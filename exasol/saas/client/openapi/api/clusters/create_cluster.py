@@ -13,6 +13,7 @@ from ...client import (
     AuthenticatedClient,
     Client,
 )
+from ...models.api_error import ApiError
 from ...models.cluster import Cluster
 from ...models.create_cluster import CreateCluster
 from ...types import (
@@ -44,20 +45,20 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Cluster]:
+) -> Union[ApiError, Cluster]:
     if response.status_code == 200:
         response_200 = Cluster.from_dict(response.json())
 
         return response_200
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+
+    response_default = ApiError.from_dict(response.json())
+
+    return response_default
 
 
 def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Cluster]:
+) -> Response[Union[ApiError, Cluster]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -72,7 +73,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     body: CreateCluster,
-) -> Response[Cluster]:
+) -> Response[Union[ApiError, Cluster]]:
     """
     Args:
         account_id (str):
@@ -84,7 +85,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Cluster]
+        Response[Union[ApiError, Cluster]]
     """
 
     kwargs = _get_kwargs(
@@ -106,7 +107,7 @@ def sync(
     *,
     client: AuthenticatedClient,
     body: CreateCluster,
-) -> Optional[Cluster]:
+) -> Optional[Union[ApiError, Cluster]]:
     """
     Args:
         account_id (str):
@@ -118,7 +119,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Cluster
+        Union[ApiError, Cluster]
     """
 
     return sync_detailed(
@@ -135,7 +136,7 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
     body: CreateCluster,
-) -> Response[Cluster]:
+) -> Response[Union[ApiError, Cluster]]:
     """
     Args:
         account_id (str):
@@ -147,7 +148,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Cluster]
+        Response[Union[ApiError, Cluster]]
     """
 
     kwargs = _get_kwargs(
@@ -167,7 +168,7 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
     body: CreateCluster,
-) -> Optional[Cluster]:
+) -> Optional[Union[ApiError, Cluster]]:
     """
     Args:
         account_id (str):
@@ -179,7 +180,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Cluster
+        Union[ApiError, Cluster]
     """
 
     return (

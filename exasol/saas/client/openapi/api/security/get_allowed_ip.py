@@ -14,6 +14,7 @@ from ...client import (
     Client,
 )
 from ...models.allowed_ip import AllowedIP
+from ...models.api_error import ApiError
 from ...types import (
     UNSET,
     Response,
@@ -35,20 +36,20 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[AllowedIP]:
+) -> Union[AllowedIP, ApiError]:
     if response.status_code == 200:
         response_200 = AllowedIP.from_dict(response.json())
 
         return response_200
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+
+    response_default = ApiError.from_dict(response.json())
+
+    return response_default
 
 
 def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[AllowedIP]:
+) -> Response[Union[AllowedIP, ApiError]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -62,7 +63,7 @@ def sync_detailed(
     allowlist_ip_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[AllowedIP]:
+) -> Response[Union[AllowedIP, ApiError]]:
     """
     Args:
         account_id (str):
@@ -73,7 +74,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[AllowedIP]
+        Response[Union[AllowedIP, ApiError]]
     """
 
     kwargs = _get_kwargs(
@@ -93,7 +94,7 @@ def sync(
     allowlist_ip_id: str,
     *,
     client: AuthenticatedClient,
-) -> Optional[AllowedIP]:
+) -> Optional[Union[AllowedIP, ApiError]]:
     """
     Args:
         account_id (str):
@@ -104,7 +105,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        AllowedIP
+        Union[AllowedIP, ApiError]
     """
 
     return sync_detailed(
@@ -119,7 +120,7 @@ async def asyncio_detailed(
     allowlist_ip_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[AllowedIP]:
+) -> Response[Union[AllowedIP, ApiError]]:
     """
     Args:
         account_id (str):
@@ -130,7 +131,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[AllowedIP]
+        Response[Union[AllowedIP, ApiError]]
     """
 
     kwargs = _get_kwargs(
@@ -148,7 +149,7 @@ async def asyncio(
     allowlist_ip_id: str,
     *,
     client: AuthenticatedClient,
-) -> Optional[AllowedIP]:
+) -> Optional[Union[AllowedIP, ApiError]]:
     """
     Args:
         account_id (str):
@@ -159,7 +160,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        AllowedIP
+        Union[AllowedIP, ApiError]
     """
 
     return (
