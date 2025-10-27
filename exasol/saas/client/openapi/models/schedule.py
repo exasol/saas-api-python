@@ -17,6 +17,7 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 from ..models.schedule_action_type_0 import ScheduleActionType0
+from ..models.schedule_state import ScheduleState
 from ..types import (
     UNSET,
     Unset,
@@ -42,6 +43,7 @@ class Schedule:
         createdby_last_name (Union[Unset, str]):
         cluster_name (Union[Unset, str]):
         payload (Union['ClusterActionScale', 'ClusterActionStartStop', Unset]):
+        state (Union[Unset, ScheduleState]):
     """
 
     action: ScheduleActionType0
@@ -52,6 +54,7 @@ class Schedule:
     createdby_last_name: Union[Unset, str] = UNSET
     cluster_name: Union[Unset, str] = UNSET
     payload: Union["ClusterActionScale", "ClusterActionStartStop", Unset] = UNSET
+    state: Union[Unset, ScheduleState] = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.cluster_action_scale import ClusterActionScale
@@ -81,6 +84,10 @@ class Schedule:
         else:
             payload = self.payload.to_dict()
 
+        state: Union[Unset, str] = UNSET
+        if not isinstance(self.state, Unset):
+            state = self.state.value
+
         field_dict: dict[str, Any] = {}
 
         field_dict.update(
@@ -101,6 +108,8 @@ class Schedule:
             field_dict["clusterName"] = cluster_name
         if payload is not UNSET:
             field_dict["payload"] = payload
+        if state is not UNSET:
+            field_dict["state"] = state
 
         return field_dict
 
@@ -153,6 +162,13 @@ class Schedule:
 
         payload = _parse_payload(d.pop("payload", UNSET))
 
+        _state = d.pop("state", UNSET)
+        state: Union[Unset, ScheduleState]
+        if isinstance(_state, Unset):
+            state = UNSET
+        else:
+            state = ScheduleState(_state)
+
         schedule = cls(
             action=action,
             cron_rule=cron_rule,
@@ -162,6 +178,7 @@ class Schedule:
             createdby_last_name=createdby_last_name,
             cluster_name=cluster_name,
             payload=payload,
+            state=state,
         )
 
         return schedule
