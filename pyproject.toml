@@ -51,7 +51,7 @@ exasol-toolbox = "^1.6.0"
 # See https://github.com/exasol/saas-api-python/issues/120
 # for using openapi-python-client version >= 0.26
 openapi-python-client = ">=0.21.5, <0.26"
-pyexasol = ">=0.25.0, <2"
+pyexasol = ">=1.0.0, <2"
 toml = "^0.10.2"
 types-python-dateutil = "^2.9.0.20250516"
 
