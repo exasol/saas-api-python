@@ -38,12 +38,15 @@ from .region import Region
 from .scale_cluster import ScaleCluster
 from .schedule import Schedule
 from .schedule_action_type_0 import ScheduleActionType0
+from .schedule_state import ScheduleState
 from .set_auto_updates_database import SetAutoUpdatesDatabase
 from .status import Status
 from .update_allowed_ip import UpdateAllowedIP
 from .update_cluster import UpdateCluster
 from .update_database import UpdateDatabase
 from .update_profile import UpdateProfile
+from .update_schedule_cron_rule import UpdateScheduleCronRule
+from .update_schedule_state import UpdateScheduleState
 from .upload_file import UploadFile
 from .usage import Usage
 from .usage_additional_property_item import UsageAdditionalPropertyItem
@@ -92,12 +95,15 @@ __all__ = (
     "ScaleCluster",
     "Schedule",
     "ScheduleActionType0",
+    "ScheduleState",
     "SetAutoUpdatesDatabase",
     "Status",
     "UpdateAllowedIP",
     "UpdateCluster",
     "UpdateDatabase",
     "UpdateProfile",
+    "UpdateScheduleCronRule",
+    "UpdateScheduleState",
     "UploadFile",
     "Usage",
     "UsageAdditionalPropertyItem",

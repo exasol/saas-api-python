@@ -6,7 +6,7 @@
         "version": "1.0",
         "download": {
             "source": "https://cloud.exasol.com/openapi.json",
-            "timestamp": "2025-09-22T08:35:51.065579+00:00"
+            "timestamp": "2025-10-27T13:31:57.902966+00:00"
         }
     },
     "servers": [
@@ -2278,6 +2278,134 @@
                 ]
             }
         },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/schedules/{actionId}/state": {
+            "patch": {
+                "operationId": "UpdateScheduleState",
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Databases"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "actionId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateScheduleState"
+                            }
+                        }
+                    },
+                    "required": true
+                }
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/schedules/{actionId}/cronRule": {
+            "patch": {
+                "operationId": "UpdateScheduleCronRule",
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Databases"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "databaseId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "actionId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateScheduleCronRule"
+                            }
+                        }
+                    },
+                    "required": true
+                }
+            }
+        },
         "/api/v1/platforms": {
             "get": {
                 "operationId": "ListPlatforms",
@@ -3640,6 +3768,10 @@
                                 "$ref": "#/components/schemas/ClusterActionStartStop"
                             }
                         ]
+                    },
+                    "state": {
+                        "$ref": "#/components/schemas/ScheduleState",
+                        "default": "ENABLED"
                     }
                 },
                 "additionalProperties": false,
@@ -3683,6 +3815,26 @@
                 },
                 "type": "object"
             },
+            "UpdateScheduleCronRule": {
+                "required": [
+                    "cronRule"
+                ],
+                "properties": {
+                    "cronRule": {
+                        "type": "string",
+                        "description": "cron rule in format: <minute> <hour> <day> <month> <weekday>"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "UpdateScheduleState": {
+                "type": "string",
+                "enum": [
+                    "ENABLED",
+                    "DISABLED"
+                ]
+            },
             "UploadFile": {
                 "required": [
                     "url"
@@ -3722,6 +3874,13 @@
                 },
                 "additionalProperties": false,
                 "type": "object"
+            },
+            "ScheduleState": {
+                "type": "string",
+                "enum": [
+                    "ENABLED",
+                    "DISABLED"
+                ]
             },
             "Status": {
                 "enum": [
