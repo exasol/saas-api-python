@@ -6,7 +6,7 @@
         "version": "1.0",
         "download": {
             "source": "https://cloud.exasol.com/openapi.json",
-            "timestamp": "2025-10-27T13:31:57.902966+00:00"
+            "timestamp": "2025-11-27T09:52:30.043415+00:00"
         }
     },
     "servers": [
@@ -3829,11 +3829,16 @@
                 "type": "object"
             },
             "UpdateScheduleState": {
-                "type": "string",
-                "enum": [
-                    "ENABLED",
-                    "DISABLED"
-                ]
+                "required": [
+                    "state"
+                ],
+                "properties": {
+                    "state": {
+                        "$ref": "#/components/schemas/ScheduleState"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
             },
             "UploadFile": {
                 "required": [
