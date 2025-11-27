@@ -34,7 +34,7 @@ def _get_kwargs(
         "url": f"/api/v1/accounts/{account_id}/databases/{database_id}/schedules/{action_id}/state",
     }
 
-    _kwargs["json"] = body.value
+    _kwargs["json"] = body.to_dict()
 
     headers["Content-Type"] = "application/json"
 
