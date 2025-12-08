@@ -12,10 +12,10 @@ from datetime import (
 )
 from typing import Any
 
+import tenacity
 from tenacity import (
     TryAgain,
 )
-import tenacity
 from tenacity.stop import stop_after_delay
 from tenacity.wait import wait_fixed
 
@@ -47,10 +47,7 @@ LOG.setLevel(logging.INFO)
 
 
 def interval_retry(interval: timedelta, timeout: timedelta):
-    return tenacity.retry(
-        wait=wait_fixed(interval),
-        stop=stop_after_delay(timeout)
-    )
+    return tenacity.retry(wait=wait_fixed(interval), stop=stop_after_delay(timeout))
 
 
 def timestamp_name(project_short_tag: str | None = None) -> str:
