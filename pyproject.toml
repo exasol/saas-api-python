@@ -1,6 +1,6 @@
 [project]
 name = "exasol-saas-api"
-version = "2.5.0"
+version = "2.6.0"
 requires-python = ">=3.10.0,<4.0"
 description = "API enabling Python applications connecting to Exasol database SaaS instances and using their SaaS services"
 authors = [
