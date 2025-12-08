@@ -305,7 +305,9 @@ class OpenApiAccess:
         @interval_retry(timedelta(seconds=5), timeout=timedelta(minutes=5))
         def _delete(client: openapi.AuthenticatedClient) -> openapi.types.Response:
             response = delete_database.sync_detailed(
-                self._account_id, database_id, client=client,
+                self._account_id,
+                database_id,
+                client=client,
             )
             message = response.content.decode("utf-8")
             if response.status_code == 400 and pattern.search(message):
@@ -319,7 +321,9 @@ class OpenApiAccess:
             if not ignore_failures:
                 raise DatabaseDeleteTimeout(
                     "Failed to delete database with ID %s: HTTP %s, %s.",
-                    database_id, response.status_code, response.content
+                    database_id,
+                    response.status_code,
+                    response.content,
                 )
 
         return response
