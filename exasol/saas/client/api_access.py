@@ -49,6 +49,12 @@ from exasol.saas.client.openapi.types import UNSET
 LOG = logging.getLogger(__name__)
 LOG.setLevel(logging.INFO)
 
+logging.basicConfig(
+    level=logging.INFO,
+    datefmt="[%X]",
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    )
+
 
 def interval_retry(interval: timedelta, timeout: timedelta):
     return tenacity.retry(wait=wait_fixed(interval), stop=stop_after_delay(timeout))
@@ -58,7 +64,7 @@ def timestamp_name(project_short_tag: str | None = None) -> str:
     """
     project_short_tag: Abbreviation of your project
     """
-    timestamp = f"{datetime.now().timestamp():.0f}"
+    timestamp = f"{datetime.utcnow().timestamp():.0f}"
     owner = getpass.getuser()
     candidate = f"{timestamp}{project_short_tag or ''}-{owner}"
     return candidate[: Limits.MAX_DATABASE_NAME_LENGTH]
@@ -309,11 +315,14 @@ class OpenApiAccess:
                 database_id,
                 client=client,
             )
+            # creating    1765211656-chku      Mon 12-08 17:34
             message = response.content.decode("utf-8")
             if response.status_code == 400 and pattern.search(message):
+                LOG.info("- Response: %s %s", response.status_code, message)
                 raise TryAgain
             return response
 
+        LOG.info("Deleting database with ID %s ...", database_id)
         try:
             with self._ignore_failures(ignore_failures) as client:
                 response = _delete(client)
@@ -389,14 +398,15 @@ class OpenApiAccess:
         success = [Status.RUNNING]
 
         @interval_retry(interval, timeout)
-        def poll_status(db: ExasolDatabase) -> Status:
-            if db.status not in success:
-                LOG.info("- Database status: %s ...", db.status)
+        def poll_status() -> Status:
+            db = self.get_database(database_id)
+            status = db.status if db else None
+            if status not in success:
+                LOG.info("- Database status: %s ...", status)
                 raise TryAgain
-            return db.status
+            return status
 
-        db = self.get_database(database_id)
-        if not db or poll_status(db) not in success:
+        if poll_status() not in success:
             raise DatabaseStartupFailure()
 
     def clusters(
