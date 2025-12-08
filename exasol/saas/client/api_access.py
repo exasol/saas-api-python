@@ -243,6 +243,7 @@ class OpenApiAccess:
 
     def delete_database(self, database_id: str, ignore_failures=False):
         with self._ignore_failures(ignore_failures) as client:
+            self.wait_until_running(database_id)
             return delete_database.sync_detailed(
                 self._account_id, database_id, client=client
             )
@@ -264,7 +265,6 @@ class OpenApiAccess:
         try:
             db = self.create_database(name, idle_time=idle_time)
             yield db
-            self.wait_until_running(db.id)
         finally:
             db_repr = f"{db.name} with ID {db.id}" if db else None
             if db and not keep:

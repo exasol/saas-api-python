@@ -33,7 +33,6 @@ def test_lifecycle(api_access, database_name):
         assert db.id in testee.list_database_ids()
 
         # delete database and verify database is not listed anymore
-        testee.wait_until_running(db.id)
         testee.delete_database(db.id)
         testee.wait_until_deleted(db.id)
         assert db.id not in testee.list_database_ids()
