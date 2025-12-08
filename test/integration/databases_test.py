@@ -72,4 +72,4 @@ def test_get_connection(api_access, local_name):
 def test_x2(api_access, local_name):
     with api_access.database(local_name) as db:
         api_access.wait_until_running(db.id)
-        print(f'{db.id}')
+        print(f"{db.id}")

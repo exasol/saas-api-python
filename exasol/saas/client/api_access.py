@@ -53,7 +53,7 @@ logging.basicConfig(
     level=logging.INFO,
     datefmt="[%X]",
     format="%(asctime)s [%(levelname)s] %(message)s",
-    )
+)
 
 
 def interval_retry(interval: timedelta, timeout: timedelta):
