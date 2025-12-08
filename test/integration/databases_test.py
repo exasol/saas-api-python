@@ -9,6 +9,7 @@ from tenacity import RetryError
 from exasol.saas.client import PROMISING_STATES
 from exasol.saas.client.api_access import (
     get_connection_params,
+    timestamp_name,
 )
 
 
@@ -66,11 +67,3 @@ def test_get_connection(api_access, local_name):
         clusters = api_access.clusters(db.id)
         connection = api_access.get_connection(db.id, clusters[0].id)
         assert connection.db_username is not None and connection.port == 8563
-
-
-def test_dummy():
-    """
-    Dummy test to prevent empty set of test cases to be interpreted as
-    failure.
-    """
-    pass

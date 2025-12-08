@@ -255,6 +255,10 @@ class OpenApiAccess:
             raise DatabaseDeleteTimeout
 
     def _wait_for_delete(self, database_id: str):
+        # if http
+        # "status": 400,
+        # "message": "Operation is not allowed:The cluster is not in a proper state!",
+        # then wait a bit an retry
         deletable = [
             Status.RUNNING,
             Status.SCALING,
@@ -321,6 +325,7 @@ class OpenApiAccess:
         try:
             db = self.create_database(name, idle_time=idle_time)
             yield db
+            wait_for_delete_clearance()
         finally:
             db_repr = f"{db.name} with ID {db.id}" if db else None
             if db and not keep:

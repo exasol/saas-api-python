@@ -4,7 +4,6 @@ import pytest
 from exasol.saas.client.api_access import get_connection_params
 
 
-@pytest.mark.slow
 def test_get_connection_params_with_id(
     saas_host, saas_pat, saas_account_id, operational_saas_database_id, allow_connection
 ):
@@ -23,7 +22,6 @@ def test_get_connection_params_with_id(
         assert result == [(1,)]
 
 
-@pytest.mark.slow
 def test_get_connection_params_with_name(
     saas_host,
     saas_pat,
