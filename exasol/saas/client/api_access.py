@@ -55,16 +55,6 @@ def timestamp_name(project_short_tag: str | None = None) -> str:
     return candidate[: Limits.MAX_DATABASE_NAME_LENGTH]
 
 
-def wait_for_delete_clearance(start: dt.datetime):
-    lifetime = datetime.now() - start
-    if lifetime < Limits.MIN_DATABASE_LIFETIME:
-        wait = Limits.MIN_DATABASE_LIFETIME - lifetime
-        LOG.info(
-            f"Waiting {int(wait.seconds)} seconds" " before deleting the database."
-        )
-        time.sleep(wait.seconds)
-
-
 class DatabaseStartupFailure(Exception):
     """
     If a SaaS database instance during startup reports a status other than
@@ -274,7 +264,7 @@ class OpenApiAccess:
         try:
             db = self.create_database(name, idle_time=idle_time)
             yield db
-            wait_for_delete_clearance(start)
+            self.wait_until_running(db.id)
         finally:
             db_repr = f"{db.name} with ID {db.id}" if db else None
             if db and not keep:

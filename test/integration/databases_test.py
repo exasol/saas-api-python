@@ -9,7 +9,6 @@ from tenacity import RetryError
 from exasol.saas.client import PROMISING_STATES
 from exasol.saas.client.api_access import (
     get_connection_params,
-    wait_for_delete_clearance,
 )
 
 
@@ -34,7 +33,7 @@ def test_lifecycle(api_access, database_name):
         assert db.id in testee.list_database_ids()
 
         # delete database and verify database is not listed anymore
-        wait_for_delete_clearance(start)
+        testee.wait_until_running(db.id)
         testee.delete_database(db.id)
         testee.wait_until_deleted(db.id)
         assert db.id not in testee.list_database_ids()
