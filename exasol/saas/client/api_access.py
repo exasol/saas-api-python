@@ -325,7 +325,7 @@ class OpenApiAccess:
         try:
             db = self.create_database(name, idle_time=idle_time)
             yield db
-            wait_for_delete_clearance()
+            # wait_for_delete_clearance(start)
         finally:
             db_repr = f"{db.name} with ID {db.id}" if db else None
             if db and not keep:
