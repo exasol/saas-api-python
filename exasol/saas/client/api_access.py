@@ -14,8 +14,8 @@ from typing import Any
 
 from tenacity import (
     TryAgain,
-    retry,
 )
+import tenacity
 from tenacity.stop import stop_after_delay
 from tenacity.wait import wait_fixed
 
@@ -38,11 +38,19 @@ from exasol.saas.client.openapi.api.security import (
     delete_allowed_ip,
     list_allowed_i_ps,
 )
+from exasol.saas.client.openapi.models.exasol_database import ExasolDatabase
 from exasol.saas.client.openapi.models.status import Status
 from exasol.saas.client.openapi.types import UNSET
 
 LOG = logging.getLogger(__name__)
 LOG.setLevel(logging.INFO)
+
+
+def interval_retry(interval: timedelta, timeout: timedelta):
+    return tenacity.retry(
+        wait=wait_fixed(interval),
+        stop=stop_after_delay(timeout)
+    )
 
 
 def timestamp_name(project_short_tag: str | None = None) -> str:
@@ -53,6 +61,16 @@ def timestamp_name(project_short_tag: str | None = None) -> str:
     owner = getpass.getuser()
     candidate = f"{timestamp}{project_short_tag or ''}-{owner}"
     return candidate[: Limits.MAX_DATABASE_NAME_LENGTH]
+
+
+def wait_for_delete_clearance(start: dt.datetime):
+    lifetime = datetime.now() - start
+    if lifetime < Limits.MIN_DATABASE_LIFETIME:
+        wait = Limits.MIN_DATABASE_LIFETIME - lifetime
+        LOG.info(
+            f"Waiting {int(wait.seconds)} seconds" " before deleting the database."
+        )
+        time.sleep(wait.seconds)
 
 
 class DatabaseStartupFailure(Exception):
@@ -192,7 +210,7 @@ class OpenApiAccess:
         cluster_size: str = "XS",
         region: str = "eu-central-1",
         idle_time: timedelta | None = None,
-    ) -> openapi.models.exasol_database.ExasolDatabase | None:
+    ) -> ExasolDatabase | None:
         def minutes(x: timedelta) -> int:
             return x.seconds // 60
 
@@ -231,7 +249,7 @@ class OpenApiAccess:
         timeout: timedelta = timedelta(seconds=1),
         interval: timedelta = timedelta(minutes=1),
     ):
-        @retry(wait=wait_fixed(interval), stop=stop_after_delay(timeout))
+        @interval_retry(interval, timeout)
         def still_exists() -> bool:
             result = database_id in self.list_database_ids()
             if result:
@@ -241,9 +259,52 @@ class OpenApiAccess:
         if still_exists():
             raise DatabaseDeleteTimeout
 
+    def _wait_for_delete(self, database_id: str):
+        deletable = [
+            Status.RUNNING,
+            Status.SCALING,
+            Status.STOPPED,
+            Status.STOPPING,
+            Status.TODELETE,
+            Status.TOSCALE,
+            Status.TOSTOP,
+        ]
+
+        @interval_retry(timedelta(seconds=1), timeout=timedelta(minutes=1))
+        def find_existing(id: str) -> ExasolDatabase:
+            if result := self.get_database(id):
+                return result
+            raise TryAgain
+
+        @interval_retry(timedelta(minutes=2), timeout=timedelta(minutes=30))
+        def poll_status(db: ExasolDatabase) -> Status:
+            if db.status in deletable:
+                return db.status
+            LOG.info("- Database status: %s ...", db.status)
+            raise TryAgain
+
+        db = find_existing(database_id)
+        if not db:
+            raise DatabaseDeleteTimeout(
+                "Couldn't find database with ID %s",
+                database_id,
+            )
+
+        if not poll_status(db):
+            raise DatabaseDeleteTimeout(
+                "Cannot delete Database in state %s",
+                db.status,
+            )
+
     def delete_database(self, database_id: str, ignore_failures=False):
+        try:
+            self._wait_for_delete(database_id)
+        except DatabaseDeleteTimeout:
+            if ignore_failures:
+                LOG.exception()
+            else:
+                raise
         with self._ignore_failures(ignore_failures) as client:
-            self.wait_until_running(database_id)
             return delete_database.sync_detailed(
                 self._account_id, database_id, client=client
             )
@@ -279,10 +340,7 @@ class OpenApiAccess:
             else:
                 LOG.info(f"Keeping database {db_repr} as keep = {keep}")
 
-    def get_database(
-        self,
-        database_id: str,
-    ) -> openapi.models.exasol_database.ExasolDatabase | None:
+    def get_database(self, database_id: str) -> ExasolDatabase | None:
         return get_database.sync(
             self._account_id,
             database_id,
@@ -299,15 +357,15 @@ class OpenApiAccess:
             Status.RUNNING,
         ]
 
-        @retry(wait=wait_fixed(interval), stop=stop_after_delay(timeout))
-        def poll_status():
-            db = self.get_database(database_id)
+        @interval_retry(interval, timeout)
+        def poll_status(db: ExasolDatabase) -> Status:
             if db.status not in success:
                 LOG.info("- Database status: %s ...", db.status)
                 raise TryAgain
             return db.status
 
-        if poll_status() not in success:
+        db = self.get_database(database_id)
+        if not db or poll_status(db) not in success:
             raise DatabaseStartupFailure()
 
     def clusters(

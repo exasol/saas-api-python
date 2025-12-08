@@ -12,6 +12,7 @@ from exasol.saas.client.api_access import (
 )
 
 
+@pytest.mark.slow
 def test_lifecycle(api_access, database_name):
     """
     This integration test uses the database created and provided by pytest
@@ -38,6 +39,7 @@ def test_lifecycle(api_access, database_name):
         assert db.id not in testee.list_database_ids()
 
 
+@pytest.mark.slow
 def test_poll(api_access, database_name):
     with api_access.database(database_name) as db:
         with pytest.raises(RetryError):
@@ -48,6 +50,7 @@ def test_poll(api_access, database_name):
             )
 
 
+@pytest.mark.slow
 def test_get_connection(api_access, database_name):
     with api_access.database(database_name) as db:
         clusters = api_access.clusters(db.id)
