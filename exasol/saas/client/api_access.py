@@ -3,6 +3,7 @@ from __future__ import annotations
 import datetime as dt
 import getpass
 import logging
+import re
 import time
 from collections.abc import Iterable
 from contextlib import contextmanager
@@ -14,6 +15,7 @@ from typing import Any
 
 import tenacity
 from tenacity import (
+    RetryError,
     TryAgain,
 )
 from tenacity.stop import stop_after_delay
@@ -23,6 +25,8 @@ from exasol.saas.client import (
     Limits,
     openapi,
 )
+
+# from exasol.saas.client.openapi.errors import UnexpectedStatus
 from exasol.saas.client.openapi.api.clusters import (
     get_cluster_connection,
     list_clusters,
@@ -60,12 +64,12 @@ def timestamp_name(project_short_tag: str | None = None) -> str:
     return candidate[: Limits.MAX_DATABASE_NAME_LENGTH]
 
 
-def wait_for_delete_clearance(start: dt.datetime):
-    lifetime = datetime.now() - start
-    if lifetime < Limits.MIN_DATABASE_LIFETIME:
-        wait = Limits.MIN_DATABASE_LIFETIME - lifetime
-        LOG.info("Waiting %d seconds before deleting the database.", int(wait.seconds))
-        time.sleep(wait.seconds)
+# def wait_for_delete_clearance(start: dt.datetime):
+#     lifetime = datetime.now() - start
+#     if lifetime < Limits.MIN_DATABASE_LIFETIME:
+#         wait = Limits.MIN_DATABASE_LIFETIME - lifetime
+#         LOG.info("Waiting %d seconds before deleting the database.", int(wait.seconds))
+#         time.sleep(wait.seconds)
 
 
 class DatabaseStartupFailure(Exception):
@@ -254,59 +258,84 @@ class OpenApiAccess:
         if still_exists():
             raise DatabaseDeleteTimeout
 
-    def _wait_for_delete(self, database_id: str):
-        # if http
-        # "status": 400,
-        # "message": "Operation is not allowed:The cluster is not in a proper state!",
-        # then wait a bit an retry
-        deletable = [
-            Status.RUNNING,
-            Status.SCALING,
-            Status.STOPPED,
-            Status.STOPPING,
-            Status.TODELETE,
-            Status.TOSCALE,
-            Status.TOSTOP,
-        ]
+    # def _wait_for_delete(self, database_id: str):
+    #     deletable = [
+    #         Status.RUNNING,
+    #         Status.SCALING,
+    #         Status.STOPPED,
+    #         Status.STOPPING,
+    #         Status.TODELETE,
+    #         Status.TOSCALE,
+    #         Status.TOSTOP,
+    #     ]
+    #
+    #     @interval_retry(timedelta(seconds=1), timeout=timedelta(minutes=1))
+    #     def find_existing(id: str) -> ExasolDatabase:
+    #         if result := self.get_database(id):
+    #             return result
+    #         raise TryAgain
+    #
+    #     @interval_retry(timedelta(minutes=2), timeout=timedelta(minutes=30))
+    #     def poll_status(db: ExasolDatabase) -> Status:
+    #         if db.status in deletable:
+    #             return db.status
+    #         LOG.info("- Database status: %s ...", db.status)
+    #         raise TryAgain
+    #
+    #     db = find_existing(database_id)
+    #     if not db:
+    #         raise DatabaseDeleteTimeout(
+    #             "Couldn't find database with ID %s",
+    #             database_id,
+    #         )
+    #
+    #     if not poll_status(db):
+    #         raise DatabaseDeleteTimeout(
+    #             "Cannot delete Database in state %s",
+    #             db.status,
+    #         )
 
-        @interval_retry(timedelta(seconds=1), timeout=timedelta(minutes=1))
-        def find_existing(id: str) -> ExasolDatabase:
-            if result := self.get_database(id):
-                return result
-            raise TryAgain
+    def delete_database(
+        self,
+        database_id: str,
+        ignore_failures=False,
+    ) -> openapi.types.Response:
+        pattern = re.compile("Operation.*not allowed.*cluster not.*in proper state")
 
-        @interval_retry(timedelta(minutes=2), timeout=timedelta(minutes=30))
-        def poll_status(db: ExasolDatabase) -> Status:
-            if db.status in deletable:
-                return db.status
-            LOG.info("- Database status: %s ...", db.status)
-            raise TryAgain
-
-        db = find_existing(database_id)
-        if not db:
-            raise DatabaseDeleteTimeout(
-                "Couldn't find database with ID %s",
-                database_id,
+        @interval_retry(timedelta(seconds=5), timeout=timedelta(minutes=5))
+        def _delete(client: openapi.AuthenticatedClient) -> openapi.types.Response:
+            response = delete_database.sync_detailed(
+                self._account_id, database_id, client=client,
             )
+            message = response.content.decode("utf-8")
+            if response.status_code == 400 and pattern.search(message):
+                raise TryAgain
+            return response
 
-        if not poll_status(db):
-            raise DatabaseDeleteTimeout(
-                "Cannot delete Database in state %s",
-                db.status,
-            )
-
-    def delete_database(self, database_id: str, ignore_failures=False):
         try:
-            self._wait_for_delete(database_id)
-        except DatabaseDeleteTimeout:
-            if ignore_failures:
-                LOG.exception("Failed waiting for delete preconditions")
-            else:
-                raise
-        with self._ignore_failures(ignore_failures) as client:
-            return delete_database.sync_detailed(
-                self._account_id, database_id, client=client
-            )
+            with self._ignore_failures(ignore_failures) as client:
+                response = _delete(client)
+        except RetryError as ex:
+            if not ignore_failures:
+                raise DatabaseDeleteTimeout(
+                    "Failed to delete database with ID %s: HTTP %s, %s.",
+                    database_id, response.status_code, response.content
+                )
+
+        return response
+
+    # def delete_database_old(self, database_id: str, ignore_failures=False):
+    #     try:
+    #         self._wait_for_delete(database_id)
+    #     except DatabaseDeleteTimeout:
+    #         if ignore_failures:
+    #             LOG.exception("Failed waiting for delete preconditions")
+    #         else:
+    #             raise
+    #     with self._ignore_failures(ignore_failures) as client:
+    #         return delete_database.sync_detailed(
+    #             self._account_id, database_id, client=client
+    #         )
 
     def list_database_ids(self) -> Iterable[str]:
         dbs = list_databases.sync(self._account_id, client=self._client) or []
@@ -353,9 +382,7 @@ class OpenApiAccess:
         timeout: timedelta = timedelta(minutes=30),
         interval: timedelta = timedelta(minutes=2),
     ):
-        success = [
-            Status.RUNNING,
-        ]
+        success = [Status.RUNNING]
 
         @interval_retry(interval, timeout)
         def poll_status(db: ExasolDatabase) -> Status:
