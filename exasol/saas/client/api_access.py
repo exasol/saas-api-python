@@ -64,10 +64,7 @@ def wait_for_delete_clearance(start: dt.datetime):
     lifetime = datetime.now() - start
     if lifetime < Limits.MIN_DATABASE_LIFETIME:
         wait = Limits.MIN_DATABASE_LIFETIME - lifetime
-        LOG.info(
-            "Waiting %d seconds before deleting the database.",
-            int(wait.seconds)
-        )
+        LOG.info("Waiting %d seconds before deleting the database.", int(wait.seconds))
         time.sleep(wait.seconds)
 
 
