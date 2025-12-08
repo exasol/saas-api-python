@@ -298,7 +298,7 @@ class OpenApiAccess:
             self._wait_for_delete(database_id)
         except DatabaseDeleteTimeout:
             if ignore_failures:
-                LOG.exception()
+                LOG.exception("Failed waiting for delete preconditions")
             else:
                 raise
         with self._ignore_failures(ignore_failures) as client:
