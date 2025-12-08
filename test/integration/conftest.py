@@ -59,12 +59,12 @@ def operational_saas_database_id(api_access, database_name) -> str:
 
 
 @pytest.fixture(scope="session")
-def project_short_tag():
+def project_short_tag() -> str | None:
     return os.environ.get("PROJECT_SHORT_TAG")
 
 
 @pytest.fixture(scope="session")
-def database_name(project_short_tag):
+def database_name(project_short_tag) -> str:
     return timestamp_name(project_short_tag)
 
 

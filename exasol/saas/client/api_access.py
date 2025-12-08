@@ -65,7 +65,8 @@ def wait_for_delete_clearance(start: dt.datetime):
     if lifetime < Limits.MIN_DATABASE_LIFETIME:
         wait = Limits.MIN_DATABASE_LIFETIME - lifetime
         LOG.info(
-            f"Waiting {int(wait.seconds)} seconds" " before deleting the database."
+            "Waiting %d seconds before deleting the database.",
+            int(wait.seconds)
         )
         time.sleep(wait.seconds)
 
@@ -220,7 +221,7 @@ class OpenApiAccess:
                 idle_time=minutes(idle_time),
             ),
         )
-        LOG.info(f"Creating database {name}")
+        LOG.info("Creating database %s", name)
         return create_database.sync(
             self._account_id,
             client=self._client,
@@ -326,16 +327,16 @@ class OpenApiAccess:
         finally:
             db_repr = f"{db.name} with ID {db.id}" if db else None
             if db and not keep:
-                LOG.info(f"Deleting database {db_repr}")
+                LOG.info("Deleting database %s", db_repr)
                 response = self.delete_database(db.id, ignore_delete_failure)
                 if response.status_code == 200:
-                    LOG.info(f"Successfully deleted database {db_repr}.")
+                    LOG.info("Successfully deleted database %s.", db_repr)
                 else:
-                    LOG.warning(f"Ignoring status code {response.status_code}.")
+                    LOG.warning("Ignoring status code %s.", response.status_code)
             elif not db:
                 LOG.warning("Cannot delete db None")
             else:
-                LOG.info(f"Keeping database {db_repr} as keep = {keep}")
+                LOG.info("Keeping database %s as keep = %s.", db_repr, keep)
 
     def get_database(self, database_id: str) -> ExasolDatabase | None:
         return get_database.sync(

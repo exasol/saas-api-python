@@ -12,8 +12,18 @@ from exasol.saas.client.api_access import (
 )
 
 
+@pytest.fixture
+def local_name(project_short_tag: str | None) -> str:
+    """
+    Other than global fixture database_name this fixture uses scope
+    "function" to generate an individual name for each test case in this file.
+    """
+    return timestamp_name(project_short_tag)
+
+
 @pytest.mark.slow
-def test_lifecycle(api_access, database_name):
+@pytest.mark.skip
+def test_lifecycle(api_access, local_name):
     """
     This integration test uses the database created and provided by pytest
     context ``_OpenApiAccess.database()`` to verify
@@ -25,7 +35,7 @@ def test_lifecycle(api_access, database_name):
     """
 
     testee = api_access
-    with testee.database(database_name, ignore_delete_failure=True) as db:
+    with testee.database(local_name, ignore_delete_failure=True) as db:
         start = datetime.now()
         # verify state and clusters of created database
         assert db.status in PROMISING_STATES and db.clusters.total == 1
@@ -40,8 +50,8 @@ def test_lifecycle(api_access, database_name):
 
 
 @pytest.mark.slow
-def test_poll(api_access, database_name):
-    with api_access.database(database_name) as db:
+def test_poll(api_access, local_name):
+    with api_access.database(local_name) as db:
         with pytest.raises(RetryError):
             api_access.wait_until_running(
                 db.id,
@@ -51,8 +61,16 @@ def test_poll(api_access, database_name):
 
 
 @pytest.mark.slow
-def test_get_connection(api_access, database_name):
-    with api_access.database(database_name) as db:
+def test_get_connection(api_access, local_name):
+    with api_access.database(local_name) as db:
         clusters = api_access.clusters(db.id)
         connection = api_access.get_connection(db.id, clusters[0].id)
         assert connection.db_username is not None and connection.port == 8563
+
+
+def test_dummy():
+    """
+    Dummy test to prevent empty set of test cases to be interpreted as
+    failure.
+    """
+    pass
