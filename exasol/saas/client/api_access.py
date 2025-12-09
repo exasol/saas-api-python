@@ -15,11 +15,12 @@ from typing import Any
 
 import tenacity
 from tenacity import (
-    RetryError,
     TryAgain,
+    retry,
 )
 from tenacity.stop import stop_after_delay
 from tenacity.wait import wait_fixed
+from tenacity.retry import retry_if_exception
 
 from exasol.saas.client import (
     Limits,
@@ -27,6 +28,7 @@ from exasol.saas.client import (
 )
 
 from exasol.saas.client.openapi.errors import UnexpectedStatus
+
 from exasol.saas.client.openapi.api.clusters import (
     get_cluster_connection,
     list_clusters,
@@ -75,12 +77,11 @@ RETRY_PATTERN = re.compile(
 )
 
 
-def indicates_retry(ex: Exception) -> bool:
+def indicates_retry(ex: BaseException) -> bool:
     """
     Check whether an the specified exception raised during deleting a
     database instance indicates to retry deletion.
     """
-    # LOG.info(f"indicates_retry: {ex}")
     return bool(
         isinstance(ex, UnexpectedStatus)
         and ex.status_code == 400
@@ -288,7 +289,7 @@ class OpenApiAccess:
         ignore_failures: bool = False,
         timeout: timedelta = timedelta(minutes=5),
         interval: timedelta = timedelta(seconds=1),
-    ) -> openapi.types.Response:
+    ) -> None:
         @retry(
             reraise=True,
             wait=wait_fixed(interval),
