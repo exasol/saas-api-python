@@ -18,17 +18,14 @@ from tenacity import (
     TryAgain,
     retry,
 )
+from tenacity.retry import retry_if_exception
 from tenacity.stop import stop_after_delay
 from tenacity.wait import wait_fixed
-from tenacity.retry import retry_if_exception
 
 from exasol.saas.client import (
     Limits,
     openapi,
 )
-
-from exasol.saas.client.openapi.errors import UnexpectedStatus
-
 from exasol.saas.client.openapi.api.clusters import (
     get_cluster_connection,
     list_clusters,
@@ -44,6 +41,7 @@ from exasol.saas.client.openapi.api.security import (
     delete_allowed_ip,
     list_allowed_i_ps,
 )
+from exasol.saas.client.openapi.errors import UnexpectedStatus
 from exasol.saas.client.openapi.models.exasol_database import ExasolDatabase
 from exasol.saas.client.openapi.models.status import Status
 from exasol.saas.client.openapi.types import UNSET
@@ -72,9 +70,7 @@ def timestamp_name(project_short_tag: str | None = None) -> str:
     return candidate[: Limits.MAX_DATABASE_NAME_LENGTH]
 
 
-RETRY_PATTERN = re.compile(
-    "Operation.*not allowed.*cluster.*not.*in.*proper state"
-)
+RETRY_PATTERN = re.compile("Operation.*not allowed.*cluster.*not.*in.*proper state")
 
 
 def indicates_retry(ex: BaseException) -> bool:
