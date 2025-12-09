@@ -85,14 +85,6 @@ def indicates_retry(ex: BaseException) -> bool:
     )
 
 
-# def wait_for_delete_clearance(start: dt.datetime):
-#     lifetime = datetime.now() - start
-#     if lifetime < Limits.MIN_DATABASE_LIFETIME:
-#         wait = Limits.MIN_DATABASE_LIFETIME - lifetime
-#         LOG.info("Waiting %d seconds before deleting the database.", int(wait.seconds))
-#         time.sleep(wait.seconds)
-
-
 class DatabaseStartupFailure(Exception):
     """
     If a SaaS database instance during startup reports a status other than
@@ -307,55 +299,6 @@ class OpenApiAccess:
             else:
                 raise
 
-    # def delete_database2(
-    #     self,
-    #     database_id: str,
-    #     ignore_failures=False,
-    # ) -> openapi.types.Response:
-    #     pattern = re.compile("Operation.*not allowed.*cluster not.*in proper state")
-    #
-    #     @interval_retry(timedelta(seconds=5), timeout=timedelta(minutes=5))
-    #     def _delete(client: openapi.AuthenticatedClient) -> openapi.types.Response:
-    #         response = delete_database.sync_detailed(
-    #             self._account_id,
-    #             database_id,
-    #             client=client,
-    #         )
-    #         # creating    1765211656-chku      Mon 12-08 17:34
-    #         message = response.content.decode("utf-8")
-    #         if response.status_code == 400 and pattern.search(message):
-    #             LOG.info("- Response: %s %s", response.status_code, message)
-    #             raise TryAgain
-    #         return response
-    #
-    #     LOG.info("Deleting database with ID %s ...", database_id)
-    #     try:
-    #         with self._ignore_failures(ignore_failures) as client:
-    #             response = _delete(client)
-    #     except RetryError as ex:
-    #         if not ignore_failures:
-    #             raise DatabaseDeleteTimeout(
-    #                 "Failed to delete database with ID %s: HTTP %s, %s.",
-    #                 database_id,
-    #                 response.status_code,
-    #                 response.content,
-    #             )
-    #
-    #     return response
-
-    # def delete_database_old(self, database_id: str, ignore_failures=False):
-    #     try:
-    #         self._wait_for_delete(database_id)
-    #     except DatabaseDeleteTimeout:
-    #         if ignore_failures:
-    #             LOG.exception("Failed waiting for delete preconditions")
-    #         else:
-    #             raise
-    #     with self._ignore_failures(ignore_failures) as client:
-    #         return delete_database.sync_detailed(
-    #             self._account_id, database_id, client=client
-    #         )
-
     def list_database_ids(self) -> Iterable[str]:
         dbs = list_databases.sync(self._account_id, client=self._client) or []
         return (db.id for db in dbs)
@@ -373,7 +316,6 @@ class OpenApiAccess:
         try:
             db = self.create_database(name, idle_time=idle_time)
             yield db
-            # wait_for_delete_clearance(start)
         finally:
             db_repr = f"{db.name} with ID {db.id}" if db else None
             if not db:
