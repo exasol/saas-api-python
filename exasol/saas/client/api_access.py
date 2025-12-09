@@ -285,7 +285,11 @@ class OpenApiAccess:
             retry=retry_if_exception(indicates_retry),
         )
         def delete_with_retry():
-            delete_database.sync_detailed(self._account_id, database_id)
+            delete_database.sync_detailed(
+                self._account_id,
+                database_id,
+                client=self._client,
+            )
 
         try:
             delete_with_retry()
