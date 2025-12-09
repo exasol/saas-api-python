@@ -23,7 +23,6 @@ def local_name(project_short_tag: str | None) -> str:
 
 
 @pytest.mark.slow
-@pytest.mark.skip
 def test_lifecycle(api_access, local_name):
     """
     This integration test uses the database created and provided by pytest
@@ -67,9 +66,3 @@ def test_get_connection(api_access, local_name):
         clusters = api_access.clusters(db.id)
         connection = api_access.get_connection(db.id, clusters[0].id)
         assert connection.db_username is not None and connection.port == 8563
-
-
-def test_x2(api_access, local_name):
-    with api_access.database(local_name) as db:
-        api_access.wait_until_running(db.id)
-        print(f"{db.id}")

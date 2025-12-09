@@ -42,6 +42,7 @@ def test_get_connection_params_with_name(
         account_id=saas_account_id,
         pat=saas_pat,
         database_name=database_name,
+        websocket_sslopt={"cert_reqs": ssl.CERT_NONE},
     )
     with pyexasol.connect(**connection_params) as pyconn:
         result = pyconn.execute("SELECT 1;").fetchall()
