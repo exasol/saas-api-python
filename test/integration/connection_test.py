@@ -1,3 +1,5 @@
+import ssl
+
 import pyexasol
 import pytest
 
