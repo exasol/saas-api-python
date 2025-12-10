@@ -20,7 +20,10 @@ from tenacity import (
 )
 from tenacity.retry import retry_if_exception
 from tenacity.stop import stop_after_delay
-from tenacity.wait import wait_fixed, wait_exponential
+from tenacity.wait import (
+    wait_exponential,
+    wait_fixed,
+)
 
 from exasol.saas.client import (
     Limits,
@@ -436,10 +439,9 @@ class OpenApiAccess:
                 self.delete_allowed_ip(ip.id, ignore_delete_failure)
 
 
-
-
 if __name__ == "__main__":
     import os
+
     host = os.getenv("SAAS_HOST")
     pat = os.getenv("SAAS_PAT")
     client = create_saas_client(host, pat)
