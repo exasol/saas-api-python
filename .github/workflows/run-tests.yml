@@ -39,10 +39,8 @@ jobs:
           SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
           SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
           PYTEST_ADDOPTS: '-o log_cli=true -o log_cli_level=INFO ${{ steps.pytest-markers.outputs.slow-tests }}'
-        run: |
-          echo "PYTEST_ADDOPTS = $PYTEST_ADDOPTS"
-          export PROJECT_SHORT_TAG=$(poetry run -- nox -s project:get-short-tag)
-          poetry run -- nox -s test:coverage --
+          PROJECT_SHORT_TAG: SAPIPY
+        run: poetry run -- nox -s test:coverage --
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4.6.2

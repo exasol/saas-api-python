@@ -52,6 +52,8 @@ from exasol.saas.client.openapi.types import UNSET
 LOG = logging.getLogger(__name__)
 LOG.setLevel(logging.INFO)
 
+logging.getLogger("httpx").setLevel(logging.WARN)
+
 logging.basicConfig(
     level=logging.INFO,
     datefmt="[%X]",
@@ -81,7 +83,6 @@ def indicates_retry(ex: BaseException) -> bool:
     Check whether an the specified exception raised during deleting a
     database instance indicates to retry deletion.
     """
-    LOG.info(f"checking  exception {ex}")
     return bool(
         isinstance(ex, UnexpectedStatus)
         and ex.status_code == 400
@@ -294,6 +295,7 @@ class OpenApiAccess:
             retry=retry_if_exception(indicates_retry),
         )
         def delete_with_retry():
+            LOG.info("Trying to delete database with ID %s ...", database_id)
             delete_database.sync_detailed(
                 self._account_id,
                 database_id,
@@ -302,6 +304,7 @@ class OpenApiAccess:
 
         try:
             delete_with_retry()
+            LOG.info("Deleted database with ID %s", database_id)
         except Exception as ex:
             if ignore_failures:
                 LOG.error(
@@ -442,9 +445,9 @@ class OpenApiAccess:
 if __name__ == "__main__":
     import os
 
-    host = os.getenv("SAAS_HOST")
-    pat = os.getenv("SAAS_PAT")
+    host = os.getenv("SAAS_HOST", "")
+    pat = os.getenv("SAAS_PAT", "")
     client = create_saas_client(host, pat)
-    account_id = os.getenv("SAAS_ACCOUNT_ID")
+    account_id = os.getenv("SAAS_ACCOUNT_ID", "")
     api = OpenApiAccess(client, account_id)
-    # api.delete_database("zo0ZtL9VQL-vqjYSNOdudA")
+    api.delete_database("zo0ZtL9VQL-vqjYSNOdudA")

@@ -11,6 +11,7 @@ from exasol.saas.client.api_access import (
     get_connection_params,
     timestamp_name,
 )
+from exasol.saas.client.openapi.models.exasol_database import ExasolDatabase
 
 
 @pytest.fixture
@@ -34,35 +35,55 @@ def test_lifecycle(api_access, local_name):
     - list_databases does not include the deleted database anymore
     """
 
-    testee = api_access
+    def wait_until_running_too_short(db: ExasolDatabase):
+        api_access.wait_until_running(
+            db.id,
+            timeout=timedelta(seconds=3),
+            interval=timedelta(seconds=1),
+        )
+
+    def get_connection(db: ExasolDatabase):
+        clusters = api_access.clusters(db.id)
+        return api_access.get_connection(db.id, clusters[0].id)
+
     with testee.database(local_name, ignore_delete_failure=True) as db:
         start = datetime.now()
         # verify state and clusters of created database
         assert db.status in PROMISING_STATES and db.clusters.total == 1
 
+        with pytest.raises(RetryError):
+            wait_until_running_too_short(db)
+
         # verify database is listed
-        assert db.id in testee.list_database_ids()
+        assert db.id in api_access.list_database_ids()
+
+        con = get_connection(db)
+        assert con.db_username is not None and con.port == 8563
 
         # delete database and verify database is not listed anymore
-        testee.delete_database(db.id)
-        testee.wait_until_deleted(db.id)
-        assert db.id not in testee.list_database_ids()
+        api_access.delete_database(db.id)
+        api_access.wait_until_deleted(db.id)
+        assert db.id not in api_access.list_database_ids()
 
 
-@pytest.mark.slow
-def test_poll(api_access, local_name):
-    with api_access.database(local_name) as db:
-        with pytest.raises(RetryError):
-            api_access.wait_until_running(
-                db.id,
-                timeout=timedelta(seconds=3),
-                interval=timedelta(seconds=1),
-            )
+# in order to avoid spinning up multiple saas_instances including long time
+# for deleting them, I integrated test_poll and test_get_connection into
+# test_lifecycle.
 
-
-@pytest.mark.slow
-def test_get_connection(api_access, local_name):
-    with api_access.database(local_name) as db:
-        clusters = api_access.clusters(db.id)
-        connection = api_access.get_connection(db.id, clusters[0].id)
-        assert connection.db_username is not None and connection.port == 8563
+# @pytest.mark.slow
+# def test_poll(api_access, local_name):
+#     with api_access.database(local_name) as db:
+#         with pytest.raises(RetryError):
+#             api_access.wait_until_running(
+#                 db.id,
+#                 timeout=timedelta(seconds=3),
+#                 interval=timedelta(seconds=1),
+#             )
+#
+#
+# @pytest.mark.slow
+# def test_get_connection(api_access, local_name):
+#     with api_access.database(local_name) as db:
+#         clusters = api_access.clusters(db.id)
+#         connection = api_access.get_connection(db.id, clusters[0].id)
+#         assert connection.db_username is not None and connection.port == 8563
