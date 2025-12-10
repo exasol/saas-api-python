@@ -25,6 +25,11 @@ RETRY_EXCEPTION = UnexpectedStatus(
     ],
 )
 def test_indicates_retry(exception, expected):
+    """
+    Call function api_access.indicates_retry() with different exceptions
+    in order to verify if it correctly rates the current exception as
+    indicating to retry deleting a SaaS database instance.
+    """
     assert indicates_retry(exception) == expected
 
 
@@ -48,6 +53,9 @@ def api_runner(mocker) -> ApiRunner:
 
 @pytest.fixture
 def retry_timings() -> dict[str, timedelta]:
+    """
+    Common timings, used by some of the test cases in this file.
+    """
     interval = timedelta(seconds=0.2)
     return {
         "min_interval": interval,
@@ -79,7 +87,12 @@ def test_delete_fail(side_effect, api_runner, retry_timings) -> None:
 @pytest.mark.parametrize(
     "side_effect, ignore_failures, expected_log_message",
     [
-        pytest.param([RETRY_EXCEPTION, None], False, "", id="success"),
+        pytest.param(
+            [RETRY_EXCEPTION, None],
+            False,
+            "",
+            id="success_after_retry",
+        ),
         pytest.param(
             [UnexpectedStatus(400, b"bla")],
             True,
@@ -87,7 +100,7 @@ def test_delete_fail(side_effect, api_runner, retry_timings) -> None:
                 "Ignoring failure when deleting database with"
                 " ID 123: Unexpected status code: 400"
             ),
-            id="success",
+            id="success_by_ignoring_failures",
         ),
     ],
 )

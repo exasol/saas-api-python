@@ -73,8 +73,8 @@ RETRY_PATTERN = re.compile("Operation.*not allowed.*cluster.*not.*in.*proper sta
 
 def indicates_retry(ex: BaseException) -> bool:
     """
-    Check whether an the specified exception raised during deleting a
-    database instance indicates to retry deletion.
+    When deleting a SaaS instance raises an UnexpectedStatus, then this
+    function decides whether we should retry to delete the database instance.
     """
     return bool(
         isinstance(ex, UnexpectedStatus)
