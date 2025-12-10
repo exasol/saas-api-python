@@ -8,6 +8,7 @@ import time
 from collections.abc import Iterable
 from contextlib import contextmanager
 from datetime import (
+    UTC,
     datetime,
     timedelta,
 )
@@ -52,7 +53,7 @@ from exasol.saas.client.openapi.types import UNSET
 LOG = logging.getLogger(__name__)
 LOG.setLevel(logging.INFO)
 
-logging.getLogger("httpx").setLevel(logging.WARN)
+# logging.getLogger("httpx").setLevel(logging.WARN)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -69,7 +70,7 @@ def timestamp_name(project_short_tag: str | None = None) -> str:
     """
     project_short_tag: Abbreviation of your project
     """
-    timestamp = f"{datetime.utcnow().timestamp():.0f}"
+    timestamp = f"{datetime.now(UTC).timestamp():.0f}"
     owner = getpass.getuser()
     candidate = f"{timestamp}{project_short_tag or ''}-{owner}"
     return candidate[: Limits.MAX_DATABASE_NAME_LENGTH]
@@ -328,7 +329,6 @@ class OpenApiAccess:
         idle_time: timedelta | None = None,
     ):
         db = None
-        start = datetime.now()
         try:
             db = self.create_database(name, idle_time=idle_time)
             yield db
@@ -450,4 +450,6 @@ if __name__ == "__main__":
     client = create_saas_client(host, pat)
     account_id = os.getenv("SAAS_ACCOUNT_ID", "")
     api = OpenApiAccess(client, account_id)
-    api.delete_database("zo0ZtL9VQL-vqjYSNOdudA")
+    # api.delete_database("zo0ZtL9VQL-vqjYSNOdudA")
+    name = timestamp_name("abc")
+    print(f"{name}")
