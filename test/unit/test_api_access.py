@@ -48,8 +48,10 @@ def api_runner(mocker) -> ApiRunner:
 
 @pytest.fixture
 def retry_timings() -> dict[str, timedelta]:
+    interval = timedelta(seconds=0.2)
     return {
-        "interval": timedelta(seconds=0.1),
+        "min_interval": interval,
+        "max_interval": interval,
         "timeout": timedelta(seconds=0.5),
     }
 
@@ -61,6 +63,10 @@ def retry_timings() -> dict[str, timedelta]:
         pytest.param(
             [RETRY_EXCEPTION, RETRY_EXCEPTION, UnexpectedStatus(400, b"bla")],
             id="failure_after_retry",
+        ),
+        pytest.param(
+            [RETRY_EXCEPTION for _ in range(4)],
+            id="timeout_after_too_many_retries",
         ),
     ],
 )
@@ -94,8 +100,6 @@ def test_delete_success(
     caplog,
 ) -> None:
     api_runner.mock_delete(side_effect)
-    interval = timedelta(seconds=0.1)
-    timeout = timedelta(seconds=0.5)
     with not_raises(Exception):
         api_runner.api.delete_database(
             database_id="123",

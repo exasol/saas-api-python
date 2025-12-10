@@ -1,8 +1,11 @@
 # 2.6.0 - 2025-12-08
-This release changes the precondition for deleting a SaaS database instance.
 
-Before, the SAPIPY used only a fixed waiting time. With the changed behavior of the actual SaaS instances the precondition needed to be adapted. SAPIPY now waits for the SaaS instance to be running before attempting to delete it.
+## Summary
+
+This release changes the strategy for deleting a SaaS database instance, as required by the changed behavior of the actual SaaS backend.
+
+Before, SAPIPY used only a fixed waiting time. In case of HTTP responses with status code 400 and message `Operation.*not allowed.*cluster.*not.*in.*proper state` SAPIPY now retries deleting the SaaS instance for max. 5 minutes.
 
 ## Bugfixes
 
-* #125: Made operation delete wait for SaaS instance to enable deletion
+* #125: Added retry when deleting SaaS instance

@@ -20,7 +20,7 @@ from tenacity import (
 )
 from tenacity.retry import retry_if_exception
 from tenacity.stop import stop_after_delay
-from tenacity.wait import wait_fixed
+from tenacity.wait import wait_fixed, wait_exponential
 
 from exasol.saas.client import (
     Limits,
@@ -78,6 +78,7 @@ def indicates_retry(ex: BaseException) -> bool:
     Check whether an the specified exception raised during deleting a
     database instance indicates to retry deletion.
     """
+    LOG.info(f"checking  exception {ex}")
     return bool(
         isinstance(ex, UnexpectedStatus)
         and ex.status_code == 400
@@ -275,12 +276,17 @@ class OpenApiAccess:
         self,
         database_id: str,
         ignore_failures: bool = False,
-        timeout: timedelta = timedelta(minutes=5),
-        interval: timedelta = timedelta(seconds=1),
+        timeout: timedelta = timedelta(minutes=30),
+        min_interval: timedelta = timedelta(seconds=1),
+        max_interval: timedelta = timedelta(minutes=2),
     ) -> None:
         @retry(
             reraise=True,
-            wait=wait_fixed(interval),
+            wait=wait_exponential(
+                multiplier=1,
+                min=min_interval,
+                max=max_interval,
+            ),
             stop=stop_after_delay(timeout),
             retry=retry_if_exception(indicates_retry),
         )
@@ -428,3 +434,15 @@ class OpenApiAccess:
         finally:
             if ip and not keep:
                 self.delete_allowed_ip(ip.id, ignore_delete_failure)
+
+
+
+
+if __name__ == "__main__":
+    import os
+    host = os.getenv("SAAS_HOST")
+    pat = os.getenv("SAAS_PAT")
+    client = create_saas_client(host, pat)
+    account_id = os.getenv("SAAS_ACCOUNT_ID")
+    api = OpenApiAccess(client, account_id)
+    # api.delete_database("zo0ZtL9VQL-vqjYSNOdudA")
