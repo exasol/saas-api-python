@@ -68,9 +68,6 @@ def timestamp_name(project_short_tag: str | None = None) -> str:
     return candidate[: Limits.MAX_DATABASE_NAME_LENGTH]
 
 
-RETRY_PATTERN = re.compile("Operation.*not allowed.*cluster.*not.*in.*proper state")
-
-
 def indicates_retry(ex: BaseException) -> bool:
     """
     When deleting a SaaS instance raises an UnexpectedStatus, then this
@@ -79,7 +76,7 @@ def indicates_retry(ex: BaseException) -> bool:
     return bool(
         isinstance(ex, UnexpectedStatus)
         and ex.status_code == 400
-        and RETRY_PATTERN.search(ex.content.decode("utf-8"))
+        and "cluster is not in a proper state" in ex.content.decode("utf-8")
     )
 
 
@@ -301,7 +298,7 @@ class OpenApiAccess:
         except Exception as ex:
             if ignore_failures:
                 LOG.error(
-                    f"Ignoring failure when deleting database with ID %s: %s",
+                    "Ignoring failure when deleting database with ID %s: %s",
                     database_id,
                     ex,
                 )
