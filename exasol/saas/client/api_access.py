@@ -53,14 +53,6 @@ from exasol.saas.client.openapi.types import UNSET
 LOG = logging.getLogger(__name__)
 LOG.setLevel(logging.INFO)
 
-# logging.getLogger("httpx").setLevel(logging.WARN)
-
-logging.basicConfig(
-    level=logging.INFO,
-    datefmt="[%X]",
-    format="%(asctime)s [%(levelname)s] %(message)s",
-)
-
 
 def interval_retry(interval: timedelta, timeout: timedelta):
     return tenacity.retry(wait=wait_fixed(interval), stop=stop_after_delay(timeout))
@@ -440,16 +432,3 @@ class OpenApiAccess:
         finally:
             if ip and not keep:
                 self.delete_allowed_ip(ip.id, ignore_delete_failure)
-
-
-if __name__ == "__main__":
-    import os
-
-    host = os.getenv("SAAS_HOST", "")
-    pat = os.getenv("SAAS_PAT", "")
-    client = create_saas_client(host, pat)
-    account_id = os.getenv("SAAS_ACCOUNT_ID", "")
-    api = OpenApiAccess(client, account_id)
-    # api.delete_database("zo0ZtL9VQL-vqjYSNOdudA")
-    name = timestamp_name("abc")
-    print(f"{name}")
