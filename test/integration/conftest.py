@@ -59,8 +59,8 @@ def operational_saas_database_id(api_access, database_name) -> str:
 
 
 @pytest.fixture(scope="session")
-def project_short_tag() -> str | None:
-    return os.environ.get("PROJECT_SHORT_TAG")
+def project_short_tag() -> str:
+    return "SAPIPY"
 
 
 @pytest.fixture(scope="session")

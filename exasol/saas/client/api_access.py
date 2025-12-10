@@ -8,9 +8,9 @@ import time
 from collections.abc import Iterable
 from contextlib import contextmanager
 from datetime import (
-    UTC,
     datetime,
     timedelta,
+    timezone,
 )
 from typing import Any
 
@@ -62,7 +62,7 @@ def timestamp_name(project_short_tag: str | None = None) -> str:
     """
     project_short_tag: Abbreviation of your project
     """
-    timestamp = f"{datetime.now(UTC).timestamp():.0f}"
+    timestamp = f"{datetime.now(timezone.utc).timestamp():.0f}"
     owner = getpass.getuser()
     candidate = f"{timestamp}{project_short_tag or ''}-{owner}"
     return candidate[: Limits.MAX_DATABASE_NAME_LENGTH]
