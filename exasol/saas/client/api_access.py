@@ -3,21 +3,28 @@ from __future__ import annotations
 import datetime as dt
 import getpass
 import logging
+import re
 import time
 from collections.abc import Iterable
 from contextlib import contextmanager
 from datetime import (
     datetime,
     timedelta,
+    timezone,
 )
 from typing import Any
 
+import tenacity
 from tenacity import (
     TryAgain,
     retry,
 )
+from tenacity.retry import retry_if_exception
 from tenacity.stop import stop_after_delay
-from tenacity.wait import wait_fixed
+from tenacity.wait import (
+    wait_exponential,
+    wait_fixed,
+)
 
 from exasol.saas.client import (
     Limits,
@@ -38,6 +45,8 @@ from exasol.saas.client.openapi.api.security import (
     delete_allowed_ip,
     list_allowed_i_ps,
 )
+from exasol.saas.client.openapi.errors import UnexpectedStatus
+from exasol.saas.client.openapi.models.exasol_database import ExasolDatabase
 from exasol.saas.client.openapi.models.status import Status
 from exasol.saas.client.openapi.types import UNSET
 
@@ -45,24 +54,30 @@ LOG = logging.getLogger(__name__)
 LOG.setLevel(logging.INFO)
 
 
+def interval_retry(interval: timedelta, timeout: timedelta):
+    return tenacity.retry(wait=wait_fixed(interval), stop=stop_after_delay(timeout))
+
+
 def timestamp_name(project_short_tag: str | None = None) -> str:
     """
     project_short_tag: Abbreviation of your project
     """
-    timestamp = f"{datetime.now().timestamp():.0f}"
+    timestamp = f"{datetime.now(timezone.utc).timestamp():.0f}"
     owner = getpass.getuser()
     candidate = f"{timestamp}{project_short_tag or ''}-{owner}"
     return candidate[: Limits.MAX_DATABASE_NAME_LENGTH]
 
 
-def wait_for_delete_clearance(start: dt.datetime):
-    lifetime = datetime.now() - start
-    if lifetime < Limits.MIN_DATABASE_LIFETIME:
-        wait = Limits.MIN_DATABASE_LIFETIME - lifetime
-        LOG.info(
-            f"Waiting {int(wait.seconds)} seconds" " before deleting the database."
-        )
-        time.sleep(wait.seconds)
+def indicates_retry(ex: BaseException) -> bool:
+    """
+    When deleting a SaaS instance raises an UnexpectedStatus, then this
+    function decides whether we should retry to delete the database instance.
+    """
+    return bool(
+        isinstance(ex, UnexpectedStatus)
+        and ex.status_code == 400
+        and "cluster is not in a proper state" in ex.content.decode("utf-8")
+    )
 
 
 class DatabaseStartupFailure(Exception):
@@ -202,7 +217,7 @@ class OpenApiAccess:
         cluster_size: str = "XS",
         region: str = "eu-central-1",
         idle_time: timedelta | None = None,
-    ) -> openapi.models.exasol_database.ExasolDatabase | None:
+    ) -> ExasolDatabase | None:
         def minutes(x: timedelta) -> int:
             return x.seconds // 60
 
@@ -215,7 +230,7 @@ class OpenApiAccess:
                 idle_time=minutes(idle_time),
             ),
         )
-        LOG.info(f"Creating database {name}")
+        LOG.info("Creating database %s", name)
         return create_database.sync(
             self._account_id,
             client=self._client,
@@ -241,7 +256,7 @@ class OpenApiAccess:
         timeout: timedelta = timedelta(seconds=1),
         interval: timedelta = timedelta(minutes=1),
     ):
-        @retry(wait=wait_fixed(interval), stop=stop_after_delay(timeout))
+        @interval_retry(interval, timeout)
         def still_exists() -> bool:
             result = database_id in self.list_database_ids()
             if result:
@@ -251,11 +266,44 @@ class OpenApiAccess:
         if still_exists():
             raise DatabaseDeleteTimeout
 
-    def delete_database(self, database_id: str, ignore_failures=False):
-        with self._ignore_failures(ignore_failures) as client:
-            return delete_database.sync_detailed(
-                self._account_id, database_id, client=client
+    def delete_database(
+        self,
+        database_id: str,
+        ignore_failures: bool = False,
+        timeout: timedelta = timedelta(minutes=30),
+        min_interval: timedelta = timedelta(seconds=1),
+        max_interval: timedelta = timedelta(minutes=2),
+    ) -> None:
+        @retry(
+            reraise=True,
+            wait=wait_exponential(
+                multiplier=1,
+                min=min_interval,
+                max=max_interval,
+            ),
+            stop=stop_after_delay(timeout),
+            retry=retry_if_exception(indicates_retry),
+        )
+        def delete_with_retry():
+            LOG.info("Trying to delete database with ID %s ...", database_id)
+            delete_database.sync_detailed(
+                self._account_id,
+                database_id,
+                client=self._client,
             )
+
+        try:
+            delete_with_retry()
+            LOG.info("Deleted database with ID %s", database_id)
+        except Exception as ex:
+            if ignore_failures:
+                LOG.error(
+                    "Ignoring failure when deleting database with ID %s: %s",
+                    database_id,
+                    ex,
+                )
+            else:
+                raise
 
     def list_database_ids(self) -> Iterable[str]:
         dbs = list_databases.sync(self._account_id, client=self._client) or []
@@ -270,29 +318,21 @@ class OpenApiAccess:
         idle_time: timedelta | None = None,
     ):
         db = None
-        start = datetime.now()
         try:
             db = self.create_database(name, idle_time=idle_time)
             yield db
-            wait_for_delete_clearance(start)
         finally:
             db_repr = f"{db.name} with ID {db.id}" if db else None
-            if db and not keep:
-                LOG.info(f"Deleting database {db_repr}")
-                response = self.delete_database(db.id, ignore_delete_failure)
-                if response.status_code == 200:
-                    LOG.info(f"Successfully deleted database {db_repr}.")
-                else:
-                    LOG.warning(f"Ignoring status code {response.status_code}.")
-            elif not db:
-                LOG.warning("Cannot delete db None")
+            if not db:
+                LOG.warning("Cannot delete database None")
+            elif keep:
+                LOG.info("Keeping database %s as keep = %s.", db_repr, keep)
             else:
-                LOG.info(f"Keeping database {db_repr} as keep = {keep}")
+                LOG.info("Deleting database %s", db_repr)
+                self.delete_database(db.id, ignore_delete_failure)
+                LOG.info("Successfully deleted database %s.", db_repr)
 
-    def get_database(
-        self,
-        database_id: str,
-    ) -> openapi.models.exasol_database.ExasolDatabase | None:
+    def get_database(self, database_id: str) -> ExasolDatabase | None:
         return get_database.sync(
             self._account_id,
             database_id,
@@ -305,17 +345,16 @@ class OpenApiAccess:
         timeout: timedelta = timedelta(minutes=30),
         interval: timedelta = timedelta(minutes=2),
     ):
-        success = [
-            Status.RUNNING,
-        ]
+        success = [Status.RUNNING]
 
-        @retry(wait=wait_fixed(interval), stop=stop_after_delay(timeout))
-        def poll_status():
+        @interval_retry(interval, timeout)
+        def poll_status() -> Status:
             db = self.get_database(database_id)
-            if db.status not in success:
-                LOG.info("- Database status: %s ...", db.status)
+            status = db.status if db else None
+            if status not in success:
+                LOG.info("- Database status: %s ...", status)
                 raise TryAgain
-            return db.status
+            return status
 
         if poll_status() not in success:
             raise DatabaseStartupFailure()

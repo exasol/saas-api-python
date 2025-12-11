@@ -1,3 +1,7 @@
+import pytest
+
+
+@pytest.mark.slow
 def test_lifecycle(api_access):
     testee = api_access
     with testee.allowed_ip(ignore_delete_failure=True) as ip:
