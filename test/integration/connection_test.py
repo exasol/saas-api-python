@@ -6,7 +6,7 @@ import pytest
 
 from exasol.saas.client.api_access import get_connection_params
 
-SSL_OPTIONS = {"websocket_sslopt": {"cert_reqs": ssl.CERT_NONE}}
+SSL_OPTIONS = {"websocket_sslopt": {"cert_reqs": ssl.CERT_REQUIRED}}
 
 
 @pytest.fixture
