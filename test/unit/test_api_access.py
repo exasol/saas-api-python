@@ -7,6 +7,7 @@ import pytest
 from exasol.saas.client.api_access import (
     OpenApiAccess,
     indicates_retry,
+    timestamp_name
 )
 from exasol.saas.client.openapi.errors import UnexpectedStatus
 
@@ -121,3 +122,16 @@ def test_delete_success(
         )
     assert api_runner.mock.called
     assert expected_log_message in caplog.text
+
+
+def test_timestamp_name() -> None:
+    names = [timestamp_name('TEST') for _ in range(3)]
+    minutes = [int(name[:5], 16) for name in names]
+    suffixes = [int(name[5:10], 16) for name in names]
+    tags = [name[10:14] for name in names]
+    # minutes from the start of the year should be the same
+    assert minutes[0] == minutes[1] or minutes[1] == minutes[2]
+    # suffixes should all be different
+    assert len(set(suffixes)) == 3
+    # the provided tag should follow the hacky timestamp.
+    assert all(tag == 'TEST' for tag in tags)
