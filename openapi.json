@@ -6,7 +6,7 @@
         "version": "1.0",
         "download": {
             "source": "https://cloud.exasol.com/openapi.json",
-            "timestamp": "2025-11-27T09:52:30.043415+00:00"
+            "timestamp": "2026-02-11T08:12:54.599117+00:00"
         }
     },
     "servers": [
@@ -616,6 +616,107 @@
                         "in": "path",
                         "required": true,
                         "name": "clusterId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/accounts/{accountId}/databases": {
+            "post": {
+                "operationId": "CreateDatabase",
+                "responses": {
+                    "200": {
+                        "description": "A database",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Database"
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Databases"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "security": [
+                    {
+                        "authorizer": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateDatabase"
+                            }
+                        }
+                    },
+                    "required": true
+                }
+            },
+            "get": {
+                "operationId": "ListDatabases",
+                "responses": {
+                    "200": {
+                        "description": "List of databases the user has access to",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Database"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Databases"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "name": "accountId",
                         "schema": {
                             "type": "string"
                         }
@@ -1469,107 +1570,6 @@
                         "in": "path",
                         "required": true,
                         "name": "databaseId",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "security": [
-                    {
-                        "authorizer": []
-                    }
-                ]
-            }
-        },
-        "/api/v1/accounts/{accountId}/databases": {
-            "post": {
-                "operationId": "CreateDatabase",
-                "responses": {
-                    "200": {
-                        "description": "A database",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Database"
-                                }
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "Default api error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ApiError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Databases"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "required": true,
-                        "name": "accountId",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "security": [
-                    {
-                        "authorizer": []
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CreateDatabase"
-                            }
-                        }
-                    },
-                    "required": true
-                }
-            },
-            "get": {
-                "operationId": "ListDatabases",
-                "responses": {
-                    "200": {
-                        "description": "List of databases the user has access to",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Database"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "default": {
-                        "description": "Default api error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ApiError"
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Databases"
-                ],
-                "parameters": [
-                    {
-                        "in": "path",
-                        "required": true,
-                        "name": "accountId",
                         "schema": {
                             "type": "string"
                         }
@@ -3327,6 +3327,9 @@
                     "size": {
                         "type": "string"
                     },
+                    "family": {
+                        "type": "string"
+                    },
                     "autoStop": {
                         "$ref": "#/components/schemas/AutoStop"
                     },
@@ -3358,6 +3361,9 @@
                                 "type": "string"
                             },
                             "size": {
+                                "type": "string"
+                            },
+                            "family": {
                                 "type": "string"
                             },
                             "autoStop": {
@@ -3715,6 +3721,9 @@
                 ],
                 "properties": {
                     "size": {
+                        "type": "string"
+                    },
+                    "family": {
                         "type": "string"
                     }
                 },

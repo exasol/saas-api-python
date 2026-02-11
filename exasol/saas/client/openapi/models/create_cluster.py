@@ -35,12 +35,14 @@ class CreateCluster:
     Attributes:
         name (str):
         size (str):
+        family (Union[Unset, str]):
         auto_stop (Union[Unset, AutoStop]):
         settings (Union[Unset, ClusterSettingsUpdate]):
     """
 
     name: str
     size: str
+    family: Union[Unset, str] = UNSET
     auto_stop: Union[Unset, "AutoStop"] = UNSET
     settings: Union[Unset, "ClusterSettingsUpdate"] = UNSET
 
@@ -51,6 +53,8 @@ class CreateCluster:
         name = self.name
 
         size = self.size
+
+        family = self.family
 
         auto_stop: Union[Unset, dict[str, Any]] = UNSET
         if not isinstance(self.auto_stop, Unset):
@@ -68,6 +72,8 @@ class CreateCluster:
                 "size": size,
             }
         )
+        if family is not UNSET:
+            field_dict["family"] = family
         if auto_stop is not UNSET:
             field_dict["autoStop"] = auto_stop
         if settings is not UNSET:
@@ -84,6 +90,8 @@ class CreateCluster:
         name = d.pop("name")
 
         size = d.pop("size")
+
+        family = d.pop("family", UNSET)
 
         _auto_stop = d.pop("autoStop", UNSET)
         auto_stop: Union[Unset, AutoStop]
@@ -102,6 +110,7 @@ class CreateCluster:
         create_cluster = cls(
             name=name,
             size=size,
+            family=family,
             auto_stop=auto_stop,
             settings=settings,
         )
