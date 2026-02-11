@@ -7,7 +7,7 @@ import pytest
 from exasol.saas.client.api_access import (
     OpenApiAccess,
     indicates_retry,
-    timestamp_name
+    timestamp_name,
 )
 from exasol.saas.client.openapi.errors import UnexpectedStatus
 
@@ -125,7 +125,7 @@ def test_delete_success(
 
 
 def test_timestamp_name() -> None:
-    names = [timestamp_name('TEST') for _ in range(3)]
+    names = [timestamp_name("TEST") for _ in range(3)]
     minutes = [int(name[:5], 16) for name in names]
     suffixes = [int(name[5:10], 16) for name in names]
     tags = [name[10:14] for name in names]
@@ -134,4 +134,4 @@ def test_timestamp_name() -> None:
     # suffixes should all be different
     assert len(set(suffixes)) == 3
     # the provided tag should follow the hacky timestamp.
-    assert all(tag == 'TEST' for tag in tags)
+    assert all(tag == "TEST" for tag in tags)
