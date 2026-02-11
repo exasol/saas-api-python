@@ -9,6 +9,7 @@ from typing import (
     Optional,
     TextIO,
     TypeVar,
+    Union,
 )
 
 from attrs import define as _attrs_define
@@ -27,12 +28,16 @@ class ScaleCluster:
     """
     Attributes:
         size (str):
+        family (Union[Unset, str]):
     """
 
     size: str
+    family: Union[Unset, str] = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         size = self.size
+
+        family = self.family
 
         field_dict: dict[str, Any] = {}
 
@@ -41,6 +46,8 @@ class ScaleCluster:
                 "size": size,
             }
         )
+        if family is not UNSET:
+            field_dict["family"] = family
 
         return field_dict
 
@@ -49,8 +56,11 @@ class ScaleCluster:
         d = dict(src_dict)
         size = d.pop("size")
 
+        family = d.pop("family", UNSET)
+
         scale_cluster = cls(
             size=size,
+            family=family,
         )
 
         return scale_cluster

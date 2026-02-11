@@ -60,9 +60,21 @@ def interval_retry(interval: timedelta, timeout: timedelta):
 
 def timestamp_name(project_short_tag: str | None = None) -> str:
     """
-    project_short_tag: Abbreviation of your project
+    Generates a semi-unique name for a database with the following format:
+    - 0-4: number of minutes since the start of the year in hex,
+    - 0-5: a semi-random number,
+    - provided tag,
+    - -username.
+
+    Args:
+        project_short_tag: Abbreviation of your project
     """
-    timestamp = f"{datetime.now(timezone.utc).timestamp():.0f}"
+    now = datetime.now()
+    year_start = datetime(now.year, 1, 1)
+    minutes_elapsed = int((now - year_start).total_seconds() // 60)
+    random_suffix = time.time_ns() % 1048576
+    timestamp = f"{minutes_elapsed:05x}{random_suffix:05x}"
+
     owner = getpass.getuser()
     candidate = f"{timestamp}{project_short_tag or ''}-{owner}"
     return candidate[: Limits.MAX_DATABASE_NAME_LENGTH]
