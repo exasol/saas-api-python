@@ -26,12 +26,13 @@ jobs:
 
     steps:
       - name: SCM Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Python & Poetry Environment
-        uses: exasol/python-toolbox/.github/actions/python-environment@1.5.0
+        uses: exasol/python-toolbox/.github/actions/python-environment@v5
         with:
           python-version: "3.10"
+          poetry-version: "2.3.0"
 
       - name: Run Nox Task api:check-outdated
         run: poetry run -- nox -s api:check-outdated
@@ -50,7 +51,7 @@ jobs:
 
       - name: Upload openapi.json
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: openapi.json
           path: openapi.json

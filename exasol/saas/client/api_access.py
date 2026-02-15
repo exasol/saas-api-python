@@ -1,16 +1,13 @@
 from __future__ import annotations
 
-import datetime as dt
 import getpass
 import logging
-import re
 import time
 from collections.abc import Iterable
 from contextlib import contextmanager
 from datetime import (
     datetime,
     timedelta,
-    timezone,
 )
 from typing import Any
 
@@ -26,6 +23,7 @@ from tenacity.wait import (
     wait_fixed,
 )
 
+import exasol.saas.client.openapi.models as openapi_models
 from exasol.saas.client import (
     Limits,
     openapi,
@@ -234,10 +232,10 @@ class OpenApiAccess:
             return x.seconds // 60
 
         idle_time = idle_time or Limits.AUTOSTOP_MIN_IDLE_TIME
-        cluster_spec = openapi.models.CreateDatabaseInitialCluster(
+        cluster_spec = openapi_models.CreateDatabaseInitialCluster(
             name="my-cluster",
             size=cluster_size,
-            auto_stop=openapi.models.AutoStop(
+            auto_stop=openapi_models.AutoStop(
                 enabled=True,
                 idle_time=minutes(idle_time),
             ),
@@ -246,7 +244,7 @@ class OpenApiAccess:
         return create_database.sync(
             self._account_id,
             client=self._client,
-            body=openapi.models.CreateDatabase(
+            body=openapi_models.CreateDatabase(
                 name=name,
                 initial_cluster=cluster_spec,
                 provider="aws",
@@ -374,7 +372,7 @@ class OpenApiAccess:
     def clusters(
         self,
         database_id: str,
-    ) -> list[openapi.models.Cluster] | None:
+    ) -> list[openapi_models.Cluster] | None:
         return list_clusters.sync(
             self._account_id,
             database_id,
@@ -385,7 +383,7 @@ class OpenApiAccess:
         self,
         database_id: str,
         cluster_id: str,
-    ) -> openapi.models.ClusterConnection | None:
+    ) -> openapi_models.ClusterConnection | None:
         return get_cluster_connection.sync(
             self._account_id,
             database_id,
@@ -406,14 +404,14 @@ class OpenApiAccess:
     def add_allowed_ip(
         self,
         cidr_ip: str = "0.0.0.0/0",
-    ) -> openapi.models.allowed_ip.AllowedIP | None:
+    ) -> openapi_models.allowed_ip.AllowedIP | None:
         """
         Suggested values for cidr_ip:
         * 185.17.207.78/32
         * 0.0.0.0/0 = all ipv4
         * ::/0 = all ipv6
         """
-        rule = openapi.models.CreateAllowedIP(
+        rule = openapi_models.CreateAllowedIP(
             name=timestamp_name(),
             cidr_ip=cidr_ip,
         )

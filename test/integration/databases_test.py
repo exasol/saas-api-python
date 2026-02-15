@@ -3,14 +3,10 @@ from datetime import (
     timedelta,
 )
 
-import pytest
 from tenacity import RetryError
 
 from exasol.saas.client import PROMISING_STATES
-from exasol.saas.client.api_access import (
-    get_connection_params,
-    timestamp_name,
-)
+from exasol.saas.client.api_access import timestamp_name
 from exasol.saas.client.openapi.models.exasol_database import ExasolDatabase
 
 
@@ -23,7 +19,6 @@ def local_name(project_short_tag: str | None) -> str:
     return timestamp_name(project_short_tag)
 
 
-@pytest.mark.slow
 def test_lifecycle(api_access, local_name):
     """
     This integration test uses the database created and provided by pytest
