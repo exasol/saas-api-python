@@ -22,7 +22,7 @@ from exasol.saas.client import SAAS_HOST
 from noxconfig import PROJECT_CONFIG
 
 # default actions to be run if nothing is explicitly specified with the -s option
-nox.options.sessions = ["project:fix"]
+nox.options.sessions = ["format:fix"]
 
 # destination folder for the generated open api client code
 DEST_DIR = "exasol/saas/client/openapi"
