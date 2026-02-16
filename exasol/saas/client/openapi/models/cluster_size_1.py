@@ -1,36 +1,33 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, TypeVar, BinaryIO, TextIO, TYPE_CHECKING, Generator
+from typing import (
+    Any,
+    TypeVar,
+)
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
 
-from ..types import UNSET, Unset
-
-from ..types import UNSET, Unset
-
-
-
-
-
+from ..types import (
+    UNSET,
+    Unset,
+)
 
 T = TypeVar("T", bound="ClusterSize1")
 
 
-
 @_attrs_define
 class ClusterSize1:
-    """ 
-        Attributes:
-            size (str):
-            price (float):
-            vcpu (float):
-            ram (float):
-            is_default (bool):
-            name (str):
-            family (str | Unset):
-     """
+    """
+    Attributes:
+        size (str):
+        price (float):
+        vcpu (float):
+        ram (float):
+        is_default (bool):
+        name (str):
+        family (str | Unset):
+    """
 
     size: str
     price: float
@@ -39,10 +36,6 @@ class ClusterSize1:
     is_default: bool
     name: str
     family: str | Unset = UNSET
-
-
-
-
 
     def to_dict(self) -> dict[str, Any]:
         size = self.size
@@ -59,23 +52,22 @@ class ClusterSize1:
 
         family = self.family
 
-
         field_dict: dict[str, Any] = {}
 
-        field_dict.update({
-            "size": size,
-            "price": price,
-            "vcpu": vcpu,
-            "ram": ram,
-            "isDefault": is_default,
-            "name": name,
-        })
+        field_dict.update(
+            {
+                "size": size,
+                "price": price,
+                "vcpu": vcpu,
+                "ram": ram,
+                "isDefault": is_default,
+                "name": name,
+            }
+        )
         if family is not UNSET:
             field_dict["family"] = family
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
@@ -105,4 +97,3 @@ class ClusterSize1:
         )
 
         return cluster_size_1
-

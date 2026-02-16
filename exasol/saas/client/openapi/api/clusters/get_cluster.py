@@ -1,58 +1,52 @@
 from http import HTTPStatus
-from typing import Any, cast
+from typing import Any
 from urllib.parse import quote
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response, UNSET
-from ... import errors
-
+from ...client import (
+    AuthenticatedClient,
+    Client,
+)
 from ...models.api_error import ApiError
 from ...models.cluster import Cluster
-from typing import cast
-
+from ...types import Response
 
 
 def _get_kwargs(
     account_id: str,
     database_id: str,
     cluster_id: str,
-
 ) -> dict[str, Any]:
-    
-
-    
-
-    
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/clusters/{cluster_id}".format(account_id=quote(str(account_id), safe=""),database_id=quote(str(database_id), safe=""),cluster_id=quote(str(cluster_id), safe=""),),
+        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/clusters/{cluster_id}".format(
+            account_id=quote(str(account_id), safe=""),
+            database_id=quote(str(database_id), safe=""),
+            cluster_id=quote(str(cluster_id), safe=""),
+        ),
     }
-
 
     return _kwargs
 
 
-
-def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> ApiError | Cluster:
+def _parse_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> ApiError | Cluster:
     if response.status_code == 200:
         response_200 = Cluster.from_dict(response.json())
-
-
 
         return response_200
 
     response_default = ApiError.from_dict(response.json())
 
-
-
     return response_default
 
 
-
-def _build_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> Response[ApiError | Cluster]:
+def _build_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[ApiError | Cluster]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -67,9 +61,8 @@ def sync_detailed(
     cluster_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Response[ApiError | Cluster]:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -81,14 +74,12 @@ def sync_detailed(
 
     Returns:
         Response[ApiError | Cluster]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-database_id=database_id,
-cluster_id=cluster_id,
-
+        database_id=database_id,
+        cluster_id=cluster_id,
     )
 
     response = client.get_httpx_client().request(
@@ -97,15 +88,15 @@ cluster_id=cluster_id,
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     account_id: str,
     database_id: str,
     cluster_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> ApiError | Cluster | None:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -117,16 +108,15 @@ def sync(
 
     Returns:
         ApiError | Cluster
-     """
-
+    """
 
     return sync_detailed(
         account_id=account_id,
-database_id=database_id,
-cluster_id=cluster_id,
-client=client,
-
+        database_id=database_id,
+        cluster_id=cluster_id,
+        client=client,
     ).parsed
+
 
 async def asyncio_detailed(
     account_id: str,
@@ -134,9 +124,8 @@ async def asyncio_detailed(
     cluster_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Response[ApiError | Cluster]:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -148,21 +137,18 @@ async def asyncio_detailed(
 
     Returns:
         Response[ApiError | Cluster]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-database_id=database_id,
-cluster_id=cluster_id,
-
+        database_id=database_id,
+        cluster_id=cluster_id,
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
 
 async def asyncio(
     account_id: str,
@@ -170,9 +156,8 @@ async def asyncio(
     cluster_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> ApiError | Cluster | None:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -184,13 +169,13 @@ async def asyncio(
 
     Returns:
         ApiError | Cluster
-     """
+    """
 
-
-    return (await asyncio_detailed(
-        account_id=account_id,
-database_id=database_id,
-cluster_id=cluster_id,
-client=client,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            account_id=account_id,
+            database_id=database_id,
+            cluster_id=cluster_id,
+            client=client,
+        )
+    ).parsed

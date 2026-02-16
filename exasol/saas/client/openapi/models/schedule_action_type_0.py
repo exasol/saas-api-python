@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class ScheduleActionType0(str, Enum):
     ACTIONCLUSTERSCALE = "ActionClusterScale"
     ACTIONCLUSTERSTART = "ActionClusterStart"

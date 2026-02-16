@@ -1,36 +1,33 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, TypeVar, BinaryIO, TextIO, TYPE_CHECKING, Generator
+from typing import (
+    Any,
+    TypeVar,
+)
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
 
-from ..types import UNSET, Unset
-
-from ..types import UNSET, Unset
-
-
-
-
-
+from ..types import (
+    UNSET,
+    Unset,
+)
 
 T = TypeVar("T", bound="UsageCluster")
 
 
-
 @_attrs_define
 class UsageCluster:
-    """ 
-        Attributes:
-            id (str):
-            size (str):
-            name (str):
-            compute (float | Unset):
-            out_same_region (float | Unset):
-            out_different_region (float | Unset):
-            out_internet (float | Unset):
-     """
+    """
+    Attributes:
+        id (str):
+        size (str):
+        name (str):
+        compute (float | Unset):
+        out_same_region (float | Unset):
+        out_different_region (float | Unset):
+        out_internet (float | Unset):
+    """
 
     id: str
     size: str
@@ -39,10 +36,6 @@ class UsageCluster:
     out_same_region: float | Unset = UNSET
     out_different_region: float | Unset = UNSET
     out_internet: float | Unset = UNSET
-
-
-
-
 
     def to_dict(self) -> dict[str, Any]:
         id = self.id
@@ -59,14 +52,15 @@ class UsageCluster:
 
         out_internet = self.out_internet
 
-
         field_dict: dict[str, Any] = {}
 
-        field_dict.update({
-            "id": id,
-            "size": size,
-            "name": name,
-        })
+        field_dict.update(
+            {
+                "id": id,
+                "size": size,
+                "name": name,
+            }
+        )
         if compute is not UNSET:
             field_dict["compute"] = compute
         if out_same_region is not UNSET:
@@ -77,8 +71,6 @@ class UsageCluster:
             field_dict["outInternet"] = out_internet
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
@@ -108,4 +100,3 @@ class UsageCluster:
         )
 
         return usage_cluster
-

@@ -1,47 +1,40 @@
 from http import HTTPStatus
-from typing import Any, cast
+from typing import Any
 from urllib.parse import quote
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response, UNSET
-from ... import errors
-
+from ...client import (
+    AuthenticatedClient,
+    Client,
+)
 from ...models.allowed_ip import AllowedIP
 from ...models.api_error import ApiError
-from typing import cast
-
+from ...types import Response
 
 
 def _get_kwargs(
     account_id: str,
-
 ) -> dict[str, Any]:
-    
-
-    
-
-    
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/api/v1/accounts/{account_id}/security/allowlist_ip".format(account_id=quote(str(account_id), safe=""),),
+        "url": "/api/v1/accounts/{account_id}/security/allowlist_ip".format(
+            account_id=quote(str(account_id), safe=""),
+        ),
     }
-
 
     return _kwargs
 
 
-
-def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> ApiError | list[AllowedIP]:
+def _parse_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> ApiError | list[AllowedIP]:
     if response.status_code == 200:
         response_200 = []
         _response_200 = response.json()
-        for response_200_item_data in (_response_200):
+        for response_200_item_data in _response_200:
             response_200_item = AllowedIP.from_dict(response_200_item_data)
-
-
 
             response_200.append(response_200_item)
 
@@ -49,13 +42,12 @@ def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Res
 
     response_default = ApiError.from_dict(response.json())
 
-
-
     return response_default
 
 
-
-def _build_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> Response[ApiError | list[AllowedIP]]:
+def _build_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[ApiError | list[AllowedIP]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -68,9 +60,8 @@ def sync_detailed(
     account_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Response[ApiError | list[AllowedIP]]:
-    """ 
+    """
     Args:
         account_id (str):
 
@@ -80,12 +71,10 @@ def sync_detailed(
 
     Returns:
         Response[ApiError | list[AllowedIP]]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-
     )
 
     response = client.get_httpx_client().request(
@@ -94,13 +83,13 @@ def sync_detailed(
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     account_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> ApiError | list[AllowedIP] | None:
-    """ 
+    """
     Args:
         account_id (str):
 
@@ -110,22 +99,20 @@ def sync(
 
     Returns:
         ApiError | list[AllowedIP]
-     """
-
+    """
 
     return sync_detailed(
         account_id=account_id,
-client=client,
-
+        client=client,
     ).parsed
+
 
 async def asyncio_detailed(
     account_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Response[ApiError | list[AllowedIP]]:
-    """ 
+    """
     Args:
         account_id (str):
 
@@ -135,27 +122,23 @@ async def asyncio_detailed(
 
     Returns:
         Response[ApiError | list[AllowedIP]]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
 
 async def asyncio(
     account_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> ApiError | list[AllowedIP] | None:
-    """ 
+    """
     Args:
         account_id (str):
 
@@ -165,11 +148,11 @@ async def asyncio(
 
     Returns:
         ApiError | list[AllowedIP]
-     """
+    """
 
-
-    return (await asyncio_detailed(
-        account_id=account_id,
-client=client,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            account_id=account_id,
+            client=client,
+        )
+    ).parsed

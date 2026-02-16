@@ -1,36 +1,31 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, TypeVar, BinaryIO, TextIO, TYPE_CHECKING, Generator
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    TypeVar,
+)
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
-
-from ..types import UNSET, Unset
-
-from typing import cast
 
 if TYPE_CHECKING:
-  from ..models.extension_version import ExtensionVersion
-
-
-
+    from ..models.extension_version import ExtensionVersion
 
 
 T = TypeVar("T", bound="Extension")
 
 
-
 @_attrs_define
 class Extension:
-    """ 
-        Attributes:
-            id (str):
-            name (str):
-            description (str):
-            category_id (str):
-            installable_versions (list[ExtensionVersion]):
-     """
+    """
+    Attributes:
+        id (str):
+        name (str):
+        description (str):
+        category_id (str):
+        installable_versions (list[ExtensionVersion]):
+    """
 
     id: str
     name: str
@@ -38,12 +33,7 @@ class Extension:
     category_id: str
     installable_versions: list[ExtensionVersion]
 
-
-
-
-
     def to_dict(self) -> dict[str, Any]:
-        from ..models.extension_version import ExtensionVersion
         id = self.id
 
         name = self.name
@@ -57,26 +47,24 @@ class Extension:
             installable_versions_item = installable_versions_item_data.to_dict()
             installable_versions.append(installable_versions_item)
 
-
-
-
         field_dict: dict[str, Any] = {}
 
-        field_dict.update({
-            "id": id,
-            "name": name,
-            "description": description,
-            "categoryId": category_id,
-            "installableVersions": installable_versions,
-        })
+        field_dict.update(
+            {
+                "id": id,
+                "name": name,
+                "description": description,
+                "categoryId": category_id,
+                "installableVersions": installable_versions,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.extension_version import ExtensionVersion
+
         d = dict(src_dict)
         id = d.pop("id")
 
@@ -88,13 +76,12 @@ class Extension:
 
         installable_versions = []
         _installable_versions = d.pop("installableVersions")
-        for installable_versions_item_data in (_installable_versions):
-            installable_versions_item = ExtensionVersion.from_dict(installable_versions_item_data)
-
-
+        for installable_versions_item_data in _installable_versions:
+            installable_versions_item = ExtensionVersion.from_dict(
+                installable_versions_item_data
+            )
 
             installable_versions.append(installable_versions_item)
-
 
         extension = cls(
             id=id,
@@ -105,4 +92,3 @@ class Extension:
         )
 
         return extension
-

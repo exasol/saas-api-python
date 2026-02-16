@@ -1,30 +1,25 @@
 from http import HTTPStatus
-from typing import Any, cast
-from urllib.parse import quote
+from typing import (
+    Any,
+    cast,
+)
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response, UNSET
-from ... import errors
-
+from ...client import (
+    AuthenticatedClient,
+    Client,
+)
 from ...models.api_error import ApiError
 from ...models.update_profile import UpdateProfile
-from typing import cast
-
+from ...types import Response
 
 
 def _get_kwargs(
     *,
     body: UpdateProfile,
-
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
-
-
-    
-
-    
 
     _kwargs: dict[str, Any] = {
         "method": "put",
@@ -33,28 +28,27 @@ def _get_kwargs(
 
     _kwargs["json"] = body.to_dict()
 
-
     headers["Content-Type"] = "application/json"
 
     _kwargs["headers"] = headers
     return _kwargs
 
 
-
-def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> Any | ApiError:
+def _parse_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Any | ApiError:
     if response.status_code == 204:
         response_204 = cast(Any, None)
         return response_204
 
     response_default = ApiError.from_dict(response.json())
 
-
-
     return response_default
 
 
-
-def _build_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> Response[Any | ApiError]:
+def _build_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[Any | ApiError]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -67,9 +61,8 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     body: UpdateProfile,
-
 ) -> Response[Any | ApiError]:
-    """ 
+    """
     Args:
         body (UpdateProfile):
 
@@ -79,12 +72,10 @@ def sync_detailed(
 
     Returns:
         Response[Any | ApiError]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         body=body,
-
     )
 
     response = client.get_httpx_client().request(
@@ -93,13 +84,13 @@ def sync_detailed(
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     *,
     client: AuthenticatedClient,
     body: UpdateProfile,
-
 ) -> Any | ApiError | None:
-    """ 
+    """
     Args:
         body (UpdateProfile):
 
@@ -109,22 +100,20 @@ def sync(
 
     Returns:
         Any | ApiError
-     """
-
+    """
 
     return sync_detailed(
         client=client,
-body=body,
-
+        body=body,
     ).parsed
+
 
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
     body: UpdateProfile,
-
 ) -> Response[Any | ApiError]:
-    """ 
+    """
     Args:
         body (UpdateProfile):
 
@@ -134,27 +123,23 @@ async def asyncio_detailed(
 
     Returns:
         Response[Any | ApiError]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         body=body,
-
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
 
 async def asyncio(
     *,
     client: AuthenticatedClient,
     body: UpdateProfile,
-
 ) -> Any | ApiError | None:
-    """ 
+    """
     Args:
         body (UpdateProfile):
 
@@ -164,11 +149,11 @@ async def asyncio(
 
     Returns:
         Any | ApiError
-     """
+    """
 
-
-    return (await asyncio_detailed(
-        client=client,
-body=body,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            client=client,
+            body=body,
+        )
+    ).parsed

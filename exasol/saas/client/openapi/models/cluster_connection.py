@@ -1,36 +1,31 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, TypeVar, BinaryIO, TextIO, TYPE_CHECKING, Generator
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    TypeVar,
+)
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
-
-from ..types import UNSET, Unset
-
-from typing import cast
 
 if TYPE_CHECKING:
-  from ..models.connection_i_ps import ConnectionIPs
-
-
-
+    from ..models.connection_i_ps import ConnectionIPs
 
 
 T = TypeVar("T", bound="ClusterConnection")
 
 
-
 @_attrs_define
 class ClusterConnection:
-    """ 
-        Attributes:
-            dns (str):
-            port (int):
-            jdbc (str):
-            ips (ConnectionIPs):
-            db_username (str):
-     """
+    """
+    Attributes:
+        dns (str):
+        port (int):
+        jdbc (str):
+        ips (ConnectionIPs):
+        db_username (str):
+    """
 
     dns: str
     port: int
@@ -38,12 +33,7 @@ class ClusterConnection:
     ips: ConnectionIPs
     db_username: str
 
-
-
-
-
     def to_dict(self) -> dict[str, Any]:
-        from ..models.connection_i_ps import ConnectionIPs
         dns = self.dns
 
         port = self.port
@@ -54,24 +44,24 @@ class ClusterConnection:
 
         db_username = self.db_username
 
-
         field_dict: dict[str, Any] = {}
 
-        field_dict.update({
-            "dns": dns,
-            "port": port,
-            "jdbc": jdbc,
-            "ips": ips,
-            "dbUsername": db_username,
-        })
+        field_dict.update(
+            {
+                "dns": dns,
+                "port": port,
+                "jdbc": jdbc,
+                "ips": ips,
+                "dbUsername": db_username,
+            }
+        )
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.connection_i_ps import ConnectionIPs
+
         d = dict(src_dict)
         dns = d.pop("dns")
 
@@ -80,9 +70,6 @@ class ClusterConnection:
         jdbc = d.pop("jdbc")
 
         ips = ConnectionIPs.from_dict(d.pop("ips"))
-
-
-
 
         db_username = d.pop("dbUsername")
 
@@ -95,4 +82,3 @@ class ClusterConnection:
         )
 
         return cluster_connection
-

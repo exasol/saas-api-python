@@ -1,48 +1,41 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, TypeVar, BinaryIO, TextIO, TYPE_CHECKING, Generator
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    TypeVar,
+)
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
 
-from ..types import UNSET, Unset
-
-from ..types import UNSET, Unset
-from typing import cast
+from ..types import (
+    UNSET,
+    Unset,
+)
 
 if TYPE_CHECKING:
-  from ..models.auto_stop import AutoStop
-  from ..models.cluster_settings_update import ClusterSettingsUpdate
-
-
-
+    from ..models.auto_stop import AutoStop
+    from ..models.cluster_settings_update import ClusterSettingsUpdate
 
 
 T = TypeVar("T", bound="UpdateCluster")
 
 
-
 @_attrs_define
 class UpdateCluster:
-    """ 
-        Attributes:
-            name (str | Unset):
-            auto_stop (AutoStop | Unset):
-            settings (ClusterSettingsUpdate | Unset):
-     """
+    """
+    Attributes:
+        name (str | Unset):
+        auto_stop (AutoStop | Unset):
+        settings (ClusterSettingsUpdate | Unset):
+    """
 
     name: str | Unset = UNSET
     auto_stop: AutoStop | Unset = UNSET
     settings: ClusterSettingsUpdate | Unset = UNSET
 
-
-
-
-
     def to_dict(self) -> dict[str, Any]:
-        from ..models.auto_stop import AutoStop
-        from ..models.cluster_settings_update import ClusterSettingsUpdate
         name = self.name
 
         auto_stop: dict[str, Any] | Unset = UNSET
@@ -53,11 +46,9 @@ class UpdateCluster:
         if not isinstance(self.settings, Unset):
             settings = self.settings.to_dict()
 
-
         field_dict: dict[str, Any] = {}
 
-        field_dict.update({
-        })
+        field_dict.update({})
         if name is not UNSET:
             field_dict["name"] = name
         if auto_stop is not UNSET:
@@ -67,34 +58,27 @@ class UpdateCluster:
 
         return field_dict
 
-
-
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.auto_stop import AutoStop
         from ..models.cluster_settings_update import ClusterSettingsUpdate
+
         d = dict(src_dict)
         name = d.pop("name", UNSET)
 
         _auto_stop = d.pop("autoStop", UNSET)
         auto_stop: AutoStop | Unset
-        if isinstance(_auto_stop,  Unset):
+        if isinstance(_auto_stop, Unset):
             auto_stop = UNSET
         else:
             auto_stop = AutoStop.from_dict(_auto_stop)
 
-
-
-
         _settings = d.pop("settings", UNSET)
         settings: ClusterSettingsUpdate | Unset
-        if isinstance(_settings,  Unset):
+        if isinstance(_settings, Unset):
             settings = UNSET
         else:
             settings = ClusterSettingsUpdate.from_dict(_settings)
-
-
-
 
         update_cluster = cls(
             name=name,
@@ -103,4 +87,3 @@ class UpdateCluster:
         )
 
         return update_cluster
-

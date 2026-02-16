@@ -1,57 +1,50 @@
 from http import HTTPStatus
-from typing import Any, cast
+from typing import Any
 from urllib.parse import quote
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response, UNSET
-from ... import errors
-
+from ...client import (
+    AuthenticatedClient,
+    Client,
+)
 from ...models.api_error import ApiError
 from ...models.database_upgrade_info import DatabaseUpgradeInfo
-from typing import cast
-
+from ...types import Response
 
 
 def _get_kwargs(
     account_id: str,
     database_id: str,
-
 ) -> dict[str, Any]:
-    
-
-    
-
-    
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/upgrade".format(account_id=quote(str(account_id), safe=""),database_id=quote(str(database_id), safe=""),),
+        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/upgrade".format(
+            account_id=quote(str(account_id), safe=""),
+            database_id=quote(str(database_id), safe=""),
+        ),
     }
-
 
     return _kwargs
 
 
-
-def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> ApiError | DatabaseUpgradeInfo:
+def _parse_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> ApiError | DatabaseUpgradeInfo:
     if response.status_code == 200:
         response_200 = DatabaseUpgradeInfo.from_dict(response.json())
-
-
 
         return response_200
 
     response_default = ApiError.from_dict(response.json())
 
-
-
     return response_default
 
 
-
-def _build_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> Response[ApiError | DatabaseUpgradeInfo]:
+def _build_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[ApiError | DatabaseUpgradeInfo]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -65,9 +58,8 @@ def sync_detailed(
     database_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Response[ApiError | DatabaseUpgradeInfo]:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -78,13 +70,11 @@ def sync_detailed(
 
     Returns:
         Response[ApiError | DatabaseUpgradeInfo]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-database_id=database_id,
-
+        database_id=database_id,
     )
 
     response = client.get_httpx_client().request(
@@ -93,14 +83,14 @@ database_id=database_id,
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     account_id: str,
     database_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> ApiError | DatabaseUpgradeInfo | None:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -111,24 +101,22 @@ def sync(
 
     Returns:
         ApiError | DatabaseUpgradeInfo
-     """
-
+    """
 
     return sync_detailed(
         account_id=account_id,
-database_id=database_id,
-client=client,
-
+        database_id=database_id,
+        client=client,
     ).parsed
+
 
 async def asyncio_detailed(
     account_id: str,
     database_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Response[ApiError | DatabaseUpgradeInfo]:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -139,29 +127,25 @@ async def asyncio_detailed(
 
     Returns:
         Response[ApiError | DatabaseUpgradeInfo]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-database_id=database_id,
-
+        database_id=database_id,
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
 
 async def asyncio(
     account_id: str,
     database_id: str,
     *,
     client: AuthenticatedClient,
-
 ) -> ApiError | DatabaseUpgradeInfo | None:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -172,12 +156,12 @@ async def asyncio(
 
     Returns:
         ApiError | DatabaseUpgradeInfo
-     """
+    """
 
-
-    return (await asyncio_detailed(
-        account_id=account_id,
-database_id=database_id,
-client=client,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            account_id=account_id,
+            database_id=database_id,
+            client=client,
+        )
+    ).parsed

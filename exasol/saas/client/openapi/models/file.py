@@ -1,38 +1,34 @@
 from __future__ import annotations
 
+import datetime
 from collections.abc import Mapping
-from typing import Any, TypeVar, BinaryIO, TextIO, TYPE_CHECKING, Generator
+from typing import (
+    Any,
+    TypeVar,
+)
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
-
-from ..types import UNSET, Unset
-
-from ..types import UNSET, Unset
 from dateutil.parser import isoparse
-from typing import cast
-import datetime
 
-
-
-
-
+from ..types import (
+    UNSET,
+    Unset,
+)
 
 T = TypeVar("T", bound="File")
 
 
-
 @_attrs_define
 class File:
-    """ 
-        Attributes:
-            name (str):
-            type_ (str):
-            path (str):
-            last_modified (datetime.datetime):
-            size (int | Unset):
-            children (list[File] | Unset):
-     """
+    """
+    Attributes:
+        name (str):
+        type_ (str):
+        path (str):
+        last_modified (datetime.datetime):
+        size (int | Unset):
+        children (list[File] | Unset):
+    """
 
     name: str
     type_: str
@@ -40,10 +36,6 @@ class File:
     last_modified: datetime.datetime
     size: int | Unset = UNSET
     children: list[File] | Unset = UNSET
-
-
-
-
 
     def to_dict(self) -> dict[str, Any]:
         name = self.name
@@ -63,25 +55,22 @@ class File:
                 children_item = children_item_data.to_dict()
                 children.append(children_item)
 
-
-
-
         field_dict: dict[str, Any] = {}
 
-        field_dict.update({
-            "name": name,
-            "type": type_,
-            "path": path,
-            "lastModified": last_modified,
-        })
+        field_dict.update(
+            {
+                "name": name,
+                "type": type_,
+                "path": path,
+                "lastModified": last_modified,
+            }
+        )
         if size is not UNSET:
             field_dict["size"] = size
         if children is not UNSET:
             field_dict["children"] = children
 
         return field_dict
-
-
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
@@ -94,9 +83,6 @@ class File:
 
         last_modified = isoparse(d.pop("lastModified"))
 
-
-
-
         size = d.pop("size", UNSET)
 
         _children = d.pop("children", UNSET)
@@ -106,10 +92,7 @@ class File:
             for children_item_data in _children:
                 children_item = File.from_dict(children_item_data)
 
-
-
                 children.append(children_item)
-
 
         file = cls(
             name=name,
@@ -121,4 +104,3 @@ class File:
         )
 
         return file
-

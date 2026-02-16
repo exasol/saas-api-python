@@ -1,47 +1,40 @@
 from http import HTTPStatus
-from typing import Any, cast
+from typing import Any
 from urllib.parse import quote
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response, UNSET
-from ... import errors
-
+from ...client import (
+    AuthenticatedClient,
+    Client,
+)
 from ...models.api_error import ApiError
 from ...models.cluster_size_1 import ClusterSize1
-from typing import cast
-
+from ...types import Response
 
 
 def _get_kwargs(
     platform: str,
-
 ) -> dict[str, Any]:
-    
-
-    
-
-    
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/api/v1/platforms/{platform}/sizes".format(platform=quote(str(platform), safe=""),),
+        "url": "/api/v1/platforms/{platform}/sizes".format(
+            platform=quote(str(platform), safe=""),
+        ),
     }
-
 
     return _kwargs
 
 
-
-def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> ApiError | list[ClusterSize1]:
+def _parse_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> ApiError | list[ClusterSize1]:
     if response.status_code == 200:
         response_200 = []
         _response_200 = response.json()
-        for response_200_item_data in (_response_200):
+        for response_200_item_data in _response_200:
             response_200_item = ClusterSize1.from_dict(response_200_item_data)
-
-
 
             response_200.append(response_200_item)
 
@@ -49,13 +42,12 @@ def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Res
 
     response_default = ApiError.from_dict(response.json())
 
-
-
     return response_default
 
 
-
-def _build_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> Response[ApiError | list[ClusterSize1]]:
+def _build_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[ApiError | list[ClusterSize1]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -68,9 +60,8 @@ def sync_detailed(
     platform: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Response[ApiError | list[ClusterSize1]]:
-    """ 
+    """
     Args:
         platform (str):
 
@@ -80,12 +71,10 @@ def sync_detailed(
 
     Returns:
         Response[ApiError | list[ClusterSize1]]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         platform=platform,
-
     )
 
     response = client.get_httpx_client().request(
@@ -94,13 +83,13 @@ def sync_detailed(
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     platform: str,
     *,
     client: AuthenticatedClient,
-
 ) -> ApiError | list[ClusterSize1] | None:
-    """ 
+    """
     Args:
         platform (str):
 
@@ -110,22 +99,20 @@ def sync(
 
     Returns:
         ApiError | list[ClusterSize1]
-     """
-
+    """
 
     return sync_detailed(
         platform=platform,
-client=client,
-
+        client=client,
     ).parsed
+
 
 async def asyncio_detailed(
     platform: str,
     *,
     client: AuthenticatedClient,
-
 ) -> Response[ApiError | list[ClusterSize1]]:
-    """ 
+    """
     Args:
         platform (str):
 
@@ -135,27 +122,23 @@ async def asyncio_detailed(
 
     Returns:
         Response[ApiError | list[ClusterSize1]]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         platform=platform,
-
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
 
 async def asyncio(
     platform: str,
     *,
     client: AuthenticatedClient,
-
 ) -> ApiError | list[ClusterSize1] | None:
-    """ 
+    """
     Args:
         platform (str):
 
@@ -165,11 +148,11 @@ async def asyncio(
 
     Returns:
         ApiError | list[ClusterSize1]
-     """
+    """
 
-
-    return (await asyncio_detailed(
-        platform=platform,
-client=client,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            platform=platform,
+            client=client,
+        )
+    ).parsed

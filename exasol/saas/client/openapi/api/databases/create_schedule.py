@@ -1,17 +1,16 @@
 from http import HTTPStatus
-from typing import Any, cast
+from typing import Any
 from urllib.parse import quote
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response, UNSET
-from ... import errors
-
+from ...client import (
+    AuthenticatedClient,
+    Client,
+)
 from ...models.api_error import ApiError
 from ...models.schedule import Schedule
-from typing import cast
-
+from ...types import Response
 
 
 def _get_kwargs(
@@ -19,22 +18,18 @@ def _get_kwargs(
     database_id: str,
     *,
     body: Schedule,
-
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
-
-    
-
-    
-
     _kwargs: dict[str, Any] = {
         "method": "post",
-        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/schedules".format(account_id=quote(str(account_id), safe=""),database_id=quote(str(database_id), safe=""),),
+        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/schedules".format(
+            account_id=quote(str(account_id), safe=""),
+            database_id=quote(str(database_id), safe=""),
+        ),
     }
 
     _kwargs["json"] = body.to_dict()
-
 
     headers["Content-Type"] = "application/json"
 
@@ -42,24 +37,22 @@ def _get_kwargs(
     return _kwargs
 
 
-
-def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> ApiError | Schedule:
+def _parse_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> ApiError | Schedule:
     if response.status_code == 201:
         response_201 = Schedule.from_dict(response.json())
-
-
 
         return response_201
 
     response_default = ApiError.from_dict(response.json())
 
-
-
     return response_default
 
 
-
-def _build_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> Response[ApiError | Schedule]:
+def _build_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[ApiError | Schedule]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -74,9 +67,8 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     body: Schedule,
-
 ) -> Response[ApiError | Schedule]:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -88,14 +80,12 @@ def sync_detailed(
 
     Returns:
         Response[ApiError | Schedule]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-database_id=database_id,
-body=body,
-
+        database_id=database_id,
+        body=body,
     )
 
     response = client.get_httpx_client().request(
@@ -104,15 +94,15 @@ body=body,
 
     return _build_response(client=client, response=response)
 
+
 def sync(
     account_id: str,
     database_id: str,
     *,
     client: AuthenticatedClient,
     body: Schedule,
-
 ) -> ApiError | Schedule | None:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -124,16 +114,15 @@ def sync(
 
     Returns:
         ApiError | Schedule
-     """
-
+    """
 
     return sync_detailed(
         account_id=account_id,
-database_id=database_id,
-client=client,
-body=body,
-
+        database_id=database_id,
+        client=client,
+        body=body,
     ).parsed
+
 
 async def asyncio_detailed(
     account_id: str,
@@ -141,9 +130,8 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
     body: Schedule,
-
 ) -> Response[ApiError | Schedule]:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -155,21 +143,18 @@ async def asyncio_detailed(
 
     Returns:
         Response[ApiError | Schedule]
-     """
-
+    """
 
     kwargs = _get_kwargs(
         account_id=account_id,
-database_id=database_id,
-body=body,
-
+        database_id=database_id,
+        body=body,
     )
 
-    response = await client.get_async_httpx_client().request(
-        **kwargs
-    )
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
 
 async def asyncio(
     account_id: str,
@@ -177,9 +162,8 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
     body: Schedule,
-
 ) -> ApiError | Schedule | None:
-    """ 
+    """
     Args:
         account_id (str):
         database_id (str):
@@ -191,13 +175,13 @@ async def asyncio(
 
     Returns:
         ApiError | Schedule
-     """
+    """
 
-
-    return (await asyncio_detailed(
-        account_id=account_id,
-database_id=database_id,
-client=client,
-body=body,
-
-    )).parsed
+    return (
+        await asyncio_detailed(
+            account_id=account_id,
+            database_id=database_id,
+            client=client,
+            body=body,
+        )
+    ).parsed
