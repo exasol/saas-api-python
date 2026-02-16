@@ -3,6 +3,7 @@ from datetime import (
     timedelta,
 )
 
+import pytest
 from tenacity import RetryError
 
 from exasol.saas.client import PROMISING_STATES
