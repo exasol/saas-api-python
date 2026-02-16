@@ -70,13 +70,3 @@ def test_lifecycle(api_access, local_name):
         api_access.delete_database(db.id)
         api_access.wait_until_deleted(db.id)
         assert db.id not in api_access.list_database_ids()
-
-
-def test_x1(api_access):
-    id = "wyZab-TzT76G6l7iDNGMuw"
-    api_access.delete_database(id)
-    try:
-        api_access.wait_until_deleted(id, timeout=timedelta(seconds=1))
-        LOG.info(f"DB {id} seems to be deleted already")
-    except DatabaseDeleteTimeout:
-        LOG.error(f"Gave up waiting for DB {id} to be deleted")
