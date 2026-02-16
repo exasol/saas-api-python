@@ -282,7 +282,7 @@ class OpenApiAccess:
         @interval_retry(interval, timeout)
         def still_exists() -> bool:
             # an exception ApiError / OpenApiError should be ignored here
-            existing = self.list_database_ids()
+            existing = list(self.list_database_ids())
             try:
                 result = database_id in existing
             except OpenApiError:
@@ -355,13 +355,13 @@ class OpenApiAccess:
         finally:
             db_repr = f"{db.name} with ID {db.id}" if db else None
             if not db:
-                LOG.warning("Cannot delete database None")
+                LOG.warning("CTX: Cannot delete database None")
             elif keep:
-                LOG.info("Keeping database %s as keep = %s.", db_repr, keep)
+                LOG.info("CTX: Keeping database %s as keep = %s.", db_repr, keep)
             else:
-                LOG.info("Deleting database %s", db_repr)
+                LOG.info("CTX: Deleting database %s", db_repr)
                 self.delete_database(db.id, ignore_delete_failure)
-                LOG.info("Successfully deleted database %s.", db_repr)
+                LOG.info("CTX: Successfully deleted database %s.", db_repr)
 
     def get_database(
         self,
