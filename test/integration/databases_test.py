@@ -58,5 +58,5 @@ def test_lifecycle(api_access, local_name):
 
         # delete database and verify database is not listed anymore
         api_access.delete_database(db.id)
-        api_access.wait_until_deleted(db.id)
+        api_access.wait_until_deleted(db.id, timeout=timedelta(minutes=30))
         assert db.id not in api_access.list_database_ids()

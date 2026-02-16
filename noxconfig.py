@@ -6,6 +6,7 @@ PROJECT_CONFIG = BaseConfig(
     root_path=Path(__file__).parent,
     project_name="saas",
     python_versions=("3.10", "3.11", "3.12", "3.13"),
+    # Actually SAPIPY itests don't use any (on-prem) database version, see
+    # https://github.com/exasol/python-toolbox/issues/682.
     exasol_versions=("7.1.30",),
-    # "exasol/saas/client/openapi/**"
 )
