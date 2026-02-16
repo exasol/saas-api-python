@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import getpass
+import json
 import logging
 import time
 from collections.abc import Iterable
@@ -14,9 +15,10 @@ from typing import Any
 import tenacity
 from tenacity import (
     TryAgain,
+    RetryError,
     retry,
 )
-from tenacity.retry import retry_if_exception
+from tenacity.retry import retry_if_exception_type
 from tenacity.stop import stop_after_delay
 from tenacity.wait import (
     wait_exponential,
@@ -51,6 +53,7 @@ from exasol.saas.client.openapi.types import UNSET
 
 LOG = logging.getLogger(__name__)
 LOG.setLevel(logging.INFO)
+logging.getLogger("httpx").setLevel(logging.ERROR)
 
 
 def interval_retry(interval: timedelta, timeout: timedelta):
@@ -79,11 +82,16 @@ def timestamp_name(project_short_tag: str | None = None) -> str:
     return candidate[: Limits.MAX_DATABASE_NAME_LENGTH]
 
 
+# unused
 def indicates_retry(ex: BaseException) -> bool:
     """
     When deleting a SaaS instance raises an UnexpectedStatus, then this
     function decides whether we should retry to delete the database instance.
     """
+    LOG.info(
+        "%d: %s: %s",
+        ex.status_code, type(ex).__name__, ex.content.decode("utf-8"),
+    )
     return bool(
         isinstance(ex, UnexpectedStatus)
         and ex.status_code == 400
@@ -102,6 +110,12 @@ class DatabaseDeleteTimeout(Exception):
     """
     If deletion of a SaaS database instance was requested but during the
     specified timeout it was still reported in the list of existing databases.
+    """
+
+
+class DatabaseDeleteError(Exception):
+    """
+    Unexpected failure when deleting a SaaS database.
     """
 
 
@@ -262,6 +276,7 @@ class OpenApiAccess:
                 stream_type="feature-release",
             ),
         )
+        LOG.info("Created database with ID %s", result.id)
         if isinstance(result, ApiError):
             raise OpenApiError(f"Failed to create database {name}", result)
         return result
@@ -281,19 +296,14 @@ class OpenApiAccess:
     ):
         @interval_retry(interval, timeout)
         def still_exists() -> bool:
-            # an exception ApiError / OpenApiError should be ignored here
-            existing = list(self.list_database_ids())
-            try:
-                result = database_id in existing
-            except OpenApiError:
-                return False
-            LOG.info(f"Found existing database IDs: {existing}")
-            if result:
+            if database_id in self.list_database_ids():
                 raise TryAgain
-            return result
+            return False
 
-        if still_exists():
-            raise DatabaseDeleteTimeout
+        try:
+            return still_exists()
+        except (TryAgain, RetryError) as ex:
+            raise DatabaseDeleteTimeout from ex
 
     def delete_database(
         self,
@@ -303,24 +313,38 @@ class OpenApiAccess:
         min_interval: timedelta = timedelta(seconds=1),
         max_interval: timedelta = timedelta(minutes=2),
     ) -> None:
+        def status_and_message(resp) -> tuple[int, str]:
+            text = resp.content.decode("utf-8")
+            msg = json.loads(text).get("message") if text else ""
+            return resp.status_code, msg
+
         @retry(
-            reraise=True,
             wait=wait_exponential(
                 multiplier=1,
                 min=min_interval,
                 max=max_interval,
             ),
             stop=stop_after_delay(timeout),
-            retry=retry_if_exception(indicates_retry),
+            retry=retry_if_exception_type(TryAgain),
         )
-        def delete_with_retry():
-            LOG.info("Trying to delete database with ID %s ...", database_id)
-            delete_database.sync_detailed(
+        def delete_with_retry() -> None:
+            LOG.info("Trying to delete ...")
+            resp = delete_database.sync_detailed(
                 self._account_id,
                 database_id,
                 client=self._client,
             )
+            status, msg = status_and_message(resp)
+            if status in [204, 200]:
+                return
+            if status == 400 and "cluster is not in a proper state" in msg:
+                raise TryAgain
+            raise DatabaseDeleteError(
+                f"Failed to delete database with ID {database_id}."
+                f" Got HTTP {status}: {msg}."
+            )
 
+        LOG.info("Got request to delete database with ID %s", database_id)
         try:
             delete_with_retry()
             LOG.info("Deleted database with ID %s", database_id)
@@ -359,9 +383,8 @@ class OpenApiAccess:
             elif keep:
                 LOG.info("CTX: Keeping database %s as keep = %s.", db_repr, keep)
             else:
-                LOG.info("CTX: Deleting database %s", db_repr)
                 self.delete_database(db.id, ignore_delete_failure)
-                LOG.info("CTX: Successfully deleted database %s.", db_repr)
+                LOG.info("Context assumes database %s as deleted.", db_repr)
 
     def get_database(
         self,
