@@ -1,3 +1,4 @@
+import logging
 from datetime import (
     datetime,
     timedelta,
@@ -9,8 +10,6 @@ from tenacity import RetryError
 from exasol.saas.client import PROMISING_STATES
 from exasol.saas.client.api_access import timestamp_name
 from exasol.saas.client.openapi.models.exasol_database import ExasolDatabase
-
-import logging
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(
