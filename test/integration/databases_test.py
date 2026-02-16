@@ -1,3 +1,4 @@
+import datetime
 import logging
 from datetime import (
     datetime,
@@ -9,7 +10,6 @@ from tenacity import RetryError
 
 from exasol.saas.client import PROMISING_STATES
 from exasol.saas.client.api_access import (
-    DatabaseDeleteTimeout,
     timestamp_name,
 )
 from exasol.saas.client.openapi.models.exasol_database import ExasolDatabase
