@@ -1,55 +1,56 @@
-from collections.abc import (
-    Generator,
-    Mapping,
-)
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    BinaryIO,
-    Optional,
-    TextIO,
-    TypeVar,
-    Union,
-)
+from __future__ import annotations
+
+from collections.abc import Mapping
+from typing import Any, TypeVar, BinaryIO, TextIO, TYPE_CHECKING, Generator
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-from ..types import (
-    UNSET,
-    Unset,
-)
+from ..types import UNSET, Unset
+
+from ..types import UNSET, Unset
+
+
+
+
+
 
 T = TypeVar("T", bound="ScaleCluster")
 
 
+
 @_attrs_define
 class ScaleCluster:
-    """
-    Attributes:
-        size (str):
-        family (Union[Unset, str]):
-    """
+    """ 
+        Attributes:
+            size (str):
+            family (str | Unset):
+     """
 
     size: str
-    family: Union[Unset, str] = UNSET
+    family: str | Unset = UNSET
+
+
+
+
 
     def to_dict(self) -> dict[str, Any]:
         size = self.size
 
         family = self.family
 
+
         field_dict: dict[str, Any] = {}
 
-        field_dict.update(
-            {
-                "size": size,
-            }
-        )
+        field_dict.update({
+            "size": size,
+        })
         if family is not UNSET:
             field_dict["family"] = family
 
         return field_dict
+
+
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
@@ -64,3 +65,4 @@ class ScaleCluster:
         )
 
         return scale_cluster
+

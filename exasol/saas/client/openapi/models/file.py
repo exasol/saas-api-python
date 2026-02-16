@@ -1,49 +1,49 @@
-import datetime
-from collections.abc import (
-    Generator,
-    Mapping,
-)
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    BinaryIO,
-    Optional,
-    TextIO,
-    TypeVar,
-    Union,
-    cast,
-)
+from __future__ import annotations
+
+from collections.abc import Mapping
+from typing import Any, TypeVar, BinaryIO, TextIO, TYPE_CHECKING, Generator
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
-from ..types import (
-    UNSET,
-    Unset,
-)
+from ..types import UNSET, Unset
+
+from ..types import UNSET, Unset
+from dateutil.parser import isoparse
+from typing import cast
+import datetime
+
+
+
+
+
 
 T = TypeVar("T", bound="File")
 
 
+
 @_attrs_define
 class File:
-    """
-    Attributes:
-        name (str):
-        type_ (str):
-        path (str):
-        last_modified (datetime.datetime):
-        size (Union[Unset, int]):
-        children (Union[Unset, list['File']]):
-    """
+    """ 
+        Attributes:
+            name (str):
+            type_ (str):
+            path (str):
+            last_modified (datetime.datetime):
+            size (int | Unset):
+            children (list[File] | Unset):
+     """
 
     name: str
     type_: str
     path: str
     last_modified: datetime.datetime
-    size: Union[Unset, int] = UNSET
-    children: Union[Unset, list["File"]] = UNSET
+    size: int | Unset = UNSET
+    children: list[File] | Unset = UNSET
+
+
+
+
 
     def to_dict(self) -> dict[str, Any]:
         name = self.name
@@ -56,29 +56,32 @@ class File:
 
         size = self.size
 
-        children: Union[Unset, list[dict[str, Any]]] = UNSET
+        children: list[dict[str, Any]] | Unset = UNSET
         if not isinstance(self.children, Unset):
             children = []
             for children_item_data in self.children:
                 children_item = children_item_data.to_dict()
                 children.append(children_item)
 
+
+
+
         field_dict: dict[str, Any] = {}
 
-        field_dict.update(
-            {
-                "name": name,
-                "type": type_,
-                "path": path,
-                "lastModified": last_modified,
-            }
-        )
+        field_dict.update({
+            "name": name,
+            "type": type_,
+            "path": path,
+            "lastModified": last_modified,
+        })
         if size is not UNSET:
             field_dict["size"] = size
         if children is not UNSET:
             field_dict["children"] = children
 
         return field_dict
+
+
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
@@ -91,14 +94,22 @@ class File:
 
         last_modified = isoparse(d.pop("lastModified"))
 
+
+
+
         size = d.pop("size", UNSET)
 
-        children = []
         _children = d.pop("children", UNSET)
-        for children_item_data in _children or []:
-            children_item = File.from_dict(children_item_data)
+        children: list[File] | Unset = UNSET
+        if _children is not UNSET:
+            children = []
+            for children_item_data in _children:
+                children_item = File.from_dict(children_item_data)
 
-            children.append(children_item)
+
+
+                children.append(children_item)
+
 
         file = cls(
             name=name,
@@ -110,3 +121,4 @@ class File:
         )
 
         return file
+

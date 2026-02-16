@@ -1,54 +1,57 @@
 from http import HTTPStatus
-from typing import (
-    Any,
-    Optional,
-    Union,
-    cast,
-)
+from typing import Any, cast
+from urllib.parse import quote
 
 import httpx
 
+from ...client import AuthenticatedClient, Client
+from ...types import Response, UNSET
 from ... import errors
-from ...client import (
-    AuthenticatedClient,
-    Client,
-)
+
 from ...models.allowed_ip import AllowedIP
-from ...types import (
-    UNSET,
-    Response,
-)
+from ...models.api_error import ApiError
+from typing import cast
+
 
 
 def _get_kwargs(
     account_id: str,
     allowlist_ip_id: str,
+
 ) -> dict[str, Any]:
+    
+
+    
+
+    
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": f"/api/v1/accounts/{account_id}/security/allowlist_ip/{allowlist_ip_id}",
+        "url": "/api/v1/accounts/{account_id}/security/allowlist_ip/{allowlist_ip_id}".format(account_id=quote(str(account_id), safe=""),allowlist_ip_id=quote(str(allowlist_ip_id), safe=""),),
     }
+
 
     return _kwargs
 
 
-def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[AllowedIP]:
+
+def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> AllowedIP | ApiError:
     if response.status_code == 200:
         response_200 = AllowedIP.from_dict(response.json())
 
+
+
         return response_200
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+
+    response_default = ApiError.from_dict(response.json())
 
 
-def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[AllowedIP]:
+
+    return response_default
+
+
+
+def _build_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> Response[AllowedIP | ApiError]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -62,8 +65,9 @@ def sync_detailed(
     allowlist_ip_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[AllowedIP]:
-    """
+
+) -> Response[AllowedIP | ApiError]:
+    """ 
     Args:
         account_id (str):
         allowlist_ip_id (str):
@@ -73,12 +77,14 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[AllowedIP]
-    """
+        Response[AllowedIP | ApiError]
+     """
+
 
     kwargs = _get_kwargs(
         account_id=account_id,
-        allowlist_ip_id=allowlist_ip_id,
+allowlist_ip_id=allowlist_ip_id,
+
     )
 
     response = client.get_httpx_client().request(
@@ -87,14 +93,14 @@ def sync_detailed(
 
     return _build_response(client=client, response=response)
 
-
 def sync(
     account_id: str,
     allowlist_ip_id: str,
     *,
     client: AuthenticatedClient,
-) -> Optional[AllowedIP]:
-    """
+
+) -> AllowedIP | ApiError | None:
+    """ 
     Args:
         account_id (str):
         allowlist_ip_id (str):
@@ -104,23 +110,25 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        AllowedIP
-    """
+        AllowedIP | ApiError
+     """
+
 
     return sync_detailed(
         account_id=account_id,
-        allowlist_ip_id=allowlist_ip_id,
-        client=client,
-    ).parsed
+allowlist_ip_id=allowlist_ip_id,
+client=client,
 
+    ).parsed
 
 async def asyncio_detailed(
     account_id: str,
     allowlist_ip_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[AllowedIP]:
-    """
+
+) -> Response[AllowedIP | ApiError]:
+    """ 
     Args:
         account_id (str):
         allowlist_ip_id (str):
@@ -130,26 +138,30 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[AllowedIP]
-    """
+        Response[AllowedIP | ApiError]
+     """
+
 
     kwargs = _get_kwargs(
         account_id=account_id,
-        allowlist_ip_id=allowlist_ip_id,
+allowlist_ip_id=allowlist_ip_id,
+
     )
 
-    response = await client.get_async_httpx_client().request(**kwargs)
+    response = await client.get_async_httpx_client().request(
+        **kwargs
+    )
 
     return _build_response(client=client, response=response)
-
 
 async def asyncio(
     account_id: str,
     allowlist_ip_id: str,
     *,
     client: AuthenticatedClient,
-) -> Optional[AllowedIP]:
-    """
+
+) -> AllowedIP | ApiError | None:
+    """ 
     Args:
         account_id (str):
         allowlist_ip_id (str):
@@ -159,13 +171,13 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        AllowedIP
-    """
+        AllowedIP | ApiError
+     """
 
-    return (
-        await asyncio_detailed(
-            account_id=account_id,
-            allowlist_ip_id=allowlist_ip_id,
-            client=client,
-        )
-    ).parsed
+
+    return (await asyncio_detailed(
+        account_id=account_id,
+allowlist_ip_id=allowlist_ip_id,
+client=client,
+
+    )).parsed

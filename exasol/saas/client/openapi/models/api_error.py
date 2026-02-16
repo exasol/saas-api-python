@@ -1,42 +1,38 @@
-from collections.abc import (
-    Generator,
-    Mapping,
-)
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    BinaryIO,
-    Optional,
-    TextIO,
-    TypeVar,
-    Union,
-)
+from __future__ import annotations
+
+from collections.abc import Mapping
+from typing import Any, TypeVar, BinaryIO, TextIO, TYPE_CHECKING, Generator
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-from ..types import (
-    UNSET,
-    Unset,
-)
+from ..types import UNSET, Unset
+
+from ..types import UNSET, Unset
+
+
+
+
+
 
 T = TypeVar("T", bound="ApiError")
 
 
+
 @_attrs_define
 class ApiError:
-    """
-    Attributes:
-        status (float):
-        message (str):
-        request_id (str):
-        path (str):
-        method (str):
-        log_id (str):
-        handler (str):
-        timestamp (str):
-        causes (Union[Unset, Any]):
-    """
+    """ 
+        Attributes:
+            status (float):
+            message (str):
+            request_id (str):
+            path (str):
+            method (str):
+            log_id (str):
+            handler (str):
+            timestamp (str):
+            causes (Any | Unset):
+     """
 
     status: float
     message: str
@@ -46,7 +42,11 @@ class ApiError:
     log_id: str
     handler: str
     timestamp: str
-    causes: Union[Unset, Any] = UNSET
+    causes: Any | Unset = UNSET
+
+
+
+
 
     def to_dict(self) -> dict[str, Any]:
         status = self.status
@@ -67,24 +67,25 @@ class ApiError:
 
         causes = self.causes
 
+
         field_dict: dict[str, Any] = {}
 
-        field_dict.update(
-            {
-                "status": status,
-                "message": message,
-                "requestId": request_id,
-                "path": path,
-                "method": method,
-                "logId": log_id,
-                "handler": handler,
-                "timestamp": timestamp,
-            }
-        )
+        field_dict.update({
+            "status": status,
+            "message": message,
+            "requestId": request_id,
+            "path": path,
+            "method": method,
+            "logId": log_id,
+            "handler": handler,
+            "timestamp": timestamp,
+        })
         if causes is not UNSET:
             field_dict["causes"] = causes
 
         return field_dict
+
+
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
@@ -120,3 +121,4 @@ class ApiError:
         )
 
         return api_error
+

@@ -1,6 +1,5 @@
 from enum import Enum
 
-
 class Status(str, Enum):
     CREATING = "creating"
     DELETED = "deleted"

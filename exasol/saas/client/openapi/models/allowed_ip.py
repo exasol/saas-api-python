@@ -1,51 +1,51 @@
-import datetime
-from collections.abc import (
-    Generator,
-    Mapping,
-)
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    BinaryIO,
-    Optional,
-    TextIO,
-    TypeVar,
-    Union,
-    cast,
-)
+from __future__ import annotations
+
+from collections.abc import Mapping
+from typing import Any, TypeVar, BinaryIO, TextIO, TYPE_CHECKING, Generator
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
-from ..types import (
-    UNSET,
-    Unset,
-)
+from ..types import UNSET, Unset
+
+from ..types import UNSET, Unset
+from dateutil.parser import isoparse
+from typing import cast
+import datetime
+
+
+
+
+
 
 T = TypeVar("T", bound="AllowedIP")
 
 
+
 @_attrs_define
 class AllowedIP:
-    """
-    Attributes:
-        id (str):
-        name (str):
-        cidr_ip (str):
-        created_at (datetime.datetime):
-        created_by (str):
-        deleted_by (Union[Unset, str]):
-        deleted_at (Union[Unset, datetime.datetime]):
-    """
+    """ 
+        Attributes:
+            id (str):
+            name (str):
+            cidr_ip (str):
+            created_at (datetime.datetime):
+            created_by (str):
+            deleted_by (str | Unset):
+            deleted_at (datetime.datetime | Unset):
+     """
 
     id: str
     name: str
     cidr_ip: str
     created_at: datetime.datetime
     created_by: str
-    deleted_by: Union[Unset, str] = UNSET
-    deleted_at: Union[Unset, datetime.datetime] = UNSET
+    deleted_by: str | Unset = UNSET
+    deleted_at: datetime.datetime | Unset = UNSET
+
+
+
+
 
     def to_dict(self) -> dict[str, Any]:
         id = self.id
@@ -60,27 +60,28 @@ class AllowedIP:
 
         deleted_by = self.deleted_by
 
-        deleted_at: Union[Unset, str] = UNSET
+        deleted_at: str | Unset = UNSET
         if not isinstance(self.deleted_at, Unset):
             deleted_at = self.deleted_at.isoformat()
 
+
         field_dict: dict[str, Any] = {}
 
-        field_dict.update(
-            {
-                "id": id,
-                "name": name,
-                "cidrIp": cidr_ip,
-                "createdAt": created_at,
-                "createdBy": created_by,
-            }
-        )
+        field_dict.update({
+            "id": id,
+            "name": name,
+            "cidrIp": cidr_ip,
+            "createdAt": created_at,
+            "createdBy": created_by,
+        })
         if deleted_by is not UNSET:
             field_dict["deletedBy"] = deleted_by
         if deleted_at is not UNSET:
             field_dict["deletedAt"] = deleted_at
 
         return field_dict
+
+
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
@@ -93,16 +94,22 @@ class AllowedIP:
 
         created_at = isoparse(d.pop("createdAt"))
 
+
+
+
         created_by = d.pop("createdBy")
 
         deleted_by = d.pop("deletedBy", UNSET)
 
         _deleted_at = d.pop("deletedAt", UNSET)
-        deleted_at: Union[Unset, datetime.datetime]
-        if isinstance(_deleted_at, Unset):
+        deleted_at: datetime.datetime | Unset
+        if isinstance(_deleted_at,  Unset):
             deleted_at = UNSET
         else:
             deleted_at = isoparse(_deleted_at)
+
+
+
 
         allowed_ip = cls(
             id=id,
@@ -115,3 +122,4 @@ class AllowedIP:
         )
 
         return allowed_ip
+

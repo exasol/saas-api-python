@@ -1,58 +1,53 @@
-from collections.abc import (
-    Generator,
-    Mapping,
-)
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    BinaryIO,
-    Optional,
-    TextIO,
-    TypeVar,
-    Union,
-    cast,
-)
+from __future__ import annotations
+
+from collections.abc import Mapping
+from typing import Any, TypeVar, BinaryIO, TextIO, TYPE_CHECKING, Generator
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-from ..types import (
-    UNSET,
-    Unset,
-)
+from ..types import UNSET, Unset
+
+from ..types import UNSET, Unset
+from typing import cast
 
 if TYPE_CHECKING:
-    from ..models.create_database_initial_cluster import CreateDatabaseInitialCluster
+  from ..models.create_database_initial_cluster import CreateDatabaseInitialCluster
+
+
+
 
 
 T = TypeVar("T", bound="CreateDatabase")
 
 
+
 @_attrs_define
 class CreateDatabase:
-    """
-    Attributes:
-        name (str):
-        initial_cluster (CreateDatabaseInitialCluster):
-        provider (str):
-        region (str):
-        num_nodes (Union[Unset, int]):
-        stream_type (Union[Unset, str]):
-    """
+    """ 
+        Attributes:
+            name (str):
+            initial_cluster (CreateDatabaseInitialCluster):
+            provider (str):
+            region (str):
+            num_nodes (int | Unset):
+            stream_type (str | Unset):
+     """
 
     name: str
-    initial_cluster: "CreateDatabaseInitialCluster"
+    initial_cluster: CreateDatabaseInitialCluster
     provider: str
     region: str
-    num_nodes: Union[Unset, int] = UNSET
-    stream_type: Union[Unset, str] = UNSET
+    num_nodes: int | Unset = UNSET
+    stream_type: str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> dict[str, Any]:
-        from ..models.create_database_initial_cluster import (
-            CreateDatabaseInitialCluster,
-        )
 
+
+
+
+    def to_dict(self) -> dict[str, Any]:
+        from ..models.create_database_initial_cluster import CreateDatabaseInitialCluster
         name = self.name
 
         initial_cluster = self.initial_cluster.to_dict()
@@ -65,16 +60,15 @@ class CreateDatabase:
 
         stream_type = self.stream_type
 
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update(
-            {
-                "name": name,
-                "initialCluster": initial_cluster,
-                "provider": provider,
-                "region": region,
-            }
-        )
+        field_dict.update({
+            "name": name,
+            "initialCluster": initial_cluster,
+            "provider": provider,
+            "region": region,
+        })
         if num_nodes is not UNSET:
             field_dict["numNodes"] = num_nodes
         if stream_type is not UNSET:
@@ -82,18 +76,18 @@ class CreateDatabase:
 
         return field_dict
 
+
+
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.create_database_initial_cluster import (
-            CreateDatabaseInitialCluster,
-        )
-
+        from ..models.create_database_initial_cluster import CreateDatabaseInitialCluster
         d = dict(src_dict)
         name = d.pop("name")
 
-        initial_cluster = CreateDatabaseInitialCluster.from_dict(
-            d.pop("initialCluster")
-        )
+        initial_cluster = CreateDatabaseInitialCluster.from_dict(d.pop("initialCluster"))
+
+
+
 
         provider = d.pop("provider")
 
@@ -111,6 +105,7 @@ class CreateDatabase:
             num_nodes=num_nodes,
             stream_type=stream_type,
         )
+
 
         create_database.additional_properties = d
         return create_database

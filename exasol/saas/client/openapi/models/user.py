@@ -1,70 +1,67 @@
-import datetime
-from collections.abc import (
-    Generator,
-    Mapping,
-)
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    BinaryIO,
-    Optional,
-    TextIO,
-    TypeVar,
-    Union,
-    cast,
-)
+from __future__ import annotations
+
+from collections.abc import Mapping
+from typing import Any, TypeVar, BinaryIO, TextIO, TYPE_CHECKING, Generator
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
+
+from ..types import UNSET, Unset
 
 from ..models.user_status import UserStatus
-from ..types import (
-    UNSET,
-    Unset,
-)
+from ..types import UNSET, Unset
+from dateutil.parser import isoparse
+from typing import cast
+import datetime
 
 if TYPE_CHECKING:
-    from ..models.user_database import UserDatabase
-    from ..models.user_role import UserRole
+  from ..models.user_database import UserDatabase
+  from ..models.user_role import UserRole
+
+
+
 
 
 T = TypeVar("T", bound="User")
 
 
+
 @_attrs_define
 class User:
-    """
-    Attributes:
-        email (str):
-        id (str):
-        created_at (datetime.datetime):
-        created_by (str):
-        status (UserStatus):
-        roles (list['UserRole']):
-        is_deletable (bool):
-        first_name (Union[Unset, str]):
-        last_name (Union[Unset, str]):
-        databases (Union[Unset, list['UserDatabase']]):
-        db_username (Union[Unset, str]):
-    """
+    """ 
+        Attributes:
+            email (str):
+            id (str):
+            created_at (datetime.datetime):
+            created_by (str):
+            status (UserStatus):
+            roles (list[UserRole]):
+            is_deletable (bool):
+            first_name (str | Unset):
+            last_name (str | Unset):
+            databases (list[UserDatabase] | Unset):
+            db_username (str | Unset):
+     """
 
     email: str
     id: str
     created_at: datetime.datetime
     created_by: str
     status: UserStatus
-    roles: list["UserRole"]
+    roles: list[UserRole]
     is_deletable: bool
-    first_name: Union[Unset, str] = UNSET
-    last_name: Union[Unset, str] = UNSET
-    databases: Union[Unset, list["UserDatabase"]] = UNSET
-    db_username: Union[Unset, str] = UNSET
+    first_name: str | Unset = UNSET
+    last_name: str | Unset = UNSET
+    databases: list[UserDatabase] | Unset = UNSET
+    db_username: str | Unset = UNSET
+
+
+
+
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.user_database import UserDatabase
         from ..models.user_role import UserRole
-
         email = self.email
 
         id = self.id
@@ -80,34 +77,37 @@ class User:
             roles_item = roles_item_data.to_dict()
             roles.append(roles_item)
 
+
+
         is_deletable = self.is_deletable
 
         first_name = self.first_name
 
         last_name = self.last_name
 
-        databases: Union[Unset, list[dict[str, Any]]] = UNSET
+        databases: list[dict[str, Any]] | Unset = UNSET
         if not isinstance(self.databases, Unset):
             databases = []
             for databases_item_data in self.databases:
                 databases_item = databases_item_data.to_dict()
                 databases.append(databases_item)
 
+
+
         db_username = self.db_username
+
 
         field_dict: dict[str, Any] = {}
 
-        field_dict.update(
-            {
-                "email": email,
-                "id": id,
-                "createdAt": created_at,
-                "createdBy": created_by,
-                "status": status,
-                "roles": roles,
-                "isDeletable": is_deletable,
-            }
-        )
+        field_dict.update({
+            "email": email,
+            "id": id,
+            "createdAt": created_at,
+            "createdBy": created_by,
+            "status": status,
+            "roles": roles,
+            "isDeletable": is_deletable,
+        })
         if first_name is not UNSET:
             field_dict["firstName"] = first_name
         if last_name is not UNSET:
@@ -119,11 +119,12 @@ class User:
 
         return field_dict
 
+
+
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.user_database import UserDatabase
         from ..models.user_role import UserRole
-
         d = dict(src_dict)
         email = d.pop("email")
 
@@ -131,16 +132,25 @@ class User:
 
         created_at = isoparse(d.pop("createdAt"))
 
+
+
+
         created_by = d.pop("createdBy")
 
         status = UserStatus(d.pop("status"))
 
+
+
+
         roles = []
         _roles = d.pop("roles")
-        for roles_item_data in _roles:
+        for roles_item_data in (_roles):
             roles_item = UserRole.from_dict(roles_item_data)
 
+
+
             roles.append(roles_item)
+
 
         is_deletable = d.pop("isDeletable")
 
@@ -148,12 +158,17 @@ class User:
 
         last_name = d.pop("lastName", UNSET)
 
-        databases = []
         _databases = d.pop("databases", UNSET)
-        for databases_item_data in _databases or []:
-            databases_item = UserDatabase.from_dict(databases_item_data)
+        databases: list[UserDatabase] | Unset = UNSET
+        if _databases is not UNSET:
+            databases = []
+            for databases_item_data in _databases:
+                databases_item = UserDatabase.from_dict(databases_item_data)
 
-            databases.append(databases_item)
+
+
+                databases.append(databases_item)
+
 
         db_username = d.pop("dbUsername", UNSET)
 
@@ -172,3 +187,4 @@ class User:
         )
 
         return user
+
