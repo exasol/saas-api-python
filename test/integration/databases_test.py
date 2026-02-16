@@ -10,6 +10,14 @@ from exasol.saas.client import PROMISING_STATES
 from exasol.saas.client.api_access import timestamp_name
 from exasol.saas.client.openapi.models.exasol_database import ExasolDatabase
 
+import logging
+
+LOG = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(levelname)s] %(message)s",
+)
+
 
 @pytest.fixture
 def local_name(project_short_tag: str | None) -> str:
@@ -57,7 +65,9 @@ def test_lifecycle(api_access, local_name):
         assert con.db_username is not None and con.port == 8563
 
         # delete database and verify database is not listed anymore
+        LOG.info(f"TEST: Deleting database with ID {db.id}")
         api_access.delete_database(db.id)
         # api_access.wait_until_deleted(db.id, timeout=timedelta(minutes=30))
+        LOG.info(f"TEST: Waiting until database with ID {db.id} is deleted")
         api_access.wait_until_deleted(db.id)
         assert db.id not in api_access.list_database_ids()
