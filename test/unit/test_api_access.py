@@ -21,9 +21,7 @@ def response(status_code: int, message: str):
     )
 
 
-RETRY = response(
-    400, "Operation is not allowed:The cluster is not in a proper state!"
-)
+RETRY = response(400, "Operation is not allowed:The cluster is not in a proper state!")
 
 
 class ApiRunner:
@@ -45,8 +43,7 @@ def test_x1():
     m = response(21, "hello")
     text = m.content.decode("utf-8")
     msg = json.loads(text).get("message") if text else ""
-    print(f'{m.status_code}  {msg}')
-
+    print(f"{m.status_code}  {msg}")
 
 
 @pytest.fixture
@@ -102,10 +99,7 @@ def test_delete_fail(api_runner, side_effect, retry_timings) -> None:
         pytest.param(
             [response(400, "bla")],
             True,
-            (
-                "Ignoring failure when deleting database with ID 123: .*"
-                "Got HTTP 400"
-            ),
+            ("Ignoring failure when deleting database with ID 123: .*" "Got HTTP 400"),
             id="success_by_ignoring_failures",
         ),
     ],
