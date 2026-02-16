@@ -88,12 +88,6 @@ def indicates_retry(ex: BaseException) -> bool:
     When deleting a SaaS instance raises an UnexpectedStatus, then this
     function decides whether we should retry to delete the database instance.
     """
-    LOG.info(
-        "%d: %s: %s",
-        ex.status_code,
-        type(ex).__name__,
-        ex.content.decode("utf-8"),
-    )
     return bool(
         isinstance(ex, UnexpectedStatus)
         and ex.status_code == 400
@@ -278,9 +272,9 @@ class OpenApiAccess:
                 stream_type="feature-release",
             ),
         )
-        LOG.info("Created database with ID %s", result.id)
-        if isinstance(result, ApiError):
+        if (result is None) or isinstance(result, ApiError):
             raise OpenApiError(f"Failed to create database {name}", result)
+        LOG.info("Created database with ID %s", result.id)
         return result
 
     @contextmanager
