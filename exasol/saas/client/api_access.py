@@ -281,7 +281,11 @@ class OpenApiAccess:
     ):
         @interval_retry(interval, timeout)
         def still_exists() -> bool:
-            result = database_id in self.list_database_ids()
+            # an exception ApiError / OpenApiError should be ignored here
+            try:
+                result = database_id in self.list_database_ids()
+            except OpenApiError:
+                return False
             if result:
                 raise TryAgain
             return result
