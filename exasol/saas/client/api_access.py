@@ -53,7 +53,7 @@ from exasol.saas.client.openapi.types import UNSET
 
 LOG = logging.getLogger(__name__)
 LOG.setLevel(logging.INFO)
-logging.getLogger("httpx").setLevel(logging.ERROR)
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
 def interval_retry(interval: timedelta, timeout: timedelta):
@@ -381,9 +381,9 @@ class OpenApiAccess:
         finally:
             db_repr = f"{db.name} with ID {db.id}" if db else None
             if not db:
-                LOG.warning("CTX: Cannot delete database None")
+                LOG.warning("Cannot delete database None")
             elif keep:
-                LOG.info("CTX: Keeping database %s as keep = %s.", db_repr, keep)
+                LOG.info("Keeping database %s as keep = %s.", db_repr, keep)
             else:
                 self.delete_database(db.id, ignore_delete_failure)
                 LOG.info("Context assumes database %s as deleted.", db_repr)
