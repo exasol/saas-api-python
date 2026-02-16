@@ -45,7 +45,6 @@ from exasol.saas.client.openapi.api.security import (
     delete_allowed_ip,
     list_allowed_i_ps,
 )
-from exasol.saas.client.openapi.errors import UnexpectedStatus
 from exasol.saas.client.openapi.models import ApiError
 from exasol.saas.client.openapi.models.exasol_database import ExasolDatabase
 from exasol.saas.client.openapi.models.status import Status
@@ -80,19 +79,6 @@ def timestamp_name(project_short_tag: str | None = None) -> str:
     owner = getpass.getuser()
     candidate = f"{timestamp}{project_short_tag or ''}-{owner}"
     return candidate[: Limits.MAX_DATABASE_NAME_LENGTH]
-
-
-# unused
-def indicates_retry(ex: BaseException) -> bool:
-    """
-    When deleting a SaaS instance raises an UnexpectedStatus, then this
-    function decides whether we should retry to delete the database instance.
-    """
-    return bool(
-        isinstance(ex, UnexpectedStatus)
-        and ex.status_code == 400
-        and "cluster is not in a proper state" in ex.content.decode("utf-8")
-    )
 
 
 class DatabaseStartupFailure(Exception):
@@ -335,7 +321,7 @@ class OpenApiAccess:
                 return
             if status == 400 and "cluster is not in a proper state" in msg:
                 raise TryAgain
-            raise DatabaseDeleteError(
+            raise Exception(
                 f"Failed to delete database with ID {database_id}."
                 f" Got HTTP {status}: {msg}."
             )
@@ -352,7 +338,7 @@ class OpenApiAccess:
                     ex,
                 )
             else:
-                raise
+                raise DatabaseDeleteError(str(ex)) from ex
 
     def list_database_ids(self) -> Iterable[str]:
         dbs = list_databases.sync(self._account_id, client=self._client) or []
