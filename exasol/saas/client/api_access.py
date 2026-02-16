@@ -310,7 +310,7 @@ class OpenApiAccess:
             retry=retry_if_exception_type(TryAgain),
         )
         def delete_with_retry() -> None:
-            LOG.info("Trying to delete ...")
+            LOG.info("- Trying to delete ...")
             resp = delete_database.sync_detailed(
                 self._account_id,
                 database_id,
@@ -329,12 +329,11 @@ class OpenApiAccess:
         LOG.info("Got request to delete database with ID %s", database_id)
         try:
             delete_with_retry()
-            LOG.info("Deleted database with ID %s", database_id)
+            LOG.info("Deleted database with")
         except Exception as ex:
             if ignore_failures:
                 LOG.error(
-                    "Ignoring failure when deleting database with ID %s: %s",
-                    database_id,
+                    "Ignoring failure when deleting database: %s",
                     ex,
                 )
             else:
@@ -398,6 +397,7 @@ class OpenApiAccess:
                 raise TryAgain
             return status
 
+        LOG.info("Waiting for database with ID %s to be available:", database_id)
         if poll_status() not in success:
             raise DatabaseStartupFailure()
 

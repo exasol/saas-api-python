@@ -25,30 +25,20 @@ RETRY = response(400, "Operation is not allowed:The cluster is not in a proper s
 
 
 class ApiRunner:
-    def __init__(self, mocker):
+    def __init__(self, monkeypatch):
         self.api = OpenApiAccess(Mock(), account_id="A1")
-        self._mocker = mocker
+        self._monkeypatch = monkeypatch
         self.mock = None
 
     def mock_delete(self, side_effect):
-        # import exasol.saas.client.api_access.delete_database as api
-        # api.sync_detailed
+        from exasol.saas.client.api_access import delete_database as api
         self.mock = Mock(side_effect=side_effect)
-        self._mocker.patch(
-            "exasol.saas.client.api_access.delete_database.sync_detailed", self.mock
-        )
-
-
-def test_x1():
-    m = response(21, "hello")
-    text = m.content.decode("utf-8")
-    msg = json.loads(text).get("message") if text else ""
-    print(f"{m.status_code}  {msg}")
+        self._monkeypatch.setattr(api, "sync_detailed", self.mock)
 
 
 @pytest.fixture
-def api_runner(mocker) -> ApiRunner:
-    return ApiRunner(mocker)
+def api_runner(monkeypatch) -> ApiRunner:
+    return ApiRunner(monkeypatch)
 
 
 @pytest.fixture
