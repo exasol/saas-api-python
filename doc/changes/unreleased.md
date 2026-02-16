@@ -2,11 +2,7 @@
 
 ## Summary
 
-This release fixes vulnerabilities by updating dependencies.
-
-## Security
-
-* tbd: Fixed vulnerabilities by updating dependencies.
+This release fixes vulnerabilities by updating dependencies and updates openapi-python-client as this was blocked by a pending release of the Exasol SaaS REST API.
 
 ## Refactorings
 
