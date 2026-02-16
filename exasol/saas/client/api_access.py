@@ -14,8 +14,8 @@ from typing import Any
 
 import tenacity
 from tenacity import (
-    TryAgain,
     RetryError,
+    TryAgain,
     retry,
 )
 from tenacity.retry import retry_if_exception_type
@@ -90,7 +90,9 @@ def indicates_retry(ex: BaseException) -> bool:
     """
     LOG.info(
         "%d: %s: %s",
-        ex.status_code, type(ex).__name__, ex.content.decode("utf-8"),
+        ex.status_code,
+        type(ex).__name__,
+        ex.content.decode("utf-8"),
     )
     return bool(
         isinstance(ex, UnexpectedStatus)

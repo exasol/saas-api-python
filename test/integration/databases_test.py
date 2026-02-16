@@ -77,6 +77,6 @@ def test_x1(api_access):
     api_access.delete_database(id)
     try:
         api_access.wait_until_deleted(id, timeout=timedelta(seconds=1))
-        LOG.info(f'DB {id} seems to be deleted already')
+        LOG.info(f"DB {id} seems to be deleted already")
     except DatabaseDeleteTimeout:
-        LOG.error(f'Gave up waiting for DB {id} to be deleted')
+        LOG.error(f"Gave up waiting for DB {id} to be deleted")
