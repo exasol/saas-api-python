@@ -97,7 +97,7 @@ class DatabaseDeleteTimeout(Exception):
 
 class DatabaseDeleteError(Exception):
     """
-    Unexpected failure when deleting a SaaS database.
+    Failed to delete a SaaS database instance.
     """
 
 
@@ -321,23 +321,19 @@ class OpenApiAccess:
                 return
             if status == 400 and "cluster is not in a proper state" in msg:
                 raise TryAgain
-            raise Exception(
-                f"Failed to delete database with ID {database_id}."
-                f" Got HTTP {status}: {msg}."
-            )
+            raise Exception(f"HTTP {status}: {msg}.")
 
         LOG.info("Got request to delete database with ID %s", database_id)
         try:
             delete_with_retry()
-            LOG.info("Deleted database with")
+            LOG.info("Successfully deleted database.")
         except Exception as ex:
             if ignore_failures:
-                LOG.error(
-                    "Ignoring failure when deleting database: %s",
-                    ex,
-                )
+                LOG.warning("Ignoring delete failure: %s", ex)
             else:
-                raise DatabaseDeleteError(str(ex)) from ex
+                msg = f"Failed to delete database: {ex}"
+                LOG.error(msg)
+                raise DatabaseDeleteError(msg) from ex
 
     def list_database_ids(self) -> Iterable[str]:
         dbs = list_databases.sync(self._account_id, client=self._client) or []

@@ -1,5 +1,4 @@
 import json
-import re
 from datetime import timedelta
 from test.util import not_raises
 from unittest.mock import Mock
@@ -90,7 +89,7 @@ def test_delete_fail(api_runner, side_effect, retry_timings) -> None:
         pytest.param(
             [response(400, "bla")],
             True,
-            ("Ignoring failure when deleting database with ID 123: .*" "Got HTTP 400"),
+            "Ignoring delete failure: HTTP 400:",
             id="success_by_ignoring_failures",
         ),
     ],
@@ -111,7 +110,8 @@ def test_delete_success(
             ignore_failures=ignore_failures,
         )
     assert api_runner.mock.called
-    assert re.search(expected_log_message, caplog.text, re.MULTILINE)
+    print(f'\nactual: {caplog.text}\n expected: {expected_log_message}')
+    assert expected_log_message in caplog.text
 
 
 def test_timestamp_name() -> None:
