@@ -110,7 +110,7 @@ def test_delete_success(
             ignore_failures=ignore_failures,
         )
     assert api_runner.mock.called
-    print(f'\nactual: {caplog.text}\n expected: {expected_log_message}')
+    print(f"\nactual: {caplog.text}\n expected: {expected_log_message}")
     assert expected_log_message in caplog.text
 
 
