@@ -32,6 +32,7 @@ class ApiRunner:
 
     def mock_delete(self, side_effect):
         from exasol.saas.client.api_access import delete_database as api
+
         self.mock = Mock(side_effect=side_effect)
         self._monkeypatch.setattr(api, "sync_detailed", self.mock)
 
