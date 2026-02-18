@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import getpass
-import json
 import logging
 import time
 from collections.abc import Iterable
@@ -101,9 +100,16 @@ class DatabaseDeleteError(Exception):
     """
 
 
-class OpenApiError(RuntimeError):
+class OpenApiError(Exception):
     def __init__(self, message: str, error: ApiError | None):
         super().__init__(f"{message}: {error.message}." if error else message)
+
+
+
+class InternalError(Exception):
+    """
+    Internal error during delete with retry.
+    """
 
 
 def create_saas_client(
@@ -295,10 +301,12 @@ class OpenApiAccess:
         min_interval: timedelta = timedelta(seconds=1),
         max_interval: timedelta = timedelta(minutes=2),
     ) -> None:
-        def status_and_message(resp) -> tuple[int, str]:
-            text = resp.content.decode("utf-8")
-            msg = json.loads(text).get("message") if text else ""
-            return resp.status_code, msg
+        def is_retry(err: Any) -> bool:
+            return (
+                isinstance(err, ApiError) and
+                err.status == 400 and
+                "cluster is not in a proper state" in err.message
+            )
 
         @retry(
             wait=wait_exponential(
@@ -316,12 +324,14 @@ class OpenApiAccess:
                 database_id,
                 client=self._client,
             )
-            status, msg = status_and_message(resp)
-            if status in [204, 200]:
+            err = resp.parsed
+            if err.status in [204, 200]:
                 return
-            if status == 400 and "cluster is not in a proper state" in msg:
+            if is_retry(err):
                 raise TryAgain
-            raise Exception(f"HTTP {status}: {msg}.")
+            raise InternalError(
+                f"{type(err).__name__} HTTP {err.status}: {err.message}."
+            )
 
         LOG.info("Got request to delete database with ID %s", database_id)
         try:
