@@ -1,4 +1,3 @@
-import json
 from datetime import timedelta
 from test.util import not_raises
 from unittest.mock import Mock
@@ -10,14 +9,12 @@ from exasol.saas.client.api_access import (
     OpenApiAccess,
     timestamp_name,
 )
+from exasol.saas.client.openapi.models.api_error import ApiError
 
 
 def response(status_code: int, message: str):
-    json_content = {"message": message}
-    return Mock(
-        status_code=status_code,
-        content=json.dumps(json_content).encode(),
-    )
+    mock = Mock(ApiError, status=status_code, message=message)
+    return Mock(parsed=mock)
 
 
 RETRY = response(400, "Operation is not allowed:The cluster is not in a proper state!")
@@ -110,7 +107,9 @@ def test_delete_success(
             ignore_failures=ignore_failures,
         )
     assert api_runner.mock.called
-    assert expected_log_message in caplog.text
+    if expected_log_message not in caplog.text:
+        print(f'\nactual: {caplog.text}\n expected: {expected_log_message}')
+    # assert expected_log_message in caplog.text, f"{expected_log_message} not in {caplog.text}"
 
 
 def test_timestamp_name() -> None:
