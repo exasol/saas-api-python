@@ -323,8 +323,8 @@ class OpenApiAccess:
                 database_id,
                 client=self._client,
             )
-            err = resp.parsed
-            if err.status in [204, 200]:
+            err = resp and resp.parsed
+            if not err or err.status in [204, 200]:
                 return
             if is_retry(err):
                 raise TryAgain
