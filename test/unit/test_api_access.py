@@ -108,7 +108,7 @@ def test_delete_success(
         )
     assert api_runner.mock.called
     if expected_log_message not in caplog.text:
-        print(f'\nactual: {caplog.text}\n expected: {expected_log_message}')
+        print(f"\nactual: {caplog.text}\n expected: {expected_log_message}")
     # assert expected_log_message in caplog.text, f"{expected_log_message} not in {caplog.text}"
 
 
