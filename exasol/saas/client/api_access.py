@@ -105,7 +105,6 @@ class OpenApiError(Exception):
         super().__init__(f"{message}: {error.message}." if error else message)
 
 
-
 class InternalError(Exception):
     """
     Internal error during delete with retry.
@@ -303,9 +302,9 @@ class OpenApiAccess:
     ) -> None:
         def is_retry(err: Any) -> bool:
             return (
-                isinstance(err, ApiError) and
-                err.status == 400 and
-                "cluster is not in a proper state" in err.message
+                isinstance(err, ApiError)
+                and err.status == 400
+                and "cluster is not in a proper state" in err.message
             )
 
         @retry(
