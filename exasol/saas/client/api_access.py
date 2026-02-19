@@ -9,7 +9,11 @@ from datetime import (
     datetime,
     timedelta,
 )
-from typing import Any
+from typing import (
+    Any,
+    TypeVar,
+    cast,
+)
 
 import tenacity
 from tenacity import (
@@ -24,7 +28,6 @@ from tenacity.wait import (
     wait_fixed,
 )
 
-import exasol.saas.client.openapi.models as openapi_models
 from exasol.saas.client import (
     Limits,
     openapi,
@@ -44,9 +47,11 @@ from exasol.saas.client.openapi.api.security import (
     delete_allowed_ip,
     list_allowed_i_ps,
 )
-from exasol.saas.client.openapi.models import ApiError
-from exasol.saas.client.openapi.models.exasol_database import ExasolDatabase
-from exasol.saas.client.openapi.models.status import Status
+from exasol.saas.client.openapi.models import (
+    ApiError,
+    ExasolDatabase,
+    Status,
+)
 from exasol.saas.client.openapi.types import UNSET
 
 LOG = logging.getLogger(__name__)
@@ -103,6 +108,23 @@ class DatabaseDeleteError(Exception):
 class OpenApiError(Exception):
     def __init__(self, message: str, error: ApiError | None):
         super().__init__(f"{message}: {error.message}." if error else message)
+
+
+T = TypeVar("T")
+
+
+def ensure_type(
+    expected: type[T],
+    response: T | ApiError | None,
+    message: str,
+) -> T:
+    """
+    Ensure the passed response is of the expected type and return it with
+    correct type. Otherwise raise an OpenApiError.
+    """
+    if isinstance(response, expected):
+        return response
+    raise OpenApiError(message, cast(ApiError, response))
 
 
 class InternalError(Exception):
@@ -204,16 +226,16 @@ def get_connection_params(
         cluster_id = next(
             filter(lambda cl: cl.main_cluster, clusters)  # type: ignore
         ).id
-        connection = get_cluster_connection.sync(
+        resp = get_cluster_connection.sync(
             account_id, database_id, cluster_id, client=client
         )
-        if connection is None or isinstance(connection, ApiError):
-            raise OpenApiError(
-                "Failed to get the connection data to"
-                f" host {host}, account {account_id},"
-                f" database with ID {database_id} named {database_name}",
-                connection,
-            )
+        connection = ensure_type(
+            openapi.models.ClusterConnection,
+            resp,
+            "Failed to get the connection data to"
+            f" host {host}, account {account_id},"
+            f" database with ID {database_id} named {database_name}",
+        )
         return {
             "dsn": f"{connection.dns}:{connection.port}",
             "user": connection.db_username,
@@ -243,19 +265,19 @@ class OpenApiAccess:
             return x.seconds // 60
 
         idle_time = idle_time or Limits.AUTOSTOP_MIN_IDLE_TIME
-        cluster_spec = openapi_models.CreateDatabaseInitialCluster(
+        cluster_spec = openapi.models.CreateDatabaseInitialCluster(
             name="my-cluster",
             size=cluster_size,
-            auto_stop=openapi_models.AutoStop(
+            auto_stop=openapi.models.AutoStop(
                 enabled=True,
                 idle_time=minutes(idle_time),
             ),
         )
         LOG.info("Creating database %s", name)
-        result = create_database.sync(
+        resp = create_database.sync(
             self._account_id,
             client=self._client,
-            body=openapi_models.CreateDatabase(
+            body=openapi.models.CreateDatabase(
                 name=name,
                 initial_cluster=cluster_spec,
                 provider="aws",
@@ -263,10 +285,13 @@ class OpenApiAccess:
                 stream_type="feature-release",
             ),
         )
-        if (result is None) or isinstance(result, ApiError):
-            raise OpenApiError(f"Failed to create database {name}", result)
-        LOG.info("Created database with ID %s", result.id)
-        return result
+        database = ensure_type(
+            ExasolDatabase,
+            resp,
+            f"Failed to create database {name}",
+        )
+        LOG.info("Created database with ID %s", database.id)
+        return database
 
     @contextmanager
     def _ignore_failures(self, ignore: bool = False):
@@ -302,8 +327,8 @@ class OpenApiAccess:
     ) -> None:
         def is_retry(resp: ApiError) -> bool:
             return (
-                resp.status == 400 and
-                "cluster is not in a proper state" in resp.message
+                resp.status == 400
+                and "cluster is not in a proper state" in resp.message
             )
 
         @retry(
@@ -342,9 +367,8 @@ class OpenApiAccess:
                 raise DatabaseDeleteError(msg) from ex
 
     def list_database_ids(self) -> Iterable[str]:
-        dbs = list_databases.sync(self._account_id, client=self._client) or []
-        if isinstance(dbs, ApiError):
-            raise OpenApiError("Failed to list databases", dbs)
+        resp = list_databases.sync(self._account_id, client=self._client) or []
+        dbs = ensure_type(list[ExasolDatabase], resp, "Failed to list databases")
         return (db.id for db in dbs)
 
     @contextmanager
@@ -372,15 +396,15 @@ class OpenApiAccess:
     def get_database(
         self,
         database_id: str,
-    ) -> openapi.models.ExasolDatabase | None:
-        result = get_database.sync(
+    ) -> ExasolDatabase | None:
+        resp = get_database.sync(
             self._account_id,
             database_id,
             client=self._client,
         )
-        if isinstance(result, ApiError):
-            raise OpenApiError(f"Failed to get database {database_id}", result)
-        return result
+        return ensure_type(
+            ExasolDatabase, resp, f"Failed to get database {database_id}"
+        )
 
     def wait_until_running(
         self,
@@ -406,75 +430,73 @@ class OpenApiAccess:
     def clusters(
         self,
         database_id: str,
-    ) -> list[openapi_models.Cluster] | None:
-        result = list_clusters.sync(
+    ) -> list[openapi.models.Cluster] | None:
+        resp = list_clusters.sync(
             self._account_id,
             database_id,
             client=self._client,
         )
-        if isinstance(result, ApiError):
-            raise OpenApiError(
-                f"Failed to list clusters of database {database_id}", result
-            )
-        return result
+        return ensure_type(
+            list[openapi.models.Cluster],
+            resp,
+            f"Failed to list clusters of database {database_id}",
+        )
 
     def get_connection(
         self,
         database_id: str,
         cluster_id: str,
-    ) -> openapi_models.ClusterConnection | None:
-        result = get_cluster_connection.sync(
+    ) -> openapi.models.ClusterConnection | None:
+        resp = get_cluster_connection.sync(
             self._account_id,
             database_id,
             cluster_id,
             client=self._client,
         )
-        if isinstance(result, ApiError):
-            raise OpenApiError(
-                "Failed to retrieve a connection to "
-                f"database {database_id} cluster {cluster_id}",
-                result,
-            )
-        return result
+        return ensure_type(
+            openapi.models.ClusterConnection,
+            resp,
+            "Failed to retrieve a connection to "
+            f"database {database_id} cluster {cluster_id}",
+        )
 
     def list_allowed_ip_ids(self) -> Iterable[str]:
-        ips = (
-            list_allowed_i_ps.sync(
-                self._account_id,
-                client=self._client,
-            )
-            or []
+        resp = list_allowed_i_ps.sync(self._account_id, client=self._client)
+        ips = ensure_type(
+            list[openapi.models.AllowedIP],
+            resp,
+            "Failed to retrieve the list of allowed ips",
         )
-        if isinstance(ips, ApiError):
-            raise OpenApiError("Failed to retrieve the list of allowed ips", ips)
-        return (x.id for x in ips)
+        return (x.id for x in ips or [])
 
     def add_allowed_ip(
         self,
         cidr_ip: str = "0.0.0.0/0",
-    ) -> openapi_models.allowed_ip.AllowedIP | None:
+    ) -> openapi.models.AllowedIP | None:
         """
         Suggested values for cidr_ip:
         * 185.17.207.78/32
         * 0.0.0.0/0 = all ipv4
         * ::/0 = all ipv6
         """
-        rule = openapi_models.CreateAllowedIP(
+        rule = openapi.models.CreateAllowedIP(
             name=timestamp_name(),
             cidr_ip=cidr_ip,
         )
-        result = add_allowed_ip.sync(
+        resp = add_allowed_ip.sync(
             self._account_id,
             client=self._client,
             body=rule,
         )
-        if isinstance(result, ApiError):
-            raise OpenApiError(f"Failed to add allowed IP address {cidr_ip}", result)
-        return result
+        return ensure_type(
+            openapi.models.AllowedIP,
+            resp,
+            f"Failed to add allowed IP address {cidr_ip}",
+        )
 
-    def delete_allowed_ip(self, id: str, ignore_failures=False):
+    def delete_allowed_ip(self, id: str, ignore_failures=False) -> Any | None:
         with self._ignore_failures(ignore_failures) as client:
-            return delete_allowed_ip.sync_detailed(self._account_id, id, client=client)
+            return delete_allowed_ip.sync(self._account_id, id, client=client)
 
     @contextmanager
     def allowed_ip(

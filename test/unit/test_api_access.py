@@ -11,7 +11,6 @@ from exasol.saas.client.api_access import (
 )
 from exasol.saas.client.openapi.models.api_error import ApiError
 
-import pytest
 
 def response(status_code: int, message: str, spec=None):
     return Mock(spec, status=status_code, message=message)
@@ -22,7 +21,8 @@ def api_error(status_code: int, message: str):
 
 
 RETRY = api_error(
-    400, "Operation is not allowed:The cluster is not in a proper state!",
+    400,
+    "Operation is not allowed:The cluster is not in a proper state!",
 )
 
 
@@ -33,6 +33,7 @@ def api_mock():
 
 def delete_mock(monkeypatch, side_effect) -> Mock:
     from exasol.saas.client.api_access import delete_database as api
+
     mock = Mock(side_effect=side_effect)
     monkeypatch.setattr(api, "sync", mock)
     return mock
