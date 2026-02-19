@@ -282,13 +282,13 @@ class OpenApiAccess:
         interval: timedelta = timedelta(minutes=1),
     ):
         @interval_retry(interval, timeout)
-        def still_exists() -> bool:
+        def verify_not_listed() -> bool:
             if database_id in self.list_database_ids():
                 raise TryAgain
-            return False
+            return True
 
         try:
-            return still_exists()
+            return verify_not_listed()
         except (TryAgain, RetryError) as ex:
             raise DatabaseDeleteTimeout from ex
 
@@ -300,11 +300,10 @@ class OpenApiAccess:
         min_interval: timedelta = timedelta(seconds=1),
         max_interval: timedelta = timedelta(minutes=2),
     ) -> None:
-        def is_retry(err: Any) -> bool:
+        def is_retry(resp: ApiError) -> bool:
             return (
-                isinstance(err, ApiError)
-                and err.status == 400
-                and "cluster is not in a proper state" in err.message
+                resp.status == 400 and
+                "cluster is not in a proper state" in resp.message
             )
 
         @retry(
@@ -318,19 +317,17 @@ class OpenApiAccess:
         )
         def delete_with_retry() -> None:
             LOG.info("- Trying to delete ...")
-            resp = delete_database.sync_detailed(
+            resp = delete_database.sync(
                 self._account_id,
                 database_id,
                 client=self._client,
             )
-            err = resp and resp.parsed
-            if not err or err.status in [204, 200]:
+            if not isinstance(resp, ApiError):
+                # success
                 return
-            if is_retry(err):
+            if is_retry(resp):
                 raise TryAgain
-            raise InternalError(
-                f"{type(err).__name__} HTTP {err.status}: {err.message}."
-            )
+            raise InternalError(f"HTTP {resp.status}: {resp.message}.")
 
         LOG.info("Got request to delete database with ID %s", database_id)
         try:

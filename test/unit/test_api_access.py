@@ -11,31 +11,31 @@ from exasol.saas.client.api_access import (
 )
 from exasol.saas.client.openapi.models.api_error import ApiError
 
+import pytest
 
-def response(status_code: int, message: str):
-    mock = Mock(ApiError, status=status_code, message=message)
-    return Mock(parsed=mock)
-
-
-RETRY = response(400, "Operation is not allowed:The cluster is not in a proper state!")
+def response(status_code: int, message: str, spec=None):
+    return Mock(spec, status=status_code, message=message)
 
 
-class ApiRunner:
-    def __init__(self, monkeypatch):
-        self.api = OpenApiAccess(Mock(), account_id="A1")
-        self._monkeypatch = monkeypatch
-        self.mock = None
+def api_error(status_code: int, message: str):
+    return response(status_code, message, spec=ApiError)
 
-    def mock_delete(self, side_effect):
-        from exasol.saas.client.api_access import delete_database as api
 
-        self.mock = Mock(side_effect=side_effect)
-        self._monkeypatch.setattr(api, "sync_detailed", self.mock)
+RETRY = api_error(
+    400, "Operation is not allowed:The cluster is not in a proper state!",
+)
 
 
 @pytest.fixture
-def api_runner(monkeypatch) -> ApiRunner:
-    return ApiRunner(monkeypatch)
+def api_mock():
+    return OpenApiAccess(Mock(), account_id="A1")
+
+
+def delete_mock(monkeypatch, side_effect) -> Mock:
+    from exasol.saas.client.api_access import delete_database as api
+    mock = Mock(side_effect=side_effect)
+    monkeypatch.setattr(api, "sync", mock)
+    return mock
 
 
 @pytest.fixture
@@ -55,11 +55,11 @@ def retry_timings() -> dict[str, timedelta]:
     "side_effect",
     [
         pytest.param(
-            [response(400, "bla")],
+            [api_error(400, "bla")],
             id="immediate_failure",
         ),
         pytest.param(
-            [RETRY, RETRY, response(400, "bla")],
+            [RETRY, RETRY, api_error(400, "bla")],
             id="failure_after_retry",
         ),
         pytest.param(
@@ -68,10 +68,10 @@ def retry_timings() -> dict[str, timedelta]:
         ),
     ],
 )
-def test_delete_fail(api_runner, side_effect, retry_timings) -> None:
-    api_runner.mock_delete(side_effect)
+def test_delete_fail(api_mock, monkeypatch, side_effect, retry_timings) -> None:
+    delete_mock(monkeypatch, side_effect)
     with pytest.raises(DatabaseDeleteError):
-        api_runner.api.delete_database("123", **retry_timings)
+        api_mock.delete_database("123", **retry_timings)
 
 
 @pytest.mark.parametrize(
@@ -84,7 +84,7 @@ def test_delete_fail(api_runner, side_effect, retry_timings) -> None:
             id="success_after_retry",
         ),
         pytest.param(
-            [response(400, "bla")],
+            [api_error(400, "bla")],
             True,
             "Ignoring delete failure: HTTP 400:",
             id="success_by_ignoring_failures",
@@ -95,21 +95,22 @@ def test_delete_success(
     side_effect,
     ignore_failures,
     expected_log_message,
-    api_runner,
+    api_mock,
+    monkeypatch,
     retry_timings,
     caplog,
 ) -> None:
-    api_runner.mock_delete(side_effect)
+    delete = delete_mock(monkeypatch, side_effect)
     with not_raises(Exception):
-        api_runner.api.delete_database(
+        api_mock.delete_database(
             database_id="123",
             **retry_timings,
             ignore_failures=ignore_failures,
         )
-    assert api_runner.mock.called
-    if expected_log_message not in caplog.text:
-        print(f"\nactual: {caplog.text}\n expected: {expected_log_message}")
-    # assert expected_log_message in caplog.text, f"{expected_log_message} not in {caplog.text}"
+    assert delete.called
+    # if expected_log_message not in caplog.text:
+    #     print(f"\nactual: {caplog.text}\n expected: {expected_log_message}")
+    assert expected_log_message in caplog.text
 
 
 def test_timestamp_name() -> None:
