@@ -251,7 +251,7 @@ class OpenApiAccess:
                 initial_cluster=cluster_spec,
                 provider="aws",
                 region=region,
-                stream_type="feature-release",
+                stream_type="innovation-release",
             ),
         )
 
