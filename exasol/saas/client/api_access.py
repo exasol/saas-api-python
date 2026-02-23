@@ -114,7 +114,7 @@ T = TypeVar("T")
 
 
 def ensure_type(
-    expected: type,
+    expected: type[T],
     response: T | ApiError | None,
     message: str,
 ) -> T:
