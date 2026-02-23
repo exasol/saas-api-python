@@ -113,8 +113,9 @@ class OpenApiError(Exception):
 T = TypeVar("T")
 
 
+# TODO: Create Unit test
 def ensure_type(
-    expected: type[T],
+    expected: type,
     response: T | ApiError | None,
     message: str,
 ) -> T:
