@@ -22,12 +22,20 @@ def test_ensure_type_success():
 
 
 @pytest.mark.parametrize(
-    "object",
+    "object, suffix",
     [
-        Mock(ApiError),
-        Mock(),
+        pytest.param(
+            Mock(ApiError, message="inner error"),
+            ": inner error.",
+            id="api_error",
+        ),
+        pytest.param(Mock(), "", id="other_class"),
+        pytest.param(None, "", id="none"),
     ],
 )
-def test_ensure_type_raises_exception(object):
-    with pytest.raises(OpenApiError):
-        ensure_type(MyClass, object, "error message")
+def test_ensure_type_raises_exception(object, suffix):
+    prefix = "some error message"
+    expected_error = prefix + suffix
+    with pytest.raises(OpenApiError, match=expected_error) as ex:
+        ensure_type(MyClass, object, prefix)
+    assert str(ex.value) == expected_error

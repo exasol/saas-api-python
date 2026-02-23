@@ -124,7 +124,8 @@ def ensure_type(
     """
     if isinstance(response, expected):
         return cast(T, response)
-    raise OpenApiError(message, cast(ApiError, response))
+    api_error = response if isinstance(response, ApiError) else None
+    raise OpenApiError(message, api_error)
 
 
 class InternalError(Exception):
@@ -431,10 +432,13 @@ class OpenApiAccess:
         self,
         database_id: str,
     ) -> list[openapi.models.Cluster] | None:
-        resp = list_clusters.sync(
-            self._account_id,
-            database_id,
-            client=self._client,
+        resp = (
+            list_clusters.sync(
+                self._account_id,
+                database_id,
+                client=self._client,
+            )
+            or []
         )
         return ensure_type(
             list[openapi.models.Cluster],
@@ -461,13 +465,13 @@ class OpenApiAccess:
         )
 
     def list_allowed_ip_ids(self) -> Iterable[str]:
-        resp = list_allowed_i_ps.sync(self._account_id, client=self._client)
+        resp = list_allowed_i_ps.sync(self._account_id, client=self._client) or []
         ips = ensure_type(
             list[openapi.models.AllowedIP],
             resp,
             "Failed to retrieve the list of allowed ips",
         )
-        return (x.id for x in ips or [])
+        return (x.id for x in ips)
 
     def add_allowed_ip(
         self,
