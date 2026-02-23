@@ -3,10 +3,15 @@
 ## Summary
 
 This release fixes vulnerabilities by updating dependencies and updates `openapi-python-client`.
+This release also describes naming conventions for SaaS instances in the User Guide.
 
 ## Security
 
 * #140: Fixed vulnerabilities by updating dependencies
+
+## Documentation
+
+* #145: Described SaaS instance naming conventions in the User Guide
 
 ## Refactorings
 
