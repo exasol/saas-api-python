@@ -10,7 +10,7 @@ var {
 
 SAPIPY offers function `timestamp_name()` to name database instances.
 
-In case of left over SaaS instances, the generated name is intended to identify who created the database, when, and for which project.
+In case of left-over SaaS instances, the generated name is intended to identify who created the database, when, and for which project.
 
 Exasol SaaS limits database names to max 20 characters.
 
