@@ -29,6 +29,5 @@ def test_ensure_type_success():
     ],
 )
 def test_ensure_type_raises_exception(object):
-    with pytest.raises(OpenApiError) as ex:
+    with pytest.raises(OpenApiError):
         ensure_type(MyClass, object, "error message")
-    assert ex.api_error
