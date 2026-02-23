@@ -287,9 +287,7 @@ class OpenApiAccess:
             ),
         )
         database = ensure_type(
-            ExasolDatabase,
-            resp,
-            f"Failed to create database {name}",
+            ExasolDatabase, resp, f"Failed to create database {name}"
         )
         LOG.info("Created database with ID %s", database.id)
         return database
@@ -369,7 +367,8 @@ class OpenApiAccess:
 
     def list_database_ids(self) -> Iterable[str]:
         resp = list_databases.sync(self._account_id, client=self._client) or []
-        dbs = ensure_type(list[ExasolDatabase], resp, "Failed to list databases")
+        # actually list[ExasolDatabase]
+        dbs = ensure_type(list, resp, "Failed to list databases")
         return (db.id for db in dbs)
 
     @contextmanager
@@ -440,10 +439,9 @@ class OpenApiAccess:
             )
             or []
         )
+        # actually list[openapi.models.Cluster]
         return ensure_type(
-            list[openapi.models.Cluster],
-            resp,
-            f"Failed to list clusters of database {database_id}",
+            list, resp, f"Failed to list clusters of database {database_id}"
         )
 
     def get_connection(
@@ -466,11 +464,8 @@ class OpenApiAccess:
 
     def list_allowed_ip_ids(self) -> Iterable[str]:
         resp = list_allowed_i_ps.sync(self._account_id, client=self._client) or []
-        ips = ensure_type(
-            list[openapi.models.AllowedIP],
-            resp,
-            "Failed to retrieve the list of allowed ips",
-        )
+        # actually list[openapi.models.AllowedIP]
+        ips = ensure_type(list, resp, "Failed to retrieve the list of allowed ips")
         return (x.id for x in ips)
 
     def add_allowed_ip(
