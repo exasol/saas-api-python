@@ -124,7 +124,7 @@ def ensure_type(
     correct type. Otherwise raise an OpenApiError.
     """
     if isinstance(response, expected):
-        return response
+        return cast(T, response)
     raise OpenApiError(message, cast(ApiError, response))
 
 
