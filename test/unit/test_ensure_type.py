@@ -1,13 +1,16 @@
 from test.util import not_raises
-
-import pytest
 from unittest.mock import Mock
 
-from exasol.saas.client.api_access import ensure_type, OpenApiError
+import pytest
+
+from exasol.saas.client.api_access import (
+    OpenApiError,
+    ensure_type,
+)
 from exasol.saas.client.openapi.models.api_error import ApiError
 
 
-class MyClass():
+class MyClass:
     pass
 
 
@@ -18,10 +21,13 @@ def test_ensure_type_success():
     assert isinstance(actual, MyClass)
 
 
-@pytest.mark.parametrize("object", [
-    Mock(ApiError),
-    Mock(),
-])
+@pytest.mark.parametrize(
+    "object",
+    [
+        Mock(ApiError),
+        Mock(),
+    ],
+)
 def test_ensure_type_raises_exception(object):
     with pytest.raises(OpenApiError) as ex:
         ensure_type(MyClass, object, "error message")
