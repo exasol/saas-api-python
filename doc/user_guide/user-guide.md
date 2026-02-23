@@ -1,9 +1,12 @@
+<!--
 <style type="text/css">
 var {
   font-style: italic;
   color: #840;
 }
 </style>
+-->
+
 # SaaS API for Python User Guide
 
 ## Naming SaaS instances
