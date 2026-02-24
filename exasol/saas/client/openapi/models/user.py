@@ -1,21 +1,14 @@
+from __future__ import annotations
+
 import datetime
-from collections.abc import (
-    Generator,
-    Mapping,
-)
+from collections.abc import Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
-    BinaryIO,
-    Optional,
-    TextIO,
     TypeVar,
-    Union,
-    cast,
 )
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
 from dateutil.parser import isoparse
 
 from ..models.user_status import UserStatus
@@ -41,12 +34,12 @@ class User:
         created_at (datetime.datetime):
         created_by (str):
         status (UserStatus):
-        roles (list['UserRole']):
+        roles (list[UserRole]):
         is_deletable (bool):
-        first_name (Union[Unset, str]):
-        last_name (Union[Unset, str]):
-        databases (Union[Unset, list['UserDatabase']]):
-        db_username (Union[Unset, str]):
+        first_name (str | Unset):
+        last_name (str | Unset):
+        databases (list[UserDatabase] | Unset):
+        db_username (str | Unset):
     """
 
     email: str
@@ -54,17 +47,14 @@ class User:
     created_at: datetime.datetime
     created_by: str
     status: UserStatus
-    roles: list["UserRole"]
+    roles: list[UserRole]
     is_deletable: bool
-    first_name: Union[Unset, str] = UNSET
-    last_name: Union[Unset, str] = UNSET
-    databases: Union[Unset, list["UserDatabase"]] = UNSET
-    db_username: Union[Unset, str] = UNSET
+    first_name: str | Unset = UNSET
+    last_name: str | Unset = UNSET
+    databases: list[UserDatabase] | Unset = UNSET
+    db_username: str | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.user_database import UserDatabase
-        from ..models.user_role import UserRole
-
         email = self.email
 
         id = self.id
@@ -86,7 +76,7 @@ class User:
 
         last_name = self.last_name
 
-        databases: Union[Unset, list[dict[str, Any]]] = UNSET
+        databases: list[dict[str, Any]] | Unset = UNSET
         if not isinstance(self.databases, Unset):
             databases = []
             for databases_item_data in self.databases:
@@ -148,12 +138,14 @@ class User:
 
         last_name = d.pop("lastName", UNSET)
 
-        databases = []
         _databases = d.pop("databases", UNSET)
-        for databases_item_data in _databases or []:
-            databases_item = UserDatabase.from_dict(databases_item_data)
+        databases: list[UserDatabase] | Unset = UNSET
+        if _databases is not UNSET:
+            databases = []
+            for databases_item_data in _databases:
+                databases_item = UserDatabase.from_dict(databases_item_data)
 
-            databases.append(databases_item)
+                databases.append(databases_item)
 
         db_username = d.pop("dbUsername", UNSET)
 

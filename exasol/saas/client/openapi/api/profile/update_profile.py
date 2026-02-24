@@ -1,23 +1,18 @@
 from http import HTTPStatus
 from typing import (
     Any,
-    Optional,
-    Union,
     cast,
 )
 
 import httpx
 
-from ... import errors
 from ...client import (
     AuthenticatedClient,
     Client,
 )
+from ...models.api_error import ApiError
 from ...models.update_profile import UpdateProfile
-from ...types import (
-    UNSET,
-    Response,
-)
+from ...types import Response
 
 
 def _get_kwargs(
@@ -40,19 +35,20 @@ def _get_kwargs(
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Any]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Any | ApiError:
     if response.status_code == 204:
-        return None
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+        response_204 = cast(Any, None)
+        return response_204
+
+    response_default = ApiError.from_dict(response.json())
+
+    return response_default
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Any]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[Any | ApiError]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -65,7 +61,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     body: UpdateProfile,
-) -> Response[Any]:
+) -> Response[Any | ApiError]:
     """
     Args:
         body (UpdateProfile):
@@ -75,7 +71,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any]
+        Response[Any | ApiError]
     """
 
     kwargs = _get_kwargs(
@@ -89,11 +85,11 @@ def sync_detailed(
     return _build_response(client=client, response=response)
 
 
-async def asyncio_detailed(
+def sync(
     *,
     client: AuthenticatedClient,
     body: UpdateProfile,
-) -> Response[Any]:
+) -> Any | ApiError | None:
     """
     Args:
         body (UpdateProfile):
@@ -103,7 +99,30 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any]
+        Any | ApiError
+    """
+
+    return sync_detailed(
+        client=client,
+        body=body,
+    ).parsed
+
+
+async def asyncio_detailed(
+    *,
+    client: AuthenticatedClient,
+    body: UpdateProfile,
+) -> Response[Any | ApiError]:
+    """
+    Args:
+        body (UpdateProfile):
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Response[Any | ApiError]
     """
 
     kwargs = _get_kwargs(
@@ -113,3 +132,28 @@ async def asyncio_detailed(
     response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
+
+async def asyncio(
+    *,
+    client: AuthenticatedClient,
+    body: UpdateProfile,
+) -> Any | ApiError | None:
+    """
+    Args:
+        body (UpdateProfile):
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Any | ApiError
+    """
+
+    return (
+        await asyncio_detailed(
+            client=client,
+            body=body,
+        )
+    ).parsed

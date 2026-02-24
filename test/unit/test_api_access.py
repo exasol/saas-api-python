@@ -5,51 +5,38 @@ from unittest.mock import Mock
 import pytest
 
 from exasol.saas.client.api_access import (
+    DatabaseDeleteError,
     OpenApiAccess,
-    indicates_retry,
     timestamp_name,
 )
-from exasol.saas.client.openapi.errors import UnexpectedStatus
+from exasol.saas.client.openapi.models.api_error import ApiError
 
-RETRY_EXCEPTION = UnexpectedStatus(
-    400, b"Operation is not allowed:The cluster is not in a proper state!"
+
+def response(status_code: int, message: str, spec=None):
+    return Mock(spec, status=status_code, message=message)
+
+
+def api_error(status_code: int, message: str):
+    return response(status_code, message, spec=ApiError)
+
+
+RETRY = api_error(
+    400,
+    "Operation is not allowed:The cluster is not in a proper state!",
 )
-
-
-@pytest.mark.parametrize(
-    "exception, expected",
-    [
-        pytest.param(RuntimeError("bla"), False, id="other_exception"),
-        pytest.param(UnexpectedStatus(404, b"bla"), False, id="other_status_code"),
-        pytest.param(UnexpectedStatus(400, b"bla"), False, id="other_message"),
-        pytest.param(RETRY_EXCEPTION, True, id="indicates_retry"),
-    ],
-)
-def test_indicates_retry(exception, expected):
-    """
-    Call function api_access.indicates_retry() with different exceptions
-    in order to verify if it correctly rates the current exception as
-    indicating to retry deleting a SaaS database instance.
-    """
-    assert indicates_retry(exception) == expected
-
-
-class ApiRunner:
-    def __init__(self, mocker):
-        self.api = OpenApiAccess(Mock(), account_id="A1")
-        self._mocker = mocker
-        self.mock = None
-
-    def mock_delete(self, side_effect):
-        self.mock = Mock(side_effect=side_effect)
-        self._mocker.patch(
-            "exasol.saas.client.api_access." "delete_database.sync_detailed", self.mock
-        )
 
 
 @pytest.fixture
-def api_runner(mocker) -> ApiRunner:
-    return ApiRunner(mocker)
+def api_mock():
+    return OpenApiAccess(Mock(), account_id="A1")
+
+
+def delete_mock(monkeypatch, side_effect) -> Mock:
+    from exasol.saas.client.api_access import delete_database as api
+
+    mock = Mock(side_effect=side_effect)
+    monkeypatch.setattr(api, "sync", mock)
+    return mock
 
 
 @pytest.fixture
@@ -68,39 +55,39 @@ def retry_timings() -> dict[str, timedelta]:
 @pytest.mark.parametrize(
     "side_effect",
     [
-        pytest.param([UnexpectedStatus(400, b"bla")], id="immediate_failure"),
         pytest.param(
-            [RETRY_EXCEPTION, RETRY_EXCEPTION, UnexpectedStatus(400, b"bla")],
+            [api_error(400, "bla")],
+            id="immediate_failure",
+        ),
+        pytest.param(
+            [RETRY, RETRY, api_error(400, "bla")],
             id="failure_after_retry",
         ),
         pytest.param(
-            [RETRY_EXCEPTION for _ in range(4)],
+            [RETRY for _ in range(4)],
             id="timeout_after_too_many_retries",
         ),
     ],
 )
-def test_delete_fail(side_effect, api_runner, retry_timings) -> None:
-    api_runner.mock_delete(side_effect)
-    with pytest.raises(UnexpectedStatus):
-        api_runner.api.delete_database("123", **retry_timings)
+def test_delete_fail(api_mock, monkeypatch, side_effect, retry_timings) -> None:
+    delete_mock(monkeypatch, side_effect)
+    with pytest.raises(DatabaseDeleteError):
+        api_mock.delete_database("123", **retry_timings)
 
 
 @pytest.mark.parametrize(
     "side_effect, ignore_failures, expected_log_message",
     [
         pytest.param(
-            [RETRY_EXCEPTION, None],
+            [RETRY, response(200, "")],
             False,
             "",
             id="success_after_retry",
         ),
         pytest.param(
-            [UnexpectedStatus(400, b"bla")],
+            [api_error(400, "bla")],
             True,
-            (
-                "Ignoring failure when deleting database with"
-                " ID 123: Unexpected status code: 400"
-            ),
+            "Ignoring delete failure: HTTP 400:",
             id="success_by_ignoring_failures",
         ),
     ],
@@ -109,18 +96,21 @@ def test_delete_success(
     side_effect,
     ignore_failures,
     expected_log_message,
-    api_runner,
+    api_mock,
+    monkeypatch,
     retry_timings,
     caplog,
 ) -> None:
-    api_runner.mock_delete(side_effect)
+    delete = delete_mock(monkeypatch, side_effect)
     with not_raises(Exception):
-        api_runner.api.delete_database(
+        api_mock.delete_database(
             database_id="123",
             **retry_timings,
             ignore_failures=ignore_failures,
         )
-    assert api_runner.mock.called
+    assert delete.called
+    # if expected_log_message not in caplog.text:
+    #     print(f"\nactual: {caplog.text}\n expected: {expected_log_message}")
     assert expected_log_message in caplog.text
 
 

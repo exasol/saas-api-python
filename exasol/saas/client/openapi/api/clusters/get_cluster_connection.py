@@ -1,23 +1,16 @@
 from http import HTTPStatus
-from typing import (
-    Any,
-    Optional,
-    Union,
-    cast,
-)
+from typing import Any
+from urllib.parse import quote
 
 import httpx
 
-from ... import errors
 from ...client import (
     AuthenticatedClient,
     Client,
 )
+from ...models.api_error import ApiError
 from ...models.cluster_connection import ClusterConnection
-from ...types import (
-    UNSET,
-    Response,
-)
+from ...types import Response
 
 
 def _get_kwargs(
@@ -28,28 +21,32 @@ def _get_kwargs(
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": f"/api/v1/accounts/{account_id}/databases/{database_id}/clusters/{cluster_id}/connect",
+        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/clusters/{cluster_id}/connect".format(
+            account_id=quote(str(account_id), safe=""),
+            database_id=quote(str(database_id), safe=""),
+            cluster_id=quote(str(cluster_id), safe=""),
+        ),
     }
 
     return _kwargs
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[ClusterConnection]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> ApiError | ClusterConnection:
     if response.status_code == 200:
         response_200 = ClusterConnection.from_dict(response.json())
 
         return response_200
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+
+    response_default = ApiError.from_dict(response.json())
+
+    return response_default
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[ClusterConnection]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[ApiError | ClusterConnection]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -64,7 +61,7 @@ def sync_detailed(
     cluster_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[ClusterConnection]:
+) -> Response[ApiError | ClusterConnection]:
     """
     Args:
         account_id (str):
@@ -76,7 +73,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ClusterConnection]
+        Response[ApiError | ClusterConnection]
     """
 
     kwargs = _get_kwargs(
@@ -98,7 +95,7 @@ def sync(
     cluster_id: str,
     *,
     client: AuthenticatedClient,
-) -> Optional[ClusterConnection]:
+) -> ApiError | ClusterConnection | None:
     """
     Args:
         account_id (str):
@@ -110,7 +107,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ClusterConnection
+        ApiError | ClusterConnection
     """
 
     return sync_detailed(
@@ -127,7 +124,7 @@ async def asyncio_detailed(
     cluster_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[ClusterConnection]:
+) -> Response[ApiError | ClusterConnection]:
     """
     Args:
         account_id (str):
@@ -139,7 +136,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ClusterConnection]
+        Response[ApiError | ClusterConnection]
     """
 
     kwargs = _get_kwargs(
@@ -159,7 +156,7 @@ async def asyncio(
     cluster_id: str,
     *,
     client: AuthenticatedClient,
-) -> Optional[ClusterConnection]:
+) -> ApiError | ClusterConnection | None:
     """
     Args:
         account_id (str):
@@ -171,7 +168,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ClusterConnection
+        ApiError | ClusterConnection
     """
 
     return (

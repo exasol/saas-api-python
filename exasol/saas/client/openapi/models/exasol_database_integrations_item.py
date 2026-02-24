@@ -1,15 +1,9 @@
-from collections.abc import (
-    Generator,
-    Mapping,
-)
+from __future__ import annotations
+
+from collections.abc import Mapping
 from typing import (
-    TYPE_CHECKING,
     Any,
-    BinaryIO,
-    Optional,
-    TextIO,
     TypeVar,
-    Union,
 )
 
 from attrs import define as _attrs_define
@@ -29,12 +23,12 @@ class ExasolDatabaseIntegrationsItem:
     Attributes:
         id (str):
         name (str):
-        url (Union[Unset, str]):
+        url (str | Unset):
     """
 
     id: str
     name: str
-    url: Union[Unset, str] = UNSET
+    url: str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:

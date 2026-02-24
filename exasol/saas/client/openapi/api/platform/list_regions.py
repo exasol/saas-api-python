@@ -1,23 +1,16 @@
 from http import HTTPStatus
-from typing import (
-    Any,
-    Optional,
-    Union,
-    cast,
-)
+from typing import Any
+from urllib.parse import quote
 
 import httpx
 
-from ... import errors
 from ...client import (
     AuthenticatedClient,
     Client,
 )
+from ...models.api_error import ApiError
 from ...models.region import Region
-from ...types import (
-    UNSET,
-    Response,
-)
+from ...types import Response
 
 
 def _get_kwargs(
@@ -26,15 +19,17 @@ def _get_kwargs(
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": f"/api/v1/platforms/{platform}/regions",
+        "url": "/api/v1/platforms/{platform}/regions".format(
+            platform=quote(str(platform), safe=""),
+        ),
     }
 
     return _kwargs
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[list["Region"]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> ApiError | list[Region]:
     if response.status_code == 200:
         response_200 = []
         _response_200 = response.json()
@@ -44,15 +39,15 @@ def _parse_response(
             response_200.append(response_200_item)
 
         return response_200
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+
+    response_default = ApiError.from_dict(response.json())
+
+    return response_default
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[list["Region"]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[ApiError | list[Region]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -65,7 +60,7 @@ def sync_detailed(
     platform: str,
     *,
     client: AuthenticatedClient,
-) -> Response[list["Region"]]:
+) -> Response[ApiError | list[Region]]:
     """
     Args:
         platform (str):
@@ -75,7 +70,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[list['Region']]
+        Response[ApiError | list[Region]]
     """
 
     kwargs = _get_kwargs(
@@ -93,7 +88,7 @@ def sync(
     platform: str,
     *,
     client: AuthenticatedClient,
-) -> Optional[list["Region"]]:
+) -> ApiError | list[Region] | None:
     """
     Args:
         platform (str):
@@ -103,7 +98,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        list['Region']
+        ApiError | list[Region]
     """
 
     return sync_detailed(
@@ -116,7 +111,7 @@ async def asyncio_detailed(
     platform: str,
     *,
     client: AuthenticatedClient,
-) -> Response[list["Region"]]:
+) -> Response[ApiError | list[Region]]:
     """
     Args:
         platform (str):
@@ -126,7 +121,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[list['Region']]
+        Response[ApiError | list[Region]]
     """
 
     kwargs = _get_kwargs(
@@ -142,7 +137,7 @@ async def asyncio(
     platform: str,
     *,
     client: AuthenticatedClient,
-) -> Optional[list["Region"]]:
+) -> ApiError | list[Region] | None:
     """
     Args:
         platform (str):
@@ -152,7 +147,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        list['Region']
+        ApiError | list[Region]
     """
 
     return (

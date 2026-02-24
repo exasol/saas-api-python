@@ -1,19 +1,12 @@
-from collections.abc import Iterable
-from dataclasses import dataclass
 from pathlib import Path
 
-ROOT_DIR = Path(__file__).parent
+from exasol.toolbox.config import BaseConfig
 
-
-@dataclass(frozen=True)
-class Config:
-    root: Path = ROOT_DIR
-    doc: Path = ROOT_DIR / "doc"
-    source: Path = Path("exasol/saas")
-    version_file: Path = ROOT_DIR / "version.py"
-    path_filters: Iterable[str] = ("dist", ".eggs", "venv")
-
-    python_versions = ["3.10"]
-
-
-PROJECT_CONFIG = Config()
+PROJECT_CONFIG = BaseConfig(
+    root_path=Path(__file__).parent,
+    project_name="saas",
+    python_versions=("3.10", "3.11", "3.12", "3.13"),
+    # Actually SAPIPY itests don't use any (on-prem) database version, see
+    # https://github.com/exasol/python-toolbox/issues/682.
+    exasol_versions=("7.1.30",),
+)

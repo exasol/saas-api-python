@@ -1,20 +1,13 @@
-from collections.abc import (
-    Generator,
-    Mapping,
-)
+from __future__ import annotations
+
+from collections.abc import Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
-    BinaryIO,
-    Optional,
-    TextIO,
     TypeVar,
-    Union,
-    cast,
 )
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
 
 from ..types import (
     UNSET,
@@ -35,32 +28,29 @@ class CreateDatabaseInitialCluster:
     Attributes:
         name (str):
         size (str):
-        family (Union[Unset, str]):
-        auto_stop (Union[Unset, AutoStop]):
-        settings (Union[Unset, ClusterSettingsUpdate]):
+        family (str | Unset):
+        auto_stop (AutoStop | Unset):
+        settings (ClusterSettingsUpdate | Unset):
     """
 
     name: str
     size: str
-    family: Union[Unset, str] = UNSET
-    auto_stop: Union[Unset, "AutoStop"] = UNSET
-    settings: Union[Unset, "ClusterSettingsUpdate"] = UNSET
+    family: str | Unset = UNSET
+    auto_stop: AutoStop | Unset = UNSET
+    settings: ClusterSettingsUpdate | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.auto_stop import AutoStop
-        from ..models.cluster_settings_update import ClusterSettingsUpdate
-
         name = self.name
 
         size = self.size
 
         family = self.family
 
-        auto_stop: Union[Unset, dict[str, Any]] = UNSET
+        auto_stop: dict[str, Any] | Unset = UNSET
         if not isinstance(self.auto_stop, Unset):
             auto_stop = self.auto_stop.to_dict()
 
-        settings: Union[Unset, dict[str, Any]] = UNSET
+        settings: dict[str, Any] | Unset = UNSET
         if not isinstance(self.settings, Unset):
             settings = self.settings.to_dict()
 
@@ -94,14 +84,14 @@ class CreateDatabaseInitialCluster:
         family = d.pop("family", UNSET)
 
         _auto_stop = d.pop("autoStop", UNSET)
-        auto_stop: Union[Unset, AutoStop]
+        auto_stop: AutoStop | Unset
         if isinstance(_auto_stop, Unset):
             auto_stop = UNSET
         else:
             auto_stop = AutoStop.from_dict(_auto_stop)
 
         _settings = d.pop("settings", UNSET)
-        settings: Union[Unset, ClusterSettingsUpdate]
+        settings: ClusterSettingsUpdate | Unset
         if isinstance(_settings, Unset):
             settings = UNSET
         else:

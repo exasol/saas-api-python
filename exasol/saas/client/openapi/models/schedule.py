@@ -1,20 +1,13 @@
-from collections.abc import (
-    Generator,
-    Mapping,
-)
+from __future__ import annotations
+
+from collections.abc import Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
-    BinaryIO,
-    Optional,
-    TextIO,
     TypeVar,
-    Union,
-    cast,
 )
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
 
 from ..models.schedule_action_type_0 import ScheduleActionType0
 from ..models.schedule_state import ScheduleState
@@ -37,28 +30,27 @@ class Schedule:
     Attributes:
         action (ScheduleActionType0):
         cron_rule (str): cron rule in format: <minute> <hour> <day> <month> <weekday>
-        id (Union[Unset, str]):
-        createdby_id (Union[Unset, str]):
-        createdby_first_name (Union[Unset, str]):
-        createdby_last_name (Union[Unset, str]):
-        cluster_name (Union[Unset, str]):
-        payload (Union['ClusterActionScale', 'ClusterActionStartStop', Unset]):
-        state (Union[Unset, ScheduleState]):
+        id (str | Unset):
+        createdby_id (str | Unset):
+        createdby_first_name (str | Unset):
+        createdby_last_name (str | Unset):
+        cluster_name (str | Unset):
+        payload (ClusterActionScale | ClusterActionStartStop | Unset):
+        state (ScheduleState | Unset):
     """
 
     action: ScheduleActionType0
     cron_rule: str
-    id: Union[Unset, str] = UNSET
-    createdby_id: Union[Unset, str] = UNSET
-    createdby_first_name: Union[Unset, str] = UNSET
-    createdby_last_name: Union[Unset, str] = UNSET
-    cluster_name: Union[Unset, str] = UNSET
-    payload: Union["ClusterActionScale", "ClusterActionStartStop", Unset] = UNSET
-    state: Union[Unset, ScheduleState] = UNSET
+    id: str | Unset = UNSET
+    createdby_id: str | Unset = UNSET
+    createdby_first_name: str | Unset = UNSET
+    createdby_last_name: str | Unset = UNSET
+    cluster_name: str | Unset = UNSET
+    payload: ClusterActionScale | ClusterActionStartStop | Unset = UNSET
+    state: ScheduleState | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.cluster_action_scale import ClusterActionScale
-        from ..models.cluster_action_start_stop import ClusterActionStartStop
 
         action: str
         if isinstance(self.action, ScheduleActionType0):
@@ -76,7 +68,7 @@ class Schedule:
 
         cluster_name = self.cluster_name
 
-        payload: Union[Unset, dict[str, Any]]
+        payload: dict[str, Any] | Unset
         if isinstance(self.payload, Unset):
             payload = UNSET
         elif isinstance(self.payload, ClusterActionScale):
@@ -84,7 +76,7 @@ class Schedule:
         else:
             payload = self.payload.to_dict()
 
-        state: Union[Unset, str] = UNSET
+        state: str | Unset = UNSET
         if not isinstance(self.state, Unset):
             state = self.state.value
 
@@ -143,7 +135,7 @@ class Schedule:
 
         def _parse_payload(
             data: object,
-        ) -> Union["ClusterActionScale", "ClusterActionStartStop", Unset]:
+        ) -> ClusterActionScale | ClusterActionStartStop | Unset:
             if isinstance(data, Unset):
                 return data
             try:
@@ -152,7 +144,7 @@ class Schedule:
                 payload_type_0 = ClusterActionScale.from_dict(data)
 
                 return payload_type_0
-            except:  # noqa: E722
+            except (TypeError, ValueError, AttributeError, KeyError):
                 pass
             if not isinstance(data, dict):
                 raise TypeError()
@@ -163,7 +155,7 @@ class Schedule:
         payload = _parse_payload(d.pop("payload", UNSET))
 
         _state = d.pop("state", UNSET)
-        state: Union[Unset, ScheduleState]
+        state: ScheduleState | Unset
         if isinstance(_state, Unset):
             state = UNSET
         else:

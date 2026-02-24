@@ -1,23 +1,16 @@
 from http import HTTPStatus
-from typing import (
-    Any,
-    Optional,
-    Union,
-    cast,
-)
+from typing import Any
+from urllib.parse import quote
 
 import httpx
 
-from ... import errors
 from ...client import (
     AuthenticatedClient,
     Client,
 )
+from ...models.api_error import ApiError
 from ...models.dlhc_activate_status import DlhcActivateStatus
-from ...types import (
-    UNSET,
-    Response,
-)
+from ...types import Response
 
 
 def _get_kwargs(
@@ -27,28 +20,31 @@ def _get_kwargs(
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": f"/api/v1/accounts/{account_id}/databases/{database_id}/dlhc-activate",
+        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/dlhc-activate".format(
+            account_id=quote(str(account_id), safe=""),
+            database_id=quote(str(database_id), safe=""),
+        ),
     }
 
     return _kwargs
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[DlhcActivateStatus]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> ApiError | DlhcActivateStatus:
     if response.status_code == 200:
         response_200 = DlhcActivateStatus.from_dict(response.json())
 
         return response_200
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+
+    response_default = ApiError.from_dict(response.json())
+
+    return response_default
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[DlhcActivateStatus]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[ApiError | DlhcActivateStatus]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -62,7 +58,7 @@ def sync_detailed(
     database_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[DlhcActivateStatus]:
+) -> Response[ApiError | DlhcActivateStatus]:
     """
     Args:
         account_id (str):
@@ -73,7 +69,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[DlhcActivateStatus]
+        Response[ApiError | DlhcActivateStatus]
     """
 
     kwargs = _get_kwargs(
@@ -93,7 +89,7 @@ def sync(
     database_id: str,
     *,
     client: AuthenticatedClient,
-) -> Optional[DlhcActivateStatus]:
+) -> ApiError | DlhcActivateStatus | None:
     """
     Args:
         account_id (str):
@@ -104,7 +100,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        DlhcActivateStatus
+        ApiError | DlhcActivateStatus
     """
 
     return sync_detailed(
@@ -119,7 +115,7 @@ async def asyncio_detailed(
     database_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[DlhcActivateStatus]:
+) -> Response[ApiError | DlhcActivateStatus]:
     """
     Args:
         account_id (str):
@@ -130,7 +126,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[DlhcActivateStatus]
+        Response[ApiError | DlhcActivateStatus]
     """
 
     kwargs = _get_kwargs(
@@ -148,7 +144,7 @@ async def asyncio(
     database_id: str,
     *,
     client: AuthenticatedClient,
-) -> Optional[DlhcActivateStatus]:
+) -> ApiError | DlhcActivateStatus | None:
     """
     Args:
         account_id (str):
@@ -159,7 +155,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        DlhcActivateStatus
+        ApiError | DlhcActivateStatus
     """
 
     return (

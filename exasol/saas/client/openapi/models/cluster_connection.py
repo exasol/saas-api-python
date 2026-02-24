@@ -1,24 +1,13 @@
-from collections.abc import (
-    Generator,
-    Mapping,
-)
+from __future__ import annotations
+
+from collections.abc import Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
-    BinaryIO,
-    Optional,
-    TextIO,
     TypeVar,
-    cast,
 )
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
-
-from ..types import (
-    UNSET,
-    Unset,
-)
 
 if TYPE_CHECKING:
     from ..models.connection_i_ps import ConnectionIPs
@@ -41,12 +30,10 @@ class ClusterConnection:
     dns: str
     port: int
     jdbc: str
-    ips: "ConnectionIPs"
+    ips: ConnectionIPs
     db_username: str
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.connection_i_ps import ConnectionIPs
-
         dns = self.dns
 
         port = self.port

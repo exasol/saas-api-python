@@ -1,21 +1,13 @@
+from __future__ import annotations
+
 import datetime
-from collections.abc import (
-    Generator,
-    Mapping,
-)
+from collections.abc import Mapping
 from typing import (
-    TYPE_CHECKING,
     Any,
-    BinaryIO,
-    Optional,
-    TextIO,
     TypeVar,
-    Union,
-    cast,
 )
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
 from dateutil.parser import isoparse
 
 from ..types import (
@@ -35,8 +27,8 @@ class AllowedIP:
         cidr_ip (str):
         created_at (datetime.datetime):
         created_by (str):
-        deleted_by (Union[Unset, str]):
-        deleted_at (Union[Unset, datetime.datetime]):
+        deleted_by (str | Unset):
+        deleted_at (datetime.datetime | Unset):
     """
 
     id: str
@@ -44,8 +36,8 @@ class AllowedIP:
     cidr_ip: str
     created_at: datetime.datetime
     created_by: str
-    deleted_by: Union[Unset, str] = UNSET
-    deleted_at: Union[Unset, datetime.datetime] = UNSET
+    deleted_by: str | Unset = UNSET
+    deleted_at: datetime.datetime | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         id = self.id
@@ -60,7 +52,7 @@ class AllowedIP:
 
         deleted_by = self.deleted_by
 
-        deleted_at: Union[Unset, str] = UNSET
+        deleted_at: str | Unset = UNSET
         if not isinstance(self.deleted_at, Unset):
             deleted_at = self.deleted_at.isoformat()
 
@@ -98,7 +90,7 @@ class AllowedIP:
         deleted_by = d.pop("deletedBy", UNSET)
 
         _deleted_at = d.pop("deletedAt", UNSET)
-        deleted_at: Union[Unset, datetime.datetime]
+        deleted_at: datetime.datetime | Unset
         if isinstance(_deleted_at, Unset):
             deleted_at = UNSET
         else:

@@ -1,21 +1,14 @@
+from __future__ import annotations
+
 import datetime
-from collections.abc import (
-    Generator,
-    Mapping,
-)
+from collections.abc import Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
-    BinaryIO,
-    Optional,
-    TextIO,
     TypeVar,
-    Union,
-    cast,
 )
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
 from dateutil.parser import isoparse
 
 from ..models.status import Status
@@ -44,9 +37,9 @@ class Cluster:
         created_by (str):
         main_cluster (bool):
         settings (ClusterSettings):
-        deleted_at (Union[Unset, datetime.datetime]):
-        deleted_by (Union[Unset, str]):
-        auto_stop (Union[Unset, AutoStop]):
+        deleted_at (datetime.datetime | Unset):
+        deleted_by (str | Unset):
+        auto_stop (AutoStop | Unset):
     """
 
     status: Status
@@ -56,15 +49,12 @@ class Cluster:
     created_at: datetime.datetime
     created_by: str
     main_cluster: bool
-    settings: "ClusterSettings"
-    deleted_at: Union[Unset, datetime.datetime] = UNSET
-    deleted_by: Union[Unset, str] = UNSET
-    auto_stop: Union[Unset, "AutoStop"] = UNSET
+    settings: ClusterSettings
+    deleted_at: datetime.datetime | Unset = UNSET
+    deleted_by: str | Unset = UNSET
+    auto_stop: AutoStop | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.auto_stop import AutoStop
-        from ..models.cluster_settings import ClusterSettings
-
         status = self.status.value
 
         id = self.id
@@ -81,13 +71,13 @@ class Cluster:
 
         settings = self.settings.to_dict()
 
-        deleted_at: Union[Unset, str] = UNSET
+        deleted_at: str | Unset = UNSET
         if not isinstance(self.deleted_at, Unset):
             deleted_at = self.deleted_at.isoformat()
 
         deleted_by = self.deleted_by
 
-        auto_stop: Union[Unset, dict[str, Any]] = UNSET
+        auto_stop: dict[str, Any] | Unset = UNSET
         if not isinstance(self.auto_stop, Unset):
             auto_stop = self.auto_stop.to_dict()
 
@@ -137,7 +127,7 @@ class Cluster:
         settings = ClusterSettings.from_dict(d.pop("settings"))
 
         _deleted_at = d.pop("deletedAt", UNSET)
-        deleted_at: Union[Unset, datetime.datetime]
+        deleted_at: datetime.datetime | Unset
         if isinstance(_deleted_at, Unset):
             deleted_at = UNSET
         else:
@@ -146,7 +136,7 @@ class Cluster:
         deleted_by = d.pop("deletedBy", UNSET)
 
         _auto_stop = d.pop("autoStop", UNSET)
-        auto_stop: Union[Unset, AutoStop]
+        auto_stop: AutoStop | Unset
         if isinstance(_auto_stop, Unset):
             auto_stop = UNSET
         else:

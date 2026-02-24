@@ -1,24 +1,13 @@
-from collections.abc import (
-    Generator,
-    Mapping,
-)
+from __future__ import annotations
+
+from collections.abc import Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
-    BinaryIO,
-    Optional,
-    TextIO,
     TypeVar,
-    cast,
 )
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
-
-from ..types import (
-    UNSET,
-    Unset,
-)
 
 if TYPE_CHECKING:
     from ..models.extension_parameter_definitions import ExtensionParameterDefinitions
@@ -33,18 +22,14 @@ class ExtensionDetail:
     Attributes:
         id (str):
         version (str):
-        parameter_definitions (list['ExtensionParameterDefinitions']):
+        parameter_definitions (list[ExtensionParameterDefinitions]):
     """
 
     id: str
     version: str
-    parameter_definitions: list["ExtensionParameterDefinitions"]
+    parameter_definitions: list[ExtensionParameterDefinitions]
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.extension_parameter_definitions import (
-            ExtensionParameterDefinitions,
-        )
-
         id = self.id
 
         version = self.version

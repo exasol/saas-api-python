@@ -1,24 +1,13 @@
-from collections.abc import (
-    Generator,
-    Mapping,
-)
+from __future__ import annotations
+
+from collections.abc import Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
-    BinaryIO,
-    Optional,
-    TextIO,
     TypeVar,
-    cast,
 )
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
-
-from ..types import (
-    UNSET,
-    Unset,
-)
 
 if TYPE_CHECKING:
     from ..models.extension_version import ExtensionVersion
@@ -35,18 +24,16 @@ class Extension:
         name (str):
         description (str):
         category_id (str):
-        installable_versions (list['ExtensionVersion']):
+        installable_versions (list[ExtensionVersion]):
     """
 
     id: str
     name: str
     description: str
     category_id: str
-    installable_versions: list["ExtensionVersion"]
+    installable_versions: list[ExtensionVersion]
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.extension_version import ExtensionVersion
-
         id = self.id
 
         name = self.name

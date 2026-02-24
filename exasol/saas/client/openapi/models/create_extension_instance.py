@@ -1,24 +1,13 @@
-from collections.abc import (
-    Generator,
-    Mapping,
-)
+from __future__ import annotations
+
+from collections.abc import Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
-    BinaryIO,
-    Optional,
-    TextIO,
     TypeVar,
-    cast,
 )
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
-
-from ..types import (
-    UNSET,
-    Unset,
-)
 
 if TYPE_CHECKING:
     from ..models.extension_parameter_value import ExtensionParameterValue
@@ -31,14 +20,12 @@ T = TypeVar("T", bound="CreateExtensionInstance")
 class CreateExtensionInstance:
     """
     Attributes:
-        parameter_values (list['ExtensionParameterValue']):
+        parameter_values (list[ExtensionParameterValue]):
     """
 
-    parameter_values: list["ExtensionParameterValue"]
+    parameter_values: list[ExtensionParameterValue]
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.extension_parameter_value import ExtensionParameterValue
-
         parameter_values = []
         for parameter_values_item_data in self.parameter_values:
             parameter_values_item = parameter_values_item_data.to_dict()

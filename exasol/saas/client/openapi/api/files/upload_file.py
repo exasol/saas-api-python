@@ -1,23 +1,16 @@
 from http import HTTPStatus
-from typing import (
-    Any,
-    Optional,
-    Union,
-    cast,
-)
+from typing import Any
+from urllib.parse import quote
 
 import httpx
 
-from ... import errors
 from ...client import (
     AuthenticatedClient,
     Client,
 )
+from ...models.api_error import ApiError
 from ...models.upload_file import UploadFile
-from ...types import (
-    UNSET,
-    Response,
-)
+from ...types import Response
 
 
 def _get_kwargs(
@@ -28,28 +21,32 @@ def _get_kwargs(
 
     _kwargs: dict[str, Any] = {
         "method": "post",
-        "url": f"/api/v1/accounts/{account_id}/databases/{database_id}/files/{key}",
+        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/files/{key}".format(
+            account_id=quote(str(account_id), safe=""),
+            database_id=quote(str(database_id), safe=""),
+            key=quote(str(key), safe=""),
+        ),
     }
 
     return _kwargs
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[UploadFile]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> ApiError | UploadFile:
     if response.status_code == 200:
         response_200 = UploadFile.from_dict(response.json())
 
         return response_200
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+
+    response_default = ApiError.from_dict(response.json())
+
+    return response_default
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[UploadFile]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[ApiError | UploadFile]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -64,7 +61,7 @@ def sync_detailed(
     key: str,
     *,
     client: AuthenticatedClient,
-) -> Response[UploadFile]:
+) -> Response[ApiError | UploadFile]:
     """
     Args:
         account_id (str):
@@ -76,7 +73,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[UploadFile]
+        Response[ApiError | UploadFile]
     """
 
     kwargs = _get_kwargs(
@@ -98,7 +95,7 @@ def sync(
     key: str,
     *,
     client: AuthenticatedClient,
-) -> Optional[UploadFile]:
+) -> ApiError | UploadFile | None:
     """
     Args:
         account_id (str):
@@ -110,7 +107,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        UploadFile
+        ApiError | UploadFile
     """
 
     return sync_detailed(
@@ -127,7 +124,7 @@ async def asyncio_detailed(
     key: str,
     *,
     client: AuthenticatedClient,
-) -> Response[UploadFile]:
+) -> Response[ApiError | UploadFile]:
     """
     Args:
         account_id (str):
@@ -139,7 +136,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[UploadFile]
+        Response[ApiError | UploadFile]
     """
 
     kwargs = _get_kwargs(
@@ -159,7 +156,7 @@ async def asyncio(
     key: str,
     *,
     client: AuthenticatedClient,
-) -> Optional[UploadFile]:
+) -> ApiError | UploadFile | None:
     """
     Args:
         account_id (str):
@@ -171,7 +168,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        UploadFile
+        ApiError | UploadFile
     """
 
     return (

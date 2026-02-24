@@ -1,23 +1,19 @@
 from http import HTTPStatus
 from typing import (
     Any,
-    Optional,
-    Union,
     cast,
 )
+from urllib.parse import quote
 
 import httpx
 
-from ... import errors
 from ...client import (
     AuthenticatedClient,
     Client,
 )
+from ...models.api_error import ApiError
 from ...models.scale_cluster import ScaleCluster
-from ...types import (
-    UNSET,
-    Response,
-)
+from ...types import Response
 
 
 def _get_kwargs(
@@ -31,7 +27,11 @@ def _get_kwargs(
 
     _kwargs: dict[str, Any] = {
         "method": "put",
-        "url": f"/api/v1/accounts/{account_id}/databases/{database_id}/clusters/{cluster_id}/scale",
+        "url": "/api/v1/accounts/{account_id}/databases/{database_id}/clusters/{cluster_id}/scale".format(
+            account_id=quote(str(account_id), safe=""),
+            database_id=quote(str(database_id), safe=""),
+            cluster_id=quote(str(cluster_id), safe=""),
+        ),
     }
 
     _kwargs["json"] = body.to_dict()
@@ -43,19 +43,20 @@ def _get_kwargs(
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Any]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Any | ApiError:
     if response.status_code == 204:
-        return None
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+        response_204 = cast(Any, None)
+        return response_204
+
+    response_default = ApiError.from_dict(response.json())
+
+    return response_default
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Any]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[Any | ApiError]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -71,7 +72,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     body: ScaleCluster,
-) -> Response[Any]:
+) -> Response[Any | ApiError]:
     """
     Args:
         account_id (str):
@@ -84,7 +85,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any]
+        Response[Any | ApiError]
     """
 
     kwargs = _get_kwargs(
@@ -101,14 +102,14 @@ def sync_detailed(
     return _build_response(client=client, response=response)
 
 
-async def asyncio_detailed(
+def sync(
     account_id: str,
     database_id: str,
     cluster_id: str,
     *,
     client: AuthenticatedClient,
     body: ScaleCluster,
-) -> Response[Any]:
+) -> Any | ApiError | None:
     """
     Args:
         account_id (str):
@@ -121,7 +122,39 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Any]
+        Any | ApiError
+    """
+
+    return sync_detailed(
+        account_id=account_id,
+        database_id=database_id,
+        cluster_id=cluster_id,
+        client=client,
+        body=body,
+    ).parsed
+
+
+async def asyncio_detailed(
+    account_id: str,
+    database_id: str,
+    cluster_id: str,
+    *,
+    client: AuthenticatedClient,
+    body: ScaleCluster,
+) -> Response[Any | ApiError]:
+    """
+    Args:
+        account_id (str):
+        database_id (str):
+        cluster_id (str):
+        body (ScaleCluster):
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Response[Any | ApiError]
     """
 
     kwargs = _get_kwargs(
@@ -134,3 +167,37 @@ async def asyncio_detailed(
     response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
+
+
+async def asyncio(
+    account_id: str,
+    database_id: str,
+    cluster_id: str,
+    *,
+    client: AuthenticatedClient,
+    body: ScaleCluster,
+) -> Any | ApiError | None:
+    """
+    Args:
+        account_id (str):
+        database_id (str):
+        cluster_id (str):
+        body (ScaleCluster):
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Any | ApiError
+    """
+
+    return (
+        await asyncio_detailed(
+            account_id=account_id,
+            database_id=database_id,
+            cluster_id=cluster_id,
+            client=client,
+            body=body,
+        )
+    ).parsed

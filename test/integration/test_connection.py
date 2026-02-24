@@ -32,7 +32,6 @@ def pyexasol_connection(
     return connect
 
 
-@pytest.mark.slow
 def test_get_connection_params_with_id(
     pyexasol_connection,
     operational_saas_database_id,
@@ -46,7 +45,6 @@ def test_get_connection_params_with_id(
         assert result == [(1,)]
 
 
-@pytest.mark.slow
 def test_get_connection_params_with_name(pyexasol_connection, database_name):
     """
     This integration test checks that opening a pyexasol connection to a SaaS DB with

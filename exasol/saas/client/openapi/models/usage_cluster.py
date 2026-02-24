@@ -1,19 +1,12 @@
-from collections.abc import (
-    Generator,
-    Mapping,
-)
+from __future__ import annotations
+
+from collections.abc import Mapping
 from typing import (
-    TYPE_CHECKING,
     Any,
-    BinaryIO,
-    Optional,
-    TextIO,
     TypeVar,
-    Union,
 )
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
 
 from ..types import (
     UNSET,
@@ -30,19 +23,19 @@ class UsageCluster:
         id (str):
         size (str):
         name (str):
-        compute (Union[Unset, float]):
-        out_same_region (Union[Unset, float]):
-        out_different_region (Union[Unset, float]):
-        out_internet (Union[Unset, float]):
+        compute (float | Unset):
+        out_same_region (float | Unset):
+        out_different_region (float | Unset):
+        out_internet (float | Unset):
     """
 
     id: str
     size: str
     name: str
-    compute: Union[Unset, float] = UNSET
-    out_same_region: Union[Unset, float] = UNSET
-    out_different_region: Union[Unset, float] = UNSET
-    out_internet: Union[Unset, float] = UNSET
+    compute: float | Unset = UNSET
+    out_same_region: float | Unset = UNSET
+    out_different_region: float | Unset = UNSET
+    out_internet: float | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         id = self.id

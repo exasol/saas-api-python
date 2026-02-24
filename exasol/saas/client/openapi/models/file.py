@@ -1,21 +1,13 @@
+from __future__ import annotations
+
 import datetime
-from collections.abc import (
-    Generator,
-    Mapping,
-)
+from collections.abc import Mapping
 from typing import (
-    TYPE_CHECKING,
     Any,
-    BinaryIO,
-    Optional,
-    TextIO,
     TypeVar,
-    Union,
-    cast,
 )
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
 from dateutil.parser import isoparse
 
 from ..types import (
@@ -34,16 +26,16 @@ class File:
         type_ (str):
         path (str):
         last_modified (datetime.datetime):
-        size (Union[Unset, int]):
-        children (Union[Unset, list['File']]):
+        size (int | Unset):
+        children (list[File] | Unset):
     """
 
     name: str
     type_: str
     path: str
     last_modified: datetime.datetime
-    size: Union[Unset, int] = UNSET
-    children: Union[Unset, list["File"]] = UNSET
+    size: int | Unset = UNSET
+    children: list[File] | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         name = self.name
@@ -56,7 +48,7 @@ class File:
 
         size = self.size
 
-        children: Union[Unset, list[dict[str, Any]]] = UNSET
+        children: list[dict[str, Any]] | Unset = UNSET
         if not isinstance(self.children, Unset):
             children = []
             for children_item_data in self.children:
@@ -93,12 +85,14 @@ class File:
 
         size = d.pop("size", UNSET)
 
-        children = []
         _children = d.pop("children", UNSET)
-        for children_item_data in _children or []:
-            children_item = File.from_dict(children_item_data)
+        children: list[File] | Unset = UNSET
+        if _children is not UNSET:
+            children = []
+            for children_item_data in _children:
+                children_item = File.from_dict(children_item_data)
 
-            children.append(children_item)
+                children.append(children_item)
 
         file = cls(
             name=name,

@@ -1,20 +1,13 @@
-from collections.abc import (
-    Generator,
-    Mapping,
-)
+from __future__ import annotations
+
+from collections.abc import Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
-    BinaryIO,
-    Optional,
-    TextIO,
     TypeVar,
-    Union,
-    cast,
 )
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
 
 from ..types import (
     UNSET,
@@ -32,21 +25,19 @@ T = TypeVar("T", bound="PatchUser")
 class PatchUser:
     """
     Attributes:
-        role_id (Union[Unset, str]):
-        databases (Union[Unset, PatchUserDatabases]):
-        db_username (Union[Unset, str]):
+        role_id (str | Unset):
+        databases (PatchUserDatabases | Unset):
+        db_username (str | Unset):
     """
 
-    role_id: Union[Unset, str] = UNSET
-    databases: Union[Unset, "PatchUserDatabases"] = UNSET
-    db_username: Union[Unset, str] = UNSET
+    role_id: str | Unset = UNSET
+    databases: PatchUserDatabases | Unset = UNSET
+    db_username: str | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.patch_user_databases import PatchUserDatabases
-
         role_id = self.role_id
 
-        databases: Union[Unset, dict[str, Any]] = UNSET
+        databases: dict[str, Any] | Unset = UNSET
         if not isinstance(self.databases, Unset):
             databases = self.databases.to_dict()
 
@@ -72,7 +63,7 @@ class PatchUser:
         role_id = d.pop("roleID", UNSET)
 
         _databases = d.pop("databases", UNSET)
-        databases: Union[Unset, PatchUserDatabases]
+        databases: PatchUserDatabases | Unset
         if isinstance(_databases, Unset):
             databases = UNSET
         else:

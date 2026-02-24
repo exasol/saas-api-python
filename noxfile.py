@@ -8,7 +8,6 @@ from datetime import (
     timezone,
 )
 from pathlib import Path
-from typing import List
 
 import nox
 import requests
@@ -19,10 +18,9 @@ from exasol.toolbox.nox.tasks import *
 from nox import Session
 
 from exasol.saas.client import SAAS_HOST
-from noxconfig import PROJECT_CONFIG
 
 # default actions to be run if nothing is explicitly specified with the -s option
-nox.options.sessions = ["project:fix"]
+nox.options.sessions = ["format:fix"]
 
 # destination folder for the generated open api client code
 DEST_DIR = "exasol/saas/client/openapi"
@@ -115,7 +113,7 @@ def generate_api(session: Session):
     if local_build:
         session.run("poetry", "add", *dependencies("tmp/pyproject.toml"))
     shutil.rmtree("tmp")
-    fix(session)
+    fix_format(session)
 
 
 @nox.session(name="api:check-outdated", python=False)

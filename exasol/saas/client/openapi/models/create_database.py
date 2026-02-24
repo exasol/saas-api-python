@@ -1,16 +1,10 @@
-from collections.abc import (
-    Generator,
-    Mapping,
-)
+from __future__ import annotations
+
+from collections.abc import Mapping
 from typing import (
     TYPE_CHECKING,
     Any,
-    BinaryIO,
-    Optional,
-    TextIO,
     TypeVar,
-    Union,
-    cast,
 )
 
 from attrs import define as _attrs_define
@@ -36,23 +30,19 @@ class CreateDatabase:
         initial_cluster (CreateDatabaseInitialCluster):
         provider (str):
         region (str):
-        num_nodes (Union[Unset, int]):
-        stream_type (Union[Unset, str]):
+        num_nodes (int | Unset):
+        stream_type (str | Unset):
     """
 
     name: str
-    initial_cluster: "CreateDatabaseInitialCluster"
+    initial_cluster: CreateDatabaseInitialCluster
     provider: str
     region: str
-    num_nodes: Union[Unset, int] = UNSET
-    stream_type: Union[Unset, str] = UNSET
+    num_nodes: int | Unset = UNSET
+    stream_type: str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.create_database_initial_cluster import (
-            CreateDatabaseInitialCluster,
-        )
-
         name = self.name
 
         initial_cluster = self.initial_cluster.to_dict()

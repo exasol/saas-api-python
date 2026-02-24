@@ -1,19 +1,12 @@
-from collections.abc import (
-    Generator,
-    Mapping,
-)
+from __future__ import annotations
+
+from collections.abc import Mapping
 from typing import (
-    TYPE_CHECKING,
     Any,
-    BinaryIO,
-    Optional,
-    TextIO,
     TypeVar,
-    Union,
 )
 
 from attrs import define as _attrs_define
-from attrs import field as _attrs_field
 
 from ..types import (
     UNSET,
@@ -27,12 +20,12 @@ T = TypeVar("T", bound="ClusterSettingsUpdate")
 class ClusterSettingsUpdate:
     """
     Attributes:
-        offload_enabled (Union[Unset, bool]):
-        offload_timeout_min (Union[Unset, int]):
+        offload_enabled (bool | Unset):
+        offload_timeout_min (int | Unset):
     """
 
-    offload_enabled: Union[Unset, bool] = UNSET
-    offload_timeout_min: Union[Unset, int] = UNSET
+    offload_enabled: bool | Unset = UNSET
+    offload_timeout_min: int | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         offload_enabled = self.offload_enabled

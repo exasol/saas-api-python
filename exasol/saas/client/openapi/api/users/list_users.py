@@ -1,18 +1,14 @@
 from http import HTTPStatus
-from typing import (
-    Any,
-    Optional,
-    Union,
-    cast,
-)
+from typing import Any
+from urllib.parse import quote
 
 import httpx
 
-from ... import errors
 from ...client import (
     AuthenticatedClient,
     Client,
 )
+from ...models.api_error import ApiError
 from ...models.user import User
 from ...types import (
     UNSET,
@@ -24,9 +20,9 @@ from ...types import (
 def _get_kwargs(
     account_id: str,
     *,
-    filter_: Union[Unset, str] = UNSET,
-    next_: Union[Unset, int] = UNSET,
-    limit: Union[Unset, int] = UNSET,
+    filter_: str | Unset = UNSET,
+    next_: int | Unset = UNSET,
+    limit: int | Unset = UNSET,
 ) -> dict[str, Any]:
 
     params: dict[str, Any] = {}
@@ -41,7 +37,9 @@ def _get_kwargs(
 
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": f"/api/v1/accounts/{account_id}/users",
+        "url": "/api/v1/accounts/{account_id}/users".format(
+            account_id=quote(str(account_id), safe=""),
+        ),
         "params": params,
     }
 
@@ -49,8 +47,8 @@ def _get_kwargs(
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[list["User"]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> ApiError | list[User]:
     if response.status_code == 200:
         response_200 = []
         _response_200 = response.json()
@@ -60,15 +58,15 @@ def _parse_response(
             response_200.append(response_200_item)
 
         return response_200
-    if client.raise_on_unexpected_status:
-        raise errors.UnexpectedStatus(response.status_code, response.content)
-    else:
-        return None
+
+    response_default = ApiError.from_dict(response.json())
+
+    return response_default
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[list["User"]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[ApiError | list[User]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -81,23 +79,23 @@ def sync_detailed(
     account_id: str,
     *,
     client: AuthenticatedClient,
-    filter_: Union[Unset, str] = UNSET,
-    next_: Union[Unset, int] = UNSET,
-    limit: Union[Unset, int] = UNSET,
-) -> Response[list["User"]]:
+    filter_: str | Unset = UNSET,
+    next_: int | Unset = UNSET,
+    limit: int | Unset = UNSET,
+) -> Response[ApiError | list[User]]:
     """
     Args:
         account_id (str):
-        filter_ (Union[Unset, str]):
-        next_ (Union[Unset, int]):
-        limit (Union[Unset, int]):
+        filter_ (str | Unset):
+        next_ (int | Unset):
+        limit (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[list['User']]
+        Response[ApiError | list[User]]
     """
 
     kwargs = _get_kwargs(
@@ -118,23 +116,23 @@ def sync(
     account_id: str,
     *,
     client: AuthenticatedClient,
-    filter_: Union[Unset, str] = UNSET,
-    next_: Union[Unset, int] = UNSET,
-    limit: Union[Unset, int] = UNSET,
-) -> Optional[list["User"]]:
+    filter_: str | Unset = UNSET,
+    next_: int | Unset = UNSET,
+    limit: int | Unset = UNSET,
+) -> ApiError | list[User] | None:
     """
     Args:
         account_id (str):
-        filter_ (Union[Unset, str]):
-        next_ (Union[Unset, int]):
-        limit (Union[Unset, int]):
+        filter_ (str | Unset):
+        next_ (int | Unset):
+        limit (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        list['User']
+        ApiError | list[User]
     """
 
     return sync_detailed(
@@ -150,23 +148,23 @@ async def asyncio_detailed(
     account_id: str,
     *,
     client: AuthenticatedClient,
-    filter_: Union[Unset, str] = UNSET,
-    next_: Union[Unset, int] = UNSET,
-    limit: Union[Unset, int] = UNSET,
-) -> Response[list["User"]]:
+    filter_: str | Unset = UNSET,
+    next_: int | Unset = UNSET,
+    limit: int | Unset = UNSET,
+) -> Response[ApiError | list[User]]:
     """
     Args:
         account_id (str):
-        filter_ (Union[Unset, str]):
-        next_ (Union[Unset, int]):
-        limit (Union[Unset, int]):
+        filter_ (str | Unset):
+        next_ (int | Unset):
+        limit (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[list['User']]
+        Response[ApiError | list[User]]
     """
 
     kwargs = _get_kwargs(
@@ -185,23 +183,23 @@ async def asyncio(
     account_id: str,
     *,
     client: AuthenticatedClient,
-    filter_: Union[Unset, str] = UNSET,
-    next_: Union[Unset, int] = UNSET,
-    limit: Union[Unset, int] = UNSET,
-) -> Optional[list["User"]]:
+    filter_: str | Unset = UNSET,
+    next_: int | Unset = UNSET,
+    limit: int | Unset = UNSET,
+) -> ApiError | list[User] | None:
     """
     Args:
         account_id (str):
-        filter_ (Union[Unset, str]):
-        next_ (Union[Unset, int]):
-        limit (Union[Unset, int]):
+        filter_ (str | Unset):
+        next_ (int | Unset):
+        limit (int | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        list['User']
+        ApiError | list[User]
     """
 
     return (

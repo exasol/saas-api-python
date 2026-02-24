@@ -1,25 +1,27 @@
 from __future__ import annotations
 
-import datetime as dt
 import getpass
 import logging
-import re
 import time
 from collections.abc import Iterable
 from contextlib import contextmanager
 from datetime import (
     datetime,
     timedelta,
-    timezone,
 )
-from typing import Any
+from typing import (
+    Any,
+    TypeVar,
+    cast,
+)
 
 import tenacity
 from tenacity import (
+    RetryError,
     TryAgain,
     retry,
 )
-from tenacity.retry import retry_if_exception
+from tenacity.retry import retry_if_exception_type
 from tenacity.stop import stop_after_delay
 from tenacity.wait import (
     wait_exponential,
@@ -45,13 +47,16 @@ from exasol.saas.client.openapi.api.security import (
     delete_allowed_ip,
     list_allowed_i_ps,
 )
-from exasol.saas.client.openapi.errors import UnexpectedStatus
-from exasol.saas.client.openapi.models.exasol_database import ExasolDatabase
-from exasol.saas.client.openapi.models.status import Status
+from exasol.saas.client.openapi.models import (
+    ApiError,
+    ExasolDatabase,
+    Status,
+)
 from exasol.saas.client.openapi.types import UNSET
 
 LOG = logging.getLogger(__name__)
 LOG.setLevel(logging.INFO)
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
 def interval_retry(interval: timedelta, timeout: timedelta):
@@ -80,18 +85,6 @@ def timestamp_name(project_short_tag: str | None = None) -> str:
     return candidate[: Limits.MAX_DATABASE_NAME_LENGTH]
 
 
-def indicates_retry(ex: BaseException) -> bool:
-    """
-    When deleting a SaaS instance raises an UnexpectedStatus, then this
-    function decides whether we should retry to delete the database instance.
-    """
-    return bool(
-        isinstance(ex, UnexpectedStatus)
-        and ex.status_code == 400
-        and "cluster is not in a proper state" in ex.content.decode("utf-8")
-    )
-
-
 class DatabaseStartupFailure(Exception):
     """
     If a SaaS database instance during startup reports a status other than
@@ -103,6 +96,41 @@ class DatabaseDeleteTimeout(Exception):
     """
     If deletion of a SaaS database instance was requested but during the
     specified timeout it was still reported in the list of existing databases.
+    """
+
+
+class DatabaseDeleteError(Exception):
+    """
+    Failed to delete a SaaS database instance.
+    """
+
+
+class OpenApiError(Exception):
+    def __init__(self, message: str, error: ApiError | None):
+        super().__init__(f"{message}: {error.message}." if error else message)
+
+
+T = TypeVar("T")
+
+
+def ensure_type(
+    expected: type[T],
+    response: T | ApiError | None,
+    message: str,
+) -> T:
+    """
+    Ensure the passed response is of the expected type and return it with
+    correct type. Otherwise raise an OpenApiError.
+    """
+    if isinstance(response, expected):
+        return cast(T, response)
+    api_error = response if isinstance(response, ApiError) else None
+    raise OpenApiError(message, api_error)
+
+
+class InternalError(Exception):
+    """
+    Internal error during delete with retry.
     """
 
 
@@ -199,17 +227,21 @@ def get_connection_params(
         cluster_id = next(
             filter(lambda cl: cl.main_cluster, clusters)  # type: ignore
         ).id
-        connections = get_cluster_connection.sync(
+        resp = get_cluster_connection.sync(
             account_id, database_id, cluster_id, client=client
         )
-        if connections is None:
-            raise RuntimeError("Failed to get the SaaS connection data.")
-        connection_params = {
-            "dsn": f"{connections.dns}:{connections.port}",
-            "user": connections.db_username,
+        connection = ensure_type(
+            openapi.models.ClusterConnection,
+            resp,
+            "Failed to get the connection data to"
+            f" host {host}, account {account_id},"
+            f" database with ID {database_id} named {database_name}",
+        )
+        return {
+            "dsn": f"{connection.dns}:{connection.port}",
+            "user": connection.db_username,
             "password": pat,
         }
-        return connection_params
 
 
 class OpenApiAccess:
@@ -243,7 +275,7 @@ class OpenApiAccess:
             ),
         )
         LOG.info("Creating database %s", name)
-        return create_database.sync(
+        resp = create_database.sync(
             self._account_id,
             client=self._client,
             body=openapi.models.CreateDatabase(
@@ -254,6 +286,11 @@ class OpenApiAccess:
                 stream_type="innovation-release",
             ),
         )
+        database = ensure_type(
+            ExasolDatabase, resp, f"Failed to create database {name}"
+        )
+        LOG.info("Created database with ID %s", database.id)
+        return database
 
     @contextmanager
     def _ignore_failures(self, ignore: bool = False):
@@ -269,14 +306,15 @@ class OpenApiAccess:
         interval: timedelta = timedelta(minutes=1),
     ):
         @interval_retry(interval, timeout)
-        def still_exists() -> bool:
-            result = database_id in self.list_database_ids()
-            if result:
+        def verify_not_listed() -> bool:
+            if database_id in self.list_database_ids():
                 raise TryAgain
-            return result
+            return True
 
-        if still_exists():
-            raise DatabaseDeleteTimeout
+        try:
+            return verify_not_listed()
+        except (TryAgain, RetryError) as ex:
+            raise DatabaseDeleteTimeout from ex
 
     def delete_database(
         self,
@@ -286,39 +324,51 @@ class OpenApiAccess:
         min_interval: timedelta = timedelta(seconds=1),
         max_interval: timedelta = timedelta(minutes=2),
     ) -> None:
+        def is_retry(resp: ApiError) -> bool:
+            return (
+                resp.status == 400
+                and "cluster is not in a proper state" in resp.message
+            )
+
         @retry(
-            reraise=True,
             wait=wait_exponential(
                 multiplier=1,
                 min=min_interval,
                 max=max_interval,
             ),
             stop=stop_after_delay(timeout),
-            retry=retry_if_exception(indicates_retry),
+            retry=retry_if_exception_type(TryAgain),
         )
-        def delete_with_retry():
-            LOG.info("Trying to delete database with ID %s ...", database_id)
-            delete_database.sync_detailed(
+        def delete_with_retry() -> None:
+            LOG.info("- Trying to delete ...")
+            resp = delete_database.sync(
                 self._account_id,
                 database_id,
                 client=self._client,
             )
+            if not isinstance(resp, ApiError):
+                # success
+                return
+            if is_retry(resp):
+                raise TryAgain
+            raise InternalError(f"HTTP {resp.status}: {resp.message}.")
 
+        LOG.info("Got request to delete database with ID %s", database_id)
         try:
             delete_with_retry()
-            LOG.info("Deleted database with ID %s", database_id)
+            LOG.info("Successfully deleted database.")
         except Exception as ex:
             if ignore_failures:
-                LOG.error(
-                    "Ignoring failure when deleting database with ID %s: %s",
-                    database_id,
-                    ex,
-                )
+                LOG.warning("Ignoring delete failure: %s", ex)
             else:
-                raise
+                msg = f"Failed to delete database: {ex}"
+                LOG.error(msg)
+                raise DatabaseDeleteError(msg) from ex
 
     def list_database_ids(self) -> Iterable[str]:
-        dbs = list_databases.sync(self._account_id, client=self._client) or []
+        resp = list_databases.sync(self._account_id, client=self._client) or []
+        # actually list[ExasolDatabase]
+        dbs = ensure_type(list, resp, "Failed to list databases")
         return (db.id for db in dbs)
 
     @contextmanager
@@ -340,15 +390,20 @@ class OpenApiAccess:
             elif keep:
                 LOG.info("Keeping database %s as keep = %s.", db_repr, keep)
             else:
-                LOG.info("Deleting database %s", db_repr)
                 self.delete_database(db.id, ignore_delete_failure)
-                LOG.info("Successfully deleted database %s.", db_repr)
+                LOG.info("Context assumes database %s as deleted.", db_repr)
 
-    def get_database(self, database_id: str) -> ExasolDatabase | None:
-        return get_database.sync(
+    def get_database(
+        self,
+        database_id: str,
+    ) -> ExasolDatabase | None:
+        resp = get_database.sync(
             self._account_id,
             database_id,
             client=self._client,
+        )
+        return ensure_type(
+            ExasolDatabase, resp, f"Failed to get database {database_id}"
         )
 
     def wait_until_running(
@@ -368,6 +423,7 @@ class OpenApiAccess:
                 raise TryAgain
             return status
 
+        LOG.info("Waiting for database with ID %s to be available:", database_id)
         if poll_status() not in success:
             raise DatabaseStartupFailure()
 
@@ -375,10 +431,17 @@ class OpenApiAccess:
         self,
         database_id: str,
     ) -> list[openapi.models.Cluster] | None:
-        return list_clusters.sync(
-            self._account_id,
-            database_id,
-            client=self._client,
+        resp = (
+            list_clusters.sync(
+                self._account_id,
+                database_id,
+                client=self._client,
+            )
+            or []
+        )
+        # actually list[openapi.models.Cluster]
+        return ensure_type(
+            list, resp, f"Failed to list clusters of database {database_id}"
         )
 
     def get_connection(
@@ -386,27 +449,29 @@ class OpenApiAccess:
         database_id: str,
         cluster_id: str,
     ) -> openapi.models.ClusterConnection | None:
-        return get_cluster_connection.sync(
+        resp = get_cluster_connection.sync(
             self._account_id,
             database_id,
             cluster_id,
             client=self._client,
         )
+        return ensure_type(
+            openapi.models.ClusterConnection,
+            resp,
+            "Failed to retrieve a connection to "
+            f"database {database_id} cluster {cluster_id}",
+        )
 
     def list_allowed_ip_ids(self) -> Iterable[str]:
-        ips = (
-            list_allowed_i_ps.sync(
-                self._account_id,
-                client=self._client,
-            )
-            or []
-        )
+        resp = list_allowed_i_ps.sync(self._account_id, client=self._client) or []
+        # actually list[openapi.models.AllowedIP]
+        ips = ensure_type(list, resp, "Failed to retrieve the list of allowed ips")
         return (x.id for x in ips)
 
     def add_allowed_ip(
         self,
         cidr_ip: str = "0.0.0.0/0",
-    ) -> openapi.models.allowed_ip.AllowedIP | None:
+    ) -> openapi.models.AllowedIP | None:
         """
         Suggested values for cidr_ip:
         * 185.17.207.78/32
@@ -417,15 +482,20 @@ class OpenApiAccess:
             name=timestamp_name(),
             cidr_ip=cidr_ip,
         )
-        return add_allowed_ip.sync(
+        resp = add_allowed_ip.sync(
             self._account_id,
             client=self._client,
             body=rule,
         )
+        return ensure_type(
+            openapi.models.AllowedIP,
+            resp,
+            f"Failed to add allowed IP address {cidr_ip}",
+        )
 
-    def delete_allowed_ip(self, id: str, ignore_failures=False):
+    def delete_allowed_ip(self, id: str, ignore_failures=False) -> Any | None:
         with self._ignore_failures(ignore_failures) as client:
-            return delete_allowed_ip.sync_detailed(self._account_id, id, client=client)
+            return delete_allowed_ip.sync(self._account_id, id, client=client)
 
     @contextmanager
     def allowed_ip(
