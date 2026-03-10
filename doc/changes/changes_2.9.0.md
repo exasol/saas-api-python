@@ -6,7 +6,7 @@ This release fixes vulnerabilities by updating dependencies and updates `openapi
 
 Additionally the release updates the Python API generated from file `openapi.json`.
 
-The following items have added in `open-api.json`:
+The following items have added in `openapi.json`:
 * `components` / `schemas` / `Cluster` / `required` / `familyName`
 * `components` / `schemas` / `Cluster` / `properties` / `familyName`
 
