@@ -33,6 +33,7 @@ class Cluster:
         id (str):
         name (str):
         size (str):
+        family_name (str):
         created_at (datetime.datetime):
         created_by (str):
         main_cluster (bool):
@@ -46,6 +47,7 @@ class Cluster:
     id: str
     name: str
     size: str
+    family_name: str
     created_at: datetime.datetime
     created_by: str
     main_cluster: bool
@@ -62,6 +64,8 @@ class Cluster:
         name = self.name
 
         size = self.size
+
+        family_name = self.family_name
 
         created_at = self.created_at.isoformat()
 
@@ -89,6 +93,7 @@ class Cluster:
                 "id": id,
                 "name": name,
                 "size": size,
+                "familyName": family_name,
                 "createdAt": created_at,
                 "createdBy": created_by,
                 "mainCluster": main_cluster,
@@ -117,6 +122,8 @@ class Cluster:
         name = d.pop("name")
 
         size = d.pop("size")
+
+        family_name = d.pop("familyName")
 
         created_at = isoparse(d.pop("createdAt"))
 
@@ -147,6 +154,7 @@ class Cluster:
             id=id,
             name=name,
             size=size,
+            family_name=family_name,
             created_at=created_at,
             created_by=created_by,
             main_cluster=main_cluster,

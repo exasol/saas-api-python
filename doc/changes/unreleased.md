@@ -2,8 +2,13 @@
 
 ## Summary
 
-This release fixes vulnerabilities by updating dependencies and updates `openapi-python-client`.
-This release also describes naming conventions for SaaS instances in the User Guide.
+This release fixes vulnerabilities by updating dependencies and updates `openapi-python-client` and describes naming conventions for SaaS instances in the User Guide.
+
+Additionally the release updates the Python API generated from file `openapi.json`.
+
+The following items have added in `open-api.json`:
+* `components` / `schemas` / `Cluster` / `required` / `familyName`
+* `components` / `schemas` / `Cluster` / `properties` / `familyName`
 
 ## Security
 
@@ -16,5 +21,5 @@ This release also describes naming conventions for SaaS instances in the User Gu
 ## Refactorings
 
 * #120: Updated openapi-python-client to version 0.26 or higher
-  * Re-generated the SaaS API client code
 * #141: Updated PTB to version 5 and regenerated GitHub workflows
+* #148: Re-generated the SaaS API client code
