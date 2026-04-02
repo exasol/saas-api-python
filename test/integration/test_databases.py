@@ -43,8 +43,8 @@ def test_lifecycle(api_access, local_name):
     def wait_until_running_too_short(db: ExasolDatabase):
         api_access.wait_until_running(
             db.id,
-            timeout=timedelta(seconds=3),
-            interval=timedelta(seconds=1),
+            timeout=timedelta(minutes=1),
+            interval=timedelta(seconds=10),
         )
 
     def get_connection(db: ExasolDatabase):
