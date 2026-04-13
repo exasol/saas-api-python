@@ -45,7 +45,7 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.1.1"
+pytest = "^9.0.3"
 pytest-mock = "^3.7.0"
 exasol-toolbox = ">=6, <7"
 openapi-python-client = ">=0.26"
