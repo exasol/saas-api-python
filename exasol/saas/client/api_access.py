@@ -353,8 +353,7 @@ class OpenApiAccess:
         def is_retry(resp: ApiError) -> bool:
             msg = resp.message.lower()
             return (
-                resp.status == 400
-                and "cluster is not in a proper state" in msg
+                resp.status == 400 and "cluster is not in a proper state" in msg
             ) or resp.status in (429, 500, 502, 503, 504)
 
         current_database_id = database_id
@@ -485,7 +484,9 @@ class OpenApiAccess:
                 raise TryAgain
             return status
 
-        LOG.info("Waiting for database with ID %s to be available:", current_database_id)
+        LOG.info(
+            "Waiting for database with ID %s to be available:", current_database_id
+        )
         if poll_status() not in success:
             raise DatabaseStartupFailure()
         return current_database_id

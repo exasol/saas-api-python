@@ -6,8 +6,8 @@ import pytest
 
 from exasol.saas.client.api_access import (
     DatabaseDeleteError,
-    OpenApiError,
     OpenApiAccess,
+    OpenApiError,
     timestamp_name,
 )
 from exasol.saas.client.openapi.models.api_error import ApiError
@@ -150,7 +150,9 @@ def test_wait_until_running_recovers_stale_database_id(api_mock, monkeypatch) ->
     assert get_database_calls == ["old-id", "new-id"]
 
 
-def test_delete_recovers_stale_database_id(api_mock, monkeypatch, retry_timings) -> None:
+def test_delete_recovers_stale_database_id(
+    api_mock, monkeypatch, retry_timings
+) -> None:
     from exasol.saas.client import api_access
 
     api_mock._database_name_by_id["old-id"] = "db-name"
