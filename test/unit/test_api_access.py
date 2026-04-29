@@ -6,10 +6,12 @@ import pytest
 
 from exasol.saas.client.api_access import (
     DatabaseDeleteError,
+    OpenApiError,
     OpenApiAccess,
     timestamp_name,
 )
 from exasol.saas.client.openapi.models.api_error import ApiError
+from exasol.saas.client.openapi.models.status import Status
 
 
 def response(status_code: int, message: str, spec=None):
@@ -85,6 +87,12 @@ def test_delete_fail(api_mock, monkeypatch, side_effect, retry_timings) -> None:
             id="success_after_retry",
         ),
         pytest.param(
+            [api_error(500, "Internal server error"), response(200, "")],
+            False,
+            "",
+            id="success_after_http_500_retry",
+        ),
+        pytest.param(
             [api_error(400, "bla")],
             True,
             "Ignoring delete failure: HTTP 400:",
@@ -110,6 +118,58 @@ def test_delete_success(
         )
     assert delete.called
     assert expected_log_message in caplog.text
+
+
+def test_wait_until_running_recovers_stale_database_id(api_mock, monkeypatch) -> None:
+    from exasol.saas.client import api_access
+
+    api_mock._database_name_by_id["old-id"] = "db-name"
+
+    get_database_calls = []
+
+    def get_database_side_effect(database_id):
+        get_database_calls.append(database_id)
+        if database_id == "old-id":
+            raise OpenApiError(
+                "Failed to get database old-id",
+                api_error(404, "User/Database not found"),
+            )
+        return Mock(status=Status.RUNNING)
+
+    monkeypatch.setattr(api_mock, "get_database", get_database_side_effect)
+    monkeypatch.setattr(api_access, "_get_database_id", Mock(return_value="new-id"))
+
+    with not_raises(Exception):
+        running_database_id = api_mock.wait_until_running(
+            "old-id",
+            timeout=timedelta(seconds=0.3),
+            interval=timedelta(seconds=0.1),
+        )
+
+    assert running_database_id == "new-id"
+    assert get_database_calls == ["old-id", "new-id"]
+
+
+def test_delete_recovers_stale_database_id(api_mock, monkeypatch, retry_timings) -> None:
+    from exasol.saas.client import api_access
+
+    api_mock._database_name_by_id["old-id"] = "db-name"
+
+    delete_calls = []
+
+    def delete_side_effect(account_id, database_id, client):
+        delete_calls.append(database_id)
+        if database_id == "old-id":
+            return api_error(404, "User/Database not found")
+        return response(200, "")
+
+    monkeypatch.setattr(api_access.delete_database, "sync", delete_side_effect)
+    monkeypatch.setattr(api_access, "_get_database_id", Mock(return_value="new-id"))
+
+    with not_raises(Exception):
+        api_mock.delete_database("old-id", **retry_timings)
+
+    assert delete_calls == ["new-id"]
 
 
 def test_timestamp_name() -> None:
