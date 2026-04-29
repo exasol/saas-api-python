@@ -9,6 +9,7 @@ from tenacity import RetryError
 
 from exasol.saas.client import PROMISING_STATES
 from exasol.saas.client.api_access import (
+    _get_database_id,
     timestamp_name,
 )
 from exasol.saas.client.openapi.models.exasol_database import ExasolDatabase
@@ -47,9 +48,9 @@ def test_lifecycle(api_access, local_name):
             interval=timedelta(seconds=10),
         )
 
-    def get_connection(db: ExasolDatabase):
-        clusters = api_access.clusters(db.id)
-        return api_access.get_connection(db.id, clusters[0].id)
+    def get_connection(database_id: str):
+        clusters = api_access.clusters(database_id)
+        return api_access.get_connection(database_id, clusters[0].id)
 
     with api_access.database(local_name, ignore_delete_failure=True) as db:
         start = datetime.now()
@@ -59,13 +60,19 @@ def test_lifecycle(api_access, local_name):
         with pytest.raises(RetryError):
             wait_until_running_too_short(db)
 
-        # verify database is listed
-        assert db.id in api_access.list_database_ids()
+        # resolve the effective database ID in case the ID returned by
+        # create_database() is stale due eventual consistency.
+        database_id = _get_database_id(
+            api_access._account_id,  # noqa: SLF001
+            api_access._client,  # noqa: SLF001
+            local_name,
+        )
+        assert database_id in api_access.list_database_ids()
 
-        con = get_connection(db)
+        con = get_connection(database_id)
         assert con.db_username is not None and con.port == 8563
 
         # delete database and verify database is not listed anymore
-        api_access.delete_database(db.id)
-        api_access.wait_until_deleted(db.id)
-        assert db.id not in api_access.list_database_ids()
+        api_access.delete_database(database_id)
+        api_access.wait_until_deleted(database_id)
+        assert database_id not in api_access.list_database_ids()

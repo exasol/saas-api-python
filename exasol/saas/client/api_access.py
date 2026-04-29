@@ -372,8 +372,8 @@ class OpenApiAccess:
             LOG.info("- Trying to delete ...")
             refreshed_database_id = self._try_refresh_database_id(current_database_id)
             if refreshed_database_id is None:
-                LOG.info("Database %s is not listed anymore.", current_database_id)
-                return
+                LOG.info("- Database %s is not listed yet ...", current_database_id)
+                raise TryAgain
             current_database_id = refreshed_database_id
             resp = delete_database.sync(
                 self._account_id,
@@ -392,8 +392,8 @@ class OpenApiAccess:
                     current_database_id
                 )
                 if refreshed_database_id is None:
-                    LOG.info("Database %s is already deleted.", current_database_id)
-                    return
+                    LOG.info("- Database %s is not listed yet ...", current_database_id)
+                    raise TryAgain
                 current_database_id = refreshed_database_id
                 raise TryAgain
             if is_retry(resp):
