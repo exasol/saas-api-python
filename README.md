@@ -6,6 +6,6 @@ The model layer of this API is generated from the OpenAPI specification in JSON 
 
 A GitHub action will check each morning if the generated model layer is outdated.
 
-See
+See 
 * [User Guide](doc/user_guide/user-guide.md)
 * [Developer Guide](doc/developer_guide/developer_guide.md)
