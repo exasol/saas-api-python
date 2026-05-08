@@ -53,8 +53,7 @@ def saas_database(
 @pytest.fixture(scope="session")
 def operational_saas_database_id(api_access, database_name) -> str:
     with api_access.database(database_name) as db:
-        api_access.wait_until_running(db.id)
-        yield db.id
+        yield api_access.wait_until_running(db.id)
 
 
 @pytest.fixture(scope="session")

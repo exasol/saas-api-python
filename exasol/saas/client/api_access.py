@@ -254,6 +254,31 @@ class OpenApiAccess:
     def __init__(self, client: openapi.AuthenticatedClient, account_id: str):
         self._client = client
         self._account_id = account_id
+        self._database_name_by_id: dict[str, str] = {}
+
+    def _try_refresh_database_id(self, database_id: str) -> str | None:
+        """
+        Try to resolve a potentially stale database id using the remembered
+        database name from create_database().
+        """
+        database_name = self._database_name_by_id.get(database_id)
+        if not database_name:
+            return database_id
+        try:
+            refreshed_database_id = _get_database_id(
+                self._account_id, self._client, database_name
+            )
+        except RuntimeError:
+            return None
+        if refreshed_database_id != database_id:
+            LOG.warning(
+                "Recovered stale database ID for '%s': %s -> %s",
+                database_name,
+                database_id,
+                refreshed_database_id,
+            )
+            self._database_name_by_id[refreshed_database_id] = database_name
+        return refreshed_database_id
 
     def create_database(
         self,
@@ -289,6 +314,7 @@ class OpenApiAccess:
         database = ensure_type(
             ExasolDatabase, resp, f"Failed to create database {name}"
         )
+        self._database_name_by_id[database.id] = name
         LOG.info("Created database with ID %s", database.id)
         return database
 
@@ -325,10 +351,12 @@ class OpenApiAccess:
         max_interval: timedelta = timedelta(minutes=2),
     ) -> None:
         def is_retry(resp: ApiError) -> bool:
+            msg = resp.message.lower()
             return (
-                resp.status == 400
-                and "cluster is not in a proper state" in resp.message
-            )
+                resp.status == 400 and "cluster is not in a proper state" in msg
+            ) or resp.status in (429, 500, 502, 503, 504)
+
+        current_database_id = database_id
 
         @retry(
             wait=wait_exponential(
@@ -340,20 +368,39 @@ class OpenApiAccess:
             retry=retry_if_exception_type(TryAgain),
         )
         def delete_with_retry() -> None:
+            nonlocal current_database_id
             LOG.info("- Trying to delete ...")
+            refreshed_database_id = self._try_refresh_database_id(current_database_id)
+            if refreshed_database_id is None:
+                LOG.info("- Database %s is not listed yet ...", current_database_id)
+                raise TryAgain
+            current_database_id = refreshed_database_id
             resp = delete_database.sync(
                 self._account_id,
-                database_id,
+                current_database_id,
                 client=self._client,
             )
             if not isinstance(resp, ApiError):
                 # success
                 return
+            if (
+                resp.status == 404
+                and "user/database not found" in resp.message.lower()
+                and self._database_name_by_id.get(current_database_id)
+            ):
+                refreshed_database_id = self._try_refresh_database_id(
+                    current_database_id
+                )
+                if refreshed_database_id is None:
+                    LOG.info("- Database %s is not listed yet ...", current_database_id)
+                    raise TryAgain
+                current_database_id = refreshed_database_id
+                raise TryAgain
             if is_retry(resp):
                 raise TryAgain
             raise InternalError(f"HTTP {resp.status}: {resp.message}.")
 
-        LOG.info("Got request to delete database with ID %s", database_id)
+        LOG.info("Got request to delete database with ID %s", current_database_id)
         try:
             delete_with_retry()
             LOG.info("Successfully deleted database.")
@@ -411,21 +458,38 @@ class OpenApiAccess:
         database_id: str,
         timeout: timedelta = timedelta(minutes=30),
         interval: timedelta = timedelta(minutes=2),
-    ):
+    ) -> str:
         success = [Status.RUNNING]
+        current_database_id = database_id
 
         @interval_retry(interval, timeout)
         def poll_status() -> Status:
-            db = self.get_database(database_id)
+            nonlocal current_database_id
+            try:
+                db = self.get_database(current_database_id)
+            except OpenApiError as ex:
+                if "user/database not found" not in str(ex).lower():
+                    raise
+                refreshed_database_id = self._try_refresh_database_id(
+                    current_database_id
+                )
+                if refreshed_database_id is None:
+                    LOG.info("- Database %s not listed yet ...", current_database_id)
+                    raise TryAgain
+                current_database_id = refreshed_database_id
+                raise TryAgain
             status = db.status if db else None
             if status not in success:
                 LOG.info("- Database status: %s ...", status)
                 raise TryAgain
             return status
 
-        LOG.info("Waiting for database with ID %s to be available:", database_id)
+        LOG.info(
+            "Waiting for database with ID %s to be available:", current_database_id
+        )
         if poll_status() not in success:
             raise DatabaseStartupFailure()
+        return current_database_id
 
     def clusters(
         self,
