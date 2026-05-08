@@ -4,7 +4,7 @@
 
 saas-api-python includes a file `.pre-commit-config.yaml`.
 
-The following command installs the pre-commit hooks, see also [framework pre-commmit](https://pre-commit.com/) and Git documentation on [Customizing Git Git Hooks](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks):
+The following command installs the pre-commit hooks, see also [framework pre-commit](https://pre-commit.com/) and Git documentation on [Customizing Git - Git Hooks](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks):
 
 ```shell
 poetry run -- pre-commit install
@@ -33,7 +33,7 @@ which regenerates the api, and checks it against the api version commited to Git
 If this check fails, it is likely for one of the following causes:
 
 * SaaS API could have changed in the meantime (should be detected automatically)
-* SaaS production vs. live system potentially can have subtle differences in the json API description (for api generation the production system is used)
+* SaaS production vs. live system potentially can have subtle differences in the JSON API description (for api generation the production system is used)
 * The version of python used changed
 * The version of the generator openapi-python-client changed
 
@@ -99,7 +99,7 @@ Executing the integration tests requires the following environment variables to 
 
 Some of the test cases verify connecting to a SaaS database instance and execution will take about 20 minutes.
 
-The regular CI build will ask for a confirmation (aka. "review) before executing these tests.
+The regular CI build will ask for a confirmation (aka. review) before executing these tests.
 
 ## Creating a Release
 

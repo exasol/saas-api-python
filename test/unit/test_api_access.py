@@ -109,8 +109,6 @@ def test_delete_success(
             ignore_failures=ignore_failures,
         )
     assert delete.called
-    # if expected_log_message not in caplog.text:
-    #     print(f"\nactual: {caplog.text}\n expected: {expected_log_message}")
     assert expected_log_message in caplog.text
 
 
