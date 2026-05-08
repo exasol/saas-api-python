@@ -19,12 +19,13 @@ jobs:
 
       - name: Set up Python & Poetry Environment
         id: set-up-python-and-poetry-environment
-        uses: exasol/python-toolbox/.github/actions/python-environment@v6
+        uses: exasol/python-toolbox/.github/actions/python-environment@v7
         with:
           python-version: "3.10"
           poetry-version: "2.3.0"
 
-      - name: Run Tests and Collect Coverage
+      - name: Run Integration Tests
+        id: run-integration-tests
         run: poetry run -- nox -s test:integration -- --coverage
         env:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
