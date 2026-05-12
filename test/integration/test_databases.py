@@ -11,7 +11,7 @@ from exasol.saas.client import PROMISING_STATES
 from exasol.saas.client.api_access import (
     timestamp_name,
 )
-from exasol.saas.client.openapi.models.exasol_database import ExasolDatabase
+from exasol.saas.client.openapi_facade import ExasolDatabase
 
 LOG = logging.getLogger(__name__)
 logging.basicConfig(
