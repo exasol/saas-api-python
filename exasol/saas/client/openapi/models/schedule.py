@@ -10,15 +10,14 @@ from typing import (
 from attrs import define as _attrs_define
 
 from ..models.schedule_action_type_0 import ScheduleActionType0
-from ..models.schedule_state import ScheduleState
 from ..types import (
     UNSET,
     Unset,
 )
 
 if TYPE_CHECKING:
-    from ..models.cluster_action_scale import ClusterActionScale
-    from ..models.cluster_action_start_stop import ClusterActionStartStop
+    from ..models.schedule_payload_type_0 import SchedulePayloadType0
+    from ..models.schedule_payload_type_1 import SchedulePayloadType1
 
 
 T = TypeVar("T", bound="Schedule")
@@ -35,8 +34,8 @@ class Schedule:
         createdby_first_name (str | Unset):
         createdby_last_name (str | Unset):
         cluster_name (str | Unset):
-        payload (ClusterActionScale | ClusterActionStartStop | Unset):
-        state (ScheduleState | Unset):
+        payload (SchedulePayloadType0 | SchedulePayloadType1 | Unset):
+        state (str | Unset):  Default: 'ENABLED'.
     """
 
     action: ScheduleActionType0
@@ -46,11 +45,11 @@ class Schedule:
     createdby_first_name: str | Unset = UNSET
     createdby_last_name: str | Unset = UNSET
     cluster_name: str | Unset = UNSET
-    payload: ClusterActionScale | ClusterActionStartStop | Unset = UNSET
-    state: ScheduleState | Unset = UNSET
+    payload: SchedulePayloadType0 | SchedulePayloadType1 | Unset = UNSET
+    state: str | Unset = "ENABLED"
 
     def to_dict(self) -> dict[str, Any]:
-        from ..models.cluster_action_scale import ClusterActionScale
+        from ..models.schedule_payload_type_0 import SchedulePayloadType0
 
         action: str
         if isinstance(self.action, ScheduleActionType0):
@@ -71,14 +70,12 @@ class Schedule:
         payload: dict[str, Any] | Unset
         if isinstance(self.payload, Unset):
             payload = UNSET
-        elif isinstance(self.payload, ClusterActionScale):
+        elif isinstance(self.payload, SchedulePayloadType0):
             payload = self.payload.to_dict()
         else:
             payload = self.payload.to_dict()
 
-        state: str | Unset = UNSET
-        if not isinstance(self.state, Unset):
-            state = self.state.value
+        state = self.state
 
         field_dict: dict[str, Any] = {}
 
@@ -107,8 +104,8 @@ class Schedule:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.cluster_action_scale import ClusterActionScale
-        from ..models.cluster_action_start_stop import ClusterActionStartStop
+        from ..models.schedule_payload_type_0 import SchedulePayloadType0
+        from ..models.schedule_payload_type_1 import SchedulePayloadType1
 
         d = dict(src_dict)
 
@@ -135,31 +132,26 @@ class Schedule:
 
         def _parse_payload(
             data: object,
-        ) -> ClusterActionScale | ClusterActionStartStop | Unset:
+        ) -> SchedulePayloadType0 | SchedulePayloadType1 | Unset:
             if isinstance(data, Unset):
                 return data
             try:
                 if not isinstance(data, dict):
                     raise TypeError()
-                payload_type_0 = ClusterActionScale.from_dict(data)
+                payload_type_0 = SchedulePayloadType0.from_dict(data)
 
                 return payload_type_0
             except (TypeError, ValueError, AttributeError, KeyError):
                 pass
             if not isinstance(data, dict):
                 raise TypeError()
-            payload_type_1 = ClusterActionStartStop.from_dict(data)
+            payload_type_1 = SchedulePayloadType1.from_dict(data)
 
             return payload_type_1
 
         payload = _parse_payload(d.pop("payload", UNSET))
 
-        _state = d.pop("state", UNSET)
-        state: ScheduleState | Unset
-        if isinstance(_state, Unset):
-            state = UNSET
-        else:
-            state = ScheduleState(_state)
+        state = d.pop("state", UNSET)
 
         schedule = cls(
             action=action,

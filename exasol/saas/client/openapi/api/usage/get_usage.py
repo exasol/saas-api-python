@@ -9,7 +9,7 @@ from ...client import (
     Client,
 )
 from ...models.api_error import ApiError
-from ...models.get_usage_type import GetUsageType
+from ...models.type_ import Type
 from ...models.usage import Usage
 from ...types import (
     UNSET,
@@ -22,7 +22,7 @@ def _get_kwargs(
     account_id: str,
     *,
     year_month: str | Unset = UNSET,
-    type_: GetUsageType | Unset = UNSET,
+    type_: Type | Unset = UNSET,
 ) -> dict[str, Any]:
 
     params: dict[str, Any] = {}
@@ -75,15 +75,15 @@ def _build_response(
 def sync_detailed(
     account_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     year_month: str | Unset = UNSET,
-    type_: GetUsageType | Unset = UNSET,
+    type_: Type | Unset = UNSET,
 ) -> Response[ApiError | Usage]:
     """
     Args:
         account_id (str):
         year_month (str | Unset):
-        type_ (GetUsageType | Unset):
+        type_ (Type | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -109,15 +109,15 @@ def sync_detailed(
 def sync(
     account_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     year_month: str | Unset = UNSET,
-    type_: GetUsageType | Unset = UNSET,
+    type_: Type | Unset = UNSET,
 ) -> ApiError | Usage | None:
     """
     Args:
         account_id (str):
         year_month (str | Unset):
-        type_ (GetUsageType | Unset):
+        type_ (Type | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -138,15 +138,15 @@ def sync(
 async def asyncio_detailed(
     account_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     year_month: str | Unset = UNSET,
-    type_: GetUsageType | Unset = UNSET,
+    type_: Type | Unset = UNSET,
 ) -> Response[ApiError | Usage]:
     """
     Args:
         account_id (str):
         year_month (str | Unset):
-        type_ (GetUsageType | Unset):
+        type_ (Type | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -170,15 +170,15 @@ async def asyncio_detailed(
 async def asyncio(
     account_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     year_month: str | Unset = UNSET,
-    type_: GetUsageType | Unset = UNSET,
+    type_: Type | Unset = UNSET,
 ) -> ApiError | Usage | None:
     """
     Args:
         account_id (str):
         year_month (str | Unset):
-        type_ (GetUsageType | Unset):
+        type_ (Type | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
