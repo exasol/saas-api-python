@@ -63,7 +63,7 @@ def _build_response(
 def sync_detailed(
     account_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     body: CreateAllowedIP,
 ) -> Response[AllowedIP | ApiError]:
     """
@@ -94,7 +94,7 @@ def sync_detailed(
 def sync(
     account_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     body: CreateAllowedIP,
 ) -> AllowedIP | ApiError | None:
     """
@@ -120,7 +120,7 @@ def sync(
 async def asyncio_detailed(
     account_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     body: CreateAllowedIP,
 ) -> Response[AllowedIP | ApiError]:
     """
@@ -149,7 +149,7 @@ async def asyncio_detailed(
 async def asyncio(
     account_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     body: CreateAllowedIP,
 ) -> AllowedIP | ApiError | None:
     """

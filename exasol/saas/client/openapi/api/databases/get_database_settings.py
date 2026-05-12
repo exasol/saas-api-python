@@ -57,7 +57,7 @@ def sync_detailed(
     account_id: str,
     database_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
 ) -> Response[ApiError | DatabaseSettings]:
     """
     Args:
@@ -88,7 +88,7 @@ def sync(
     account_id: str,
     database_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
 ) -> ApiError | DatabaseSettings | None:
     """
     Args:
@@ -114,7 +114,7 @@ async def asyncio_detailed(
     account_id: str,
     database_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
 ) -> Response[ApiError | DatabaseSettings]:
     """
     Args:
@@ -143,7 +143,7 @@ async def asyncio(
     account_id: str,
     database_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
 ) -> ApiError | DatabaseSettings | None:
     """
     Args:

@@ -10,7 +10,7 @@ from typing import (
 from attrs import define as _attrs_define
 
 if TYPE_CHECKING:
-    from ..models.connection_i_ps import ConnectionIPs
+    from ..models.cluster_connection_ips import ClusterConnectionIps
 
 
 T = TypeVar("T", bound="ClusterConnection")
@@ -23,14 +23,14 @@ class ClusterConnection:
         dns (str):
         port (int):
         jdbc (str):
-        ips (ConnectionIPs):
+        ips (ClusterConnectionIps):
         db_username (str):
     """
 
     dns: str
     port: int
     jdbc: str
-    ips: ConnectionIPs
+    ips: ClusterConnectionIps
     db_username: str
 
     def to_dict(self) -> dict[str, Any]:
@@ -60,7 +60,7 @@ class ClusterConnection:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.connection_i_ps import ConnectionIPs
+        from ..models.cluster_connection_ips import ClusterConnectionIps
 
         d = dict(src_dict)
         dns = d.pop("dns")
@@ -69,7 +69,7 @@ class ClusterConnection:
 
         jdbc = d.pop("jdbc")
 
-        ips = ConnectionIPs.from_dict(d.pop("ips"))
+        ips = ClusterConnectionIps.from_dict(d.pop("ips"))
 
         db_username = d.pop("dbUsername")
 

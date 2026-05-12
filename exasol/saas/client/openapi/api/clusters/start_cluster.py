@@ -61,7 +61,7 @@ def sync_detailed(
     database_id: str,
     cluster_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
 ) -> Response[Any | ApiError]:
     """
     Args:
@@ -95,7 +95,7 @@ def sync(
     database_id: str,
     cluster_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
 ) -> Any | ApiError | None:
     """
     Args:
@@ -124,7 +124,7 @@ async def asyncio_detailed(
     database_id: str,
     cluster_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
 ) -> Response[Any | ApiError]:
     """
     Args:
@@ -156,7 +156,7 @@ async def asyncio(
     database_id: str,
     cluster_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
 ) -> Any | ApiError | None:
     """
     Args:

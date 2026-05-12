@@ -13,11 +13,11 @@ from ..types import (
     Unset,
 )
 
-T = TypeVar("T", bound="ClusterSize1")
+T = TypeVar("T", bound="ListClusterSizesResponse200Item")
 
 
 @_attrs_define
-class ClusterSize1:
+class ListClusterSizesResponse200Item:
     """
     Attributes:
         size (str):
@@ -86,7 +86,7 @@ class ClusterSize1:
 
         family = d.pop("family", UNSET)
 
-        cluster_size_1 = cls(
+        list_cluster_sizes_response_200_item = cls(
             size=size,
             price=price,
             vcpu=vcpu,
@@ -96,4 +96,4 @@ class ClusterSize1:
             family=family,
         )
 
-        return cluster_size_1
+        return list_cluster_sizes_response_200_item
