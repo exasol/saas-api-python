@@ -2,12 +2,12 @@ import os
 
 import pytest
 
-from exasol.saas.client import openapi
 from exasol.saas.client.api_access import (
     OpenApiAccess,
     create_saas_client,
     timestamp_name,
 )
+from exasol.saas.client.openapi_facade import ExasolDatabase
 
 
 def _env(var: str) -> str:
@@ -41,7 +41,7 @@ def api_access(saas_host, saas_pat, saas_account_id) -> OpenApiAccess:
 @pytest.fixture(scope="session")
 def saas_database(
     api_access, database_name
-) -> openapi.models.exasol_database.ExasolDatabase:
+) -> ExasolDatabase:
     """
     Note: The SaaS instance database returned by this fixture initially
     will not be operational. The startup takes about 20 minutes.
