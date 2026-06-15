@@ -11,7 +11,7 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 if TYPE_CHECKING:
-    from ..models.usage_additional_property_item import UsageAdditionalPropertyItem
+    from ..models.usage_database import UsageDatabase
 
 
 T = TypeVar("T", bound="Usage")
@@ -21,7 +21,7 @@ T = TypeVar("T", bound="Usage")
 class Usage:
     """ """
 
-    additional_properties: dict[str, list[UsageAdditionalPropertyItem]] = _attrs_field(
+    additional_properties: dict[str, list[UsageDatabase]] = _attrs_field(
         init=False, factory=dict
     )
 
@@ -38,7 +38,7 @@ class Usage:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.usage_additional_property_item import UsageAdditionalPropertyItem
+        from ..models.usage_database import UsageDatabase
 
         d = dict(src_dict)
         usage = cls()
@@ -48,7 +48,7 @@ class Usage:
             additional_property = []
             _additional_property = prop_dict
             for additional_property_item_data in _additional_property:
-                additional_property_item = UsageAdditionalPropertyItem.from_dict(
+                additional_property_item = UsageDatabase.from_dict(
                     additional_property_item_data
                 )
 
@@ -63,10 +63,10 @@ class Usage:
     def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
-    def __getitem__(self, key: str) -> list[UsageAdditionalPropertyItem]:
+    def __getitem__(self, key: str) -> list[UsageDatabase]:
         return self.additional_properties[key]
 
-    def __setitem__(self, key: str, value: list[UsageAdditionalPropertyItem]) -> None:
+    def __setitem__(self, key: str, value: list[UsageDatabase]) -> None:
         self.additional_properties[key] = value
 
     def __delitem__(self, key: str) -> None:

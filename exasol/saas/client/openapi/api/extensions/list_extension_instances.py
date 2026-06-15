@@ -9,7 +9,7 @@ from ...client import (
     Client,
 )
 from ...models.api_error import ApiError
-from ...models.extension_instance import ExtensionInstance
+from ...models.worksheet_connection import WorksheetConnection
 from ...types import Response
 
 
@@ -35,12 +35,12 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> ApiError | list[ExtensionInstance]:
+) -> ApiError | list[WorksheetConnection]:
     if response.status_code == 200:
         response_200 = []
         _response_200 = response.json()
         for response_200_item_data in _response_200:
-            response_200_item = ExtensionInstance.from_dict(response_200_item_data)
+            response_200_item = WorksheetConnection.from_dict(response_200_item_data)
 
             response_200.append(response_200_item)
 
@@ -58,7 +58,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[ApiError | list[ExtensionInstance]]:
+) -> Response[ApiError | list[WorksheetConnection]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -73,8 +73,8 @@ def sync_detailed(
     extension_id: str,
     extension_version: str,
     *,
-    client: AuthenticatedClient,
-) -> Response[ApiError | list[ExtensionInstance]]:
+    client: AuthenticatedClient | Client,
+) -> Response[ApiError | list[WorksheetConnection]]:
     """
     Args:
         account_id (str):
@@ -87,7 +87,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiError | list[ExtensionInstance]]
+        Response[ApiError | list[WorksheetConnection]]
     """
 
     kwargs = _get_kwargs(
@@ -110,8 +110,8 @@ def sync(
     extension_id: str,
     extension_version: str,
     *,
-    client: AuthenticatedClient,
-) -> ApiError | list[ExtensionInstance] | None:
+    client: AuthenticatedClient | Client,
+) -> ApiError | list[WorksheetConnection] | None:
     """
     Args:
         account_id (str):
@@ -124,7 +124,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiError | list[ExtensionInstance]
+        ApiError | list[WorksheetConnection]
     """
 
     return sync_detailed(
@@ -142,8 +142,8 @@ async def asyncio_detailed(
     extension_id: str,
     extension_version: str,
     *,
-    client: AuthenticatedClient,
-) -> Response[ApiError | list[ExtensionInstance]]:
+    client: AuthenticatedClient | Client,
+) -> Response[ApiError | list[WorksheetConnection]]:
     """
     Args:
         account_id (str):
@@ -156,7 +156,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[ApiError | list[ExtensionInstance]]
+        Response[ApiError | list[WorksheetConnection]]
     """
 
     kwargs = _get_kwargs(
@@ -177,8 +177,8 @@ async def asyncio(
     extension_id: str,
     extension_version: str,
     *,
-    client: AuthenticatedClient,
-) -> ApiError | list[ExtensionInstance] | None:
+    client: AuthenticatedClient | Client,
+) -> ApiError | list[WorksheetConnection] | None:
     """
     Args:
         account_id (str):
@@ -191,7 +191,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        ApiError | list[ExtensionInstance]
+        ApiError | list[WorksheetConnection]
     """
 
     return (

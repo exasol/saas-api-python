@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class GetUsageType(str, Enum):
+class Type(str, Enum):
     CSV = "csv"
     JSON = "json"
 

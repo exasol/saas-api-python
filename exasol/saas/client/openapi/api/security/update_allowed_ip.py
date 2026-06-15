@@ -67,7 +67,7 @@ def sync_detailed(
     account_id: str,
     allowlist_ip_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     body: UpdateAllowedIP,
 ) -> Response[Any | ApiError]:
     """
@@ -101,7 +101,7 @@ def sync(
     account_id: str,
     allowlist_ip_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     body: UpdateAllowedIP,
 ) -> Any | ApiError | None:
     """
@@ -130,7 +130,7 @@ async def asyncio_detailed(
     account_id: str,
     allowlist_ip_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     body: UpdateAllowedIP,
 ) -> Response[Any | ApiError]:
     """
@@ -162,7 +162,7 @@ async def asyncio(
     account_id: str,
     allowlist_ip_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     body: UpdateAllowedIP,
 ) -> Any | ApiError | None:
     """
