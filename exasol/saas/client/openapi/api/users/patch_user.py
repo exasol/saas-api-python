@@ -67,7 +67,7 @@ def sync_detailed(
     account_id: str,
     user_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     body: PatchUser,
 ) -> Response[Any | ApiError]:
     """
@@ -101,7 +101,7 @@ def sync(
     account_id: str,
     user_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     body: PatchUser,
 ) -> Any | ApiError | None:
     """
@@ -130,7 +130,7 @@ async def asyncio_detailed(
     account_id: str,
     user_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     body: PatchUser,
 ) -> Response[Any | ApiError]:
     """
@@ -162,7 +162,7 @@ async def asyncio(
     account_id: str,
     user_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     body: PatchUser,
 ) -> Any | ApiError | None:
     """

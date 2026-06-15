@@ -64,7 +64,7 @@ def sync_detailed(
     extension_id: str,
     extension_version: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
 ) -> Response[Any | ApiError]:
     """
     Args:
@@ -101,7 +101,7 @@ def sync(
     extension_id: str,
     extension_version: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
 ) -> Any | ApiError | None:
     """
     Args:
@@ -133,7 +133,7 @@ async def asyncio_detailed(
     extension_id: str,
     extension_version: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
 ) -> Response[Any | ApiError]:
     """
     Args:
@@ -168,7 +168,7 @@ async def asyncio(
     extension_id: str,
     extension_version: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
 ) -> Any | ApiError | None:
     """
     Args:

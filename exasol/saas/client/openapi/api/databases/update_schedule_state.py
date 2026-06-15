@@ -70,7 +70,7 @@ def sync_detailed(
     database_id: str,
     action_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     body: UpdateScheduleState,
 ) -> Response[Any | ApiError]:
     """
@@ -107,7 +107,7 @@ def sync(
     database_id: str,
     action_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     body: UpdateScheduleState,
 ) -> Any | ApiError | None:
     """
@@ -139,7 +139,7 @@ async def asyncio_detailed(
     database_id: str,
     action_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     body: UpdateScheduleState,
 ) -> Response[Any | ApiError]:
     """
@@ -174,7 +174,7 @@ async def asyncio(
     database_id: str,
     action_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     body: UpdateScheduleState,
 ) -> Any | ApiError | None:
     """

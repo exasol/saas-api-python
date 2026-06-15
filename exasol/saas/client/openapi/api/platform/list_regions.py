@@ -59,7 +59,7 @@ def _build_response(
 def sync_detailed(
     platform: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
 ) -> Response[ApiError | list[Region]]:
     """
     Args:
@@ -87,7 +87,7 @@ def sync_detailed(
 def sync(
     platform: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
 ) -> ApiError | list[Region] | None:
     """
     Args:
@@ -110,7 +110,7 @@ def sync(
 async def asyncio_detailed(
     platform: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
 ) -> Response[ApiError | list[Region]]:
     """
     Args:
@@ -136,7 +136,7 @@ async def asyncio_detailed(
 async def asyncio(
     platform: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
 ) -> ApiError | list[Region] | None:
     """
     Args:

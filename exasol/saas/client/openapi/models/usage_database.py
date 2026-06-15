@@ -18,11 +18,11 @@ if TYPE_CHECKING:
     from ..models.usage_cluster import UsageCluster
 
 
-T = TypeVar("T", bound="UsageAdditionalPropertyItem")
+T = TypeVar("T", bound="UsageDatabase")
 
 
 @_attrs_define
-class UsageAdditionalPropertyItem:
+class UsageDatabase:
     """
     Attributes:
         id (str):
@@ -80,11 +80,11 @@ class UsageAdditionalPropertyItem:
 
         used_storage = d.pop("usedStorage", UNSET)
 
-        usage_additional_property_item = cls(
+        usage_database = cls(
             id=id,
             name=name,
             clusters=clusters,
             used_storage=used_storage,
         )
 
-        return usage_additional_property_item
+        return usage_database

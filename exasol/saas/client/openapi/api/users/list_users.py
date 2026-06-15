@@ -78,7 +78,7 @@ def _build_response(
 def sync_detailed(
     account_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     filter_: str | Unset = UNSET,
     next_: int | Unset = UNSET,
     limit: int | Unset = UNSET,
@@ -115,7 +115,7 @@ def sync_detailed(
 def sync(
     account_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     filter_: str | Unset = UNSET,
     next_: int | Unset = UNSET,
     limit: int | Unset = UNSET,
@@ -147,7 +147,7 @@ def sync(
 async def asyncio_detailed(
     account_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     filter_: str | Unset = UNSET,
     next_: int | Unset = UNSET,
     limit: int | Unset = UNSET,
@@ -182,7 +182,7 @@ async def asyncio_detailed(
 async def asyncio(
     account_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     filter_: str | Unset = UNSET,
     next_: int | Unset = UNSET,
     limit: int | Unset = UNSET,

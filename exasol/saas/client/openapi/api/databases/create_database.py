@@ -63,7 +63,7 @@ def _build_response(
 def sync_detailed(
     account_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     body: CreateDatabase,
 ) -> Response[ApiError | ExasolDatabase]:
     """
@@ -94,7 +94,7 @@ def sync_detailed(
 def sync(
     account_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     body: CreateDatabase,
 ) -> ApiError | ExasolDatabase | None:
     """
@@ -120,7 +120,7 @@ def sync(
 async def asyncio_detailed(
     account_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     body: CreateDatabase,
 ) -> Response[ApiError | ExasolDatabase]:
     """
@@ -149,7 +149,7 @@ async def asyncio_detailed(
 async def asyncio(
     account_id: str,
     *,
-    client: AuthenticatedClient,
+    client: AuthenticatedClient | Client,
     body: CreateDatabase,
 ) -> ApiError | ExasolDatabase | None:
     """
