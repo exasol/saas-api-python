@@ -7,7 +7,7 @@ from exasol.saas.client.api_access import (
     OpenApiError,
     ensure_type,
 )
-from exasol.saas.client.openapi.models.api_error import ApiError
+from exasol.saas.client.openapi_facade import ApiError
 
 
 class MyClass:
@@ -25,7 +25,16 @@ def test_ensure_type_success():
     "object, suffix",
     [
         pytest.param(
-            Mock(ApiError, message="inner error"),
+            ApiError(
+                status=400,
+                message="inner error",
+                request_id="r1",
+                path="/path",
+                method="GET",
+                log_id="l1",
+                handler="handler",
+                timestamp="now",
+            ),
             ": inner error.",
             id="api_error",
         ),

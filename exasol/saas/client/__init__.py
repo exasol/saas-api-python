@@ -7,7 +7,7 @@ from datetime import (
 )
 from typing import Final
 
-from exasol.saas.client.openapi.models.status import Status
+from exasol.saas.client.openapi_facade_types import Status
 
 SAAS_HOST = "https://cloud.exasol.com"
 

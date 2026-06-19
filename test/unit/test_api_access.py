@@ -7,9 +7,13 @@ import pytest
 from exasol.saas.client.api_access import (
     DatabaseDeleteError,
     OpenApiAccess,
+    create_saas_client,
     timestamp_name,
 )
-from exasol.saas.client.openapi.models.api_error import ApiError
+from exasol.saas.client.openapi_facade import (
+    ApiError,
+    OpenApiFacade,
+)
 
 
 def response(status_code: int, message: str, spec=None):
@@ -17,7 +21,16 @@ def response(status_code: int, message: str, spec=None):
 
 
 def api_error(status_code: int, message: str):
-    return response(status_code, message, spec=ApiError)
+    return ApiError(
+        status=status_code,
+        message=message,
+        request_id="r1",
+        path="/path",
+        method="DELETE",
+        log_id="l1",
+        handler="handler",
+        timestamp="now",
+    )
 
 
 RETRY = api_error(
@@ -31,11 +44,9 @@ def api_mock():
     return OpenApiAccess(Mock(), account_id="A1")
 
 
-def delete_mock(monkeypatch, side_effect) -> Mock:
-    from exasol.saas.client.api_access import delete_database as api
-
+def delete_mock(api_mock, side_effect) -> Mock:
     mock = Mock(side_effect=side_effect)
-    monkeypatch.setattr(api, "sync", mock)
+    api_mock._client.delete_database = mock
     return mock
 
 
@@ -69,8 +80,8 @@ def retry_timings() -> dict[str, timedelta]:
         ),
     ],
 )
-def test_delete_fail(api_mock, monkeypatch, side_effect, retry_timings) -> None:
-    delete_mock(monkeypatch, side_effect)
+def test_delete_fail(api_mock, side_effect, retry_timings) -> None:
+    delete_mock(api_mock, side_effect)
     with pytest.raises(DatabaseDeleteError):
         api_mock.delete_database("123", **retry_timings)
 
@@ -97,11 +108,10 @@ def test_delete_success(
     ignore_failures,
     expected_log_message,
     api_mock,
-    monkeypatch,
     retry_timings,
     caplog,
 ) -> None:
-    delete = delete_mock(monkeypatch, side_effect)
+    delete = delete_mock(api_mock, side_effect)
     with not_raises(Exception):
         api_mock.delete_database(
             database_id="123",
@@ -123,3 +133,8 @@ def test_timestamp_name() -> None:
     assert len(set(suffixes)) == 3
     # the provided tag should follow the hacky timestamp.
     assert all(tag == "TEST" for tag in tags)
+
+
+def test_create_saas_client_returns_facade() -> None:
+    client = create_saas_client("https://example.org", "pat")
+    assert isinstance(client, OpenApiFacade)
