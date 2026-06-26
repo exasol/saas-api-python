@@ -9,12 +9,14 @@ import pytest
 from tenacity import TryAgain
 
 from exasol.saas.client.api_access import (
+    DatabaseDeleteTimeout,
     DatabaseDeleteError,
     OpenApiAccess,
     OpenApiError,
     ensure_type,
     timestamp_name,
 )
+from exasol.saas.client.openapi.models.allowed_ip import AllowedIP
 from exasol.saas.client.openapi.models.api_error import ApiError
 from exasol.saas.client.openapi.models.database_settings import DatabaseSettings
 from exasol.saas.client.openapi.models.exasol_database import ExasolDatabase
@@ -76,6 +78,14 @@ def list_allowed_ips_mock(monkeypatch, side_effect) -> Mock:
     return mock
 
 
+def get_database_mock(monkeypatch, side_effect) -> Mock:
+    from exasol.saas.client.api_access import get_database as api
+
+    mock = Mock(side_effect=side_effect)
+    monkeypatch.setattr(api, "sync", mock)
+    return mock
+
+
 def database_response(name: str = "db") -> ExasolDatabase:
     return ExasolDatabase(
         status=Status.CREATING,
@@ -86,6 +96,23 @@ def database_response(name: str = "db") -> ExasolDatabase:
         region="eu-central-1",
         created_at=datetime(2026, 1, 1),
         created_by="tester",
+    )
+
+
+def allowed_ip_response(
+    id: str = "ip-1",
+    *,
+    deleted_at=UNSET,
+    deleted_by=UNSET,
+) -> AllowedIP:
+    return AllowedIP(
+        id=id,
+        name="test-ip",
+        cidr_ip="0.0.0.0/0",
+        created_at=datetime(2026, 1, 1),
+        created_by="tester",
+        deleted_at=deleted_at,
+        deleted_by=deleted_by,
     )
 
 
@@ -227,22 +254,6 @@ def test_database_context_forwards_num_nodes(api_mock, monkeypatch) -> None:
 def test_get_database_settings_retries_transient_not_found(
     api_mock, monkeypatch
 ) -> None:
-    def immediate_retry(*_args, **_kwargs):
-        def decorate(func):
-            def wrapped():
-                for _ in range(5):
-                    try:
-                        return func()
-                    except TryAgain:
-                        pass
-                    except Exception:
-                        raise
-                return func()
-
-            return wrapped
-
-        return decorate
-
     monkeypatch.setattr(
         "exasol.saas.client.api_access.interval_retry",
         immediate_retry,
@@ -281,7 +292,7 @@ def test_get_database_settings_raises_non_retryable_error(
 def test_wait_until_allowed_ip_listed_retries(api_mock, monkeypatch) -> None:
     list_allowed_ips_mock(
         monkeypatch,
-        [[], [Mock(id="ip-1")]],
+        [[], [allowed_ip_response("ip-1")]],
     )
 
     api_mock.wait_until_allowed_ip_listed(
@@ -294,7 +305,49 @@ def test_wait_until_allowed_ip_listed_retries(api_mock, monkeypatch) -> None:
 def test_wait_until_allowed_ip_deleted_retries(api_mock, monkeypatch) -> None:
     list_allowed_ips_mock(
         monkeypatch,
-        [[Mock(id="ip-1")], []],
+        [[allowed_ip_response("ip-1")], []],
+    )
+
+    api_mock.wait_until_allowed_ip_deleted(
+        "ip-1",
+        timeout=timedelta(seconds=1),
+        interval=timedelta(milliseconds=10),
+    )
+
+
+def test_list_allowed_ip_ids_skips_deleted_entries(api_mock, monkeypatch) -> None:
+    list_allowed_ips_mock(
+        monkeypatch,
+        [
+            [
+                allowed_ip_response("ip-1"),
+                allowed_ip_response(
+                    "ip-2",
+                    deleted_at=datetime(2026, 1, 2),
+                    deleted_by="tester",
+                ),
+            ]
+        ],
+    )
+
+    assert list(api_mock.list_allowed_ip_ids()) == ["ip-1"]
+
+
+def test_wait_until_allowed_ip_deleted_ignores_soft_deleted_entries(
+    api_mock, monkeypatch
+) -> None:
+    list_allowed_ips_mock(
+        monkeypatch,
+        [
+            [allowed_ip_response("ip-1")],
+            [
+                allowed_ip_response(
+                    "ip-1",
+                    deleted_at=datetime(2026, 1, 2),
+                    deleted_by="tester",
+                )
+            ],
+        ],
     )
 
     api_mock.wait_until_allowed_ip_deleted(
@@ -359,3 +412,106 @@ def test_list_database_ids_skips_deleted_databases(api_mock, monkeypatch) -> Non
     )
 
     assert list(api_mock.list_database_ids()) == ["db-id"]
+
+
+def immediate_retry(*_args, **_kwargs):
+    def decorate(func):
+        def wrapped():
+            for _ in range(5):
+                try:
+                    return func()
+                except TryAgain:
+                    pass
+                except Exception:
+                    raise
+            return func()
+
+        return wrapped
+
+    return decorate
+
+
+def test_wait_until_deleted_uses_get_database_until_not_found(
+    api_mock, monkeypatch
+) -> None:
+    monkeypatch.setattr(
+        "exasol.saas.client.api_access.interval_retry",
+        immediate_retry,
+    )
+    get_database_mock(
+        monkeypatch,
+        [
+            database_response("db-active"),
+            ExasolDatabase(
+                status=Status.TODELETE,
+                id="db-id",
+                name="db-active",
+                clusters=ExasolDatabaseClusters(total=1, running=0),
+                provider="aws",
+                region="eu-central-1",
+                created_at=datetime(2026, 1, 1),
+                created_by="tester",
+            ),
+            api_error(404, "User/Database not found"),
+        ],
+    )
+    list_databases_mock = Mock(
+        side_effect=[
+            [database_response("db-active")],
+            [],
+        ]
+    )
+    from exasol.saas.client.api_access import list_databases as list_api
+
+    monkeypatch.setattr(list_api, "sync", list_databases_mock)
+
+    api_mock.wait_until_deleted("db-id")
+
+
+def test_wait_until_deleted_accepts_soft_deleted_database(
+    api_mock, monkeypatch
+) -> None:
+    monkeypatch.setattr(
+        "exasol.saas.client.api_access.interval_retry",
+        immediate_retry,
+    )
+    get_database_mock(
+        monkeypatch,
+        [
+            ExasolDatabase(
+                status=Status.DELETED,
+                id="db-id",
+                name="db-active",
+                clusters=ExasolDatabaseClusters(total=1, running=0),
+                provider="aws",
+                region="eu-central-1",
+                created_at=datetime(2026, 1, 1),
+                created_by="tester",
+                deleted_at=datetime(2026, 1, 2),
+                deleted_by="tester",
+            )
+        ],
+    )
+
+    api_mock.wait_until_deleted("db-id")
+
+
+def test_wait_until_deleted_times_out_for_active_database(
+    api_mock, monkeypatch
+) -> None:
+    monkeypatch.setattr(
+        "exasol.saas.client.api_access.interval_retry",
+        lambda *_args, **_kwargs: (lambda func: func),
+    )
+    monkeypatch.setattr(
+        api_mock,
+        "list_database_ids",
+        Mock(return_value=iter(["db-id"])),
+    )
+    get_database_mock(
+        monkeypatch,
+        [database_response("db-active")],
+    )
+
+    with pytest.raises(DatabaseDeleteTimeout):
+        api_mock.wait_until_deleted("db-id")

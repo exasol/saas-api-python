@@ -135,6 +135,10 @@ class InternalError(Exception):
     """
 
 
+def _is_not_found(resp: ApiError, entity: str = "User/Database") -> bool:
+    return resp.status == 404 and f"{entity} not found" in resp.message
+
+
 def create_saas_client(
     host: str,
     pat: str,
@@ -311,14 +315,42 @@ class OpenApiAccess:
         timeout: timedelta = timedelta(minutes=5),
         interval: timedelta = timedelta(seconds=10),
     ):
+        terminal = {Status.DELETED}
+        in_progress = {Status.DELETING, Status.TODELETE}
+
         @interval_retry(interval, timeout)
-        def verify_not_listed() -> bool:
-            if database_id in self.list_database_ids():
+        def verify_deleted() -> bool:
+            resp = get_database.sync(
+                self._account_id,
+                database_id,
+                client=self._client,
+            )
+            if isinstance(resp, ApiError):
+                if _is_not_found(resp):
+                    return True
+                raise OpenApiError(
+                    f"Failed to get database {database_id}",
+                    resp,
+                )
+
+            if resp.deleted_at is not UNSET or resp.deleted_by is not UNSET:
+                return True
+
+            if resp.status in terminal:
+                return True
+
+            if resp.status in in_progress:
+                LOG.info("- Database deletion status: %s ...", resp.status)
                 raise TryAgain
+
+            if database_id in self.list_database_ids():
+                LOG.info("- Database deletion status: %s ...", resp.status)
+                raise TryAgain
+
             return True
 
         try:
-            return verify_not_listed()
+            return verify_deleted()
         except (TryAgain, RetryError) as ex:
             raise DatabaseDeleteTimeout from ex
 
@@ -424,7 +456,7 @@ class OpenApiAccess:
         database_id: str,
     ) -> openapi.models.DatabaseSettings | None:
         def is_retry(resp: ApiError) -> bool:
-            return resp.status == 404 and "User/Database not found" in resp.message
+            return _is_not_found(resp)
 
         @interval_retry(
             interval=timedelta(seconds=5),
@@ -506,7 +538,11 @@ class OpenApiAccess:
         resp = list_allowed_i_ps.sync(self._account_id, client=self._client) or []
         # actually list[openapi.models.AllowedIP]
         ips = ensure_type(list, resp, "Failed to retrieve the list of allowed ips")
-        return (x.id for x in ips)
+        return (
+            ip.id
+            for ip in ips
+            if ip.deleted_at is UNSET and ip.deleted_by is UNSET
+        )
 
     def wait_until_allowed_ip_listed(
         self,
