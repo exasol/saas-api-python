@@ -375,7 +375,9 @@ class OpenApiAccess:
         resp = list_databases.sync(self._account_id, client=self._client) or []
         # actually list[ExasolDatabase]
         dbs = ensure_type(list, resp, "Failed to list databases")
-        return (db.id for db in dbs)
+        return (
+            db.id for db in dbs if db.deleted_at is UNSET and db.deleted_by is UNSET
+        )
 
     @contextmanager
     def database(

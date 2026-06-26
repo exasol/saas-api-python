@@ -82,21 +82,21 @@ class ApiError:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        status = d.pop("status")
+        status = d.pop("status", 0)
 
-        message = d.pop("message")
+        message = d.pop("message", "Unknown API error")
 
-        request_id = d.pop("requestId")
+        request_id = d.pop("requestId", "")
 
-        path = d.pop("path")
+        path = d.pop("path", "")
 
-        method = d.pop("method")
+        method = d.pop("method", "")
 
-        log_id = d.pop("logId")
+        log_id = d.pop("logId", "")
 
-        handler = d.pop("handler")
+        handler = d.pop("handler", "")
 
-        timestamp = d.pop("timestamp")
+        timestamp = d.pop("timestamp", "")
 
         causes = d.pop("causes", UNSET)
 

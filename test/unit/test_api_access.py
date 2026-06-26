@@ -12,6 +12,7 @@ from exasol.saas.client.api_access import (
     DatabaseDeleteError,
     OpenApiAccess,
     OpenApiError,
+    ensure_type,
     timestamp_name,
 )
 from exasol.saas.client.openapi.models.api_error import ApiError
@@ -301,3 +302,60 @@ def test_wait_until_allowed_ip_deleted_retries(api_mock, monkeypatch) -> None:
         timeout=timedelta(seconds=1),
         interval=timedelta(milliseconds=10),
     )
+
+
+def test_api_error_from_dict_tolerates_missing_fields() -> None:
+    error = ApiError.from_dict(
+        {
+            "status": 500,
+            "message": "boom",
+        }
+    )
+
+    assert error.status == 500
+    assert error.message == "boom"
+    assert error.request_id == ""
+    assert error.path == ""
+    assert error.method == ""
+    assert error.log_id == ""
+    assert error.handler == ""
+    assert error.timestamp == ""
+    assert error.causes is UNSET
+
+
+def test_ensure_type_raises_open_api_error_for_malformed_error_payload() -> None:
+    malformed_error = ApiError.from_dict({"message": "backend failed"})
+
+    with pytest.raises(
+        OpenApiError,
+        match="Failed to do something: backend failed\\.",
+    ):
+        ensure_type(DatabaseSettings, malformed_error, "Failed to do something")
+
+
+def test_list_database_ids_skips_deleted_databases(api_mock, monkeypatch) -> None:
+    from exasol.saas.client.api_access import list_databases as api
+
+    monkeypatch.setattr(
+        api,
+        "sync",
+        Mock(
+            return_value=[
+                database_response("active-db"),
+                ExasolDatabase(
+                    status=Status.DELETING,
+                    id="deleted-db-id",
+                    name="deleted-db",
+                    clusters=ExasolDatabaseClusters(total=1, running=0),
+                    provider="aws",
+                    region="eu-central-1",
+                    created_at=datetime(2026, 1, 1),
+                    created_by="tester",
+                    deleted_at=datetime(2026, 1, 2),
+                    deleted_by="tester",
+                ),
+            ]
+        ),
+    )
+
+    assert list(api_mock.list_database_ids()) == ["db-id"]

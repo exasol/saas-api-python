@@ -100,6 +100,8 @@ def generate_api(session: Session):
         "--overwrite",
         "--config",
         "openapi_config.yml",
+        "--custom-template-path",
+        "openapi_templates",
         "--output-path",
         "tmp",
         silent=local_build,
