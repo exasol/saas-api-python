@@ -12,11 +12,11 @@ from exasol.saas.client.api_access import (
     OpenApiAccess,
     timestamp_name,
 )
+from exasol.saas.client.openapi.models.api_error import ApiError
 from exasol.saas.client.openapi.models.exasol_database import ExasolDatabase
 from exasol.saas.client.openapi.models.exasol_database_clusters import (
     ExasolDatabaseClusters,
 )
-from exasol.saas.client.openapi.models.api_error import ApiError
 from exasol.saas.client.openapi.models.status import Status
 from exasol.saas.client.openapi.types import UNSET
 
