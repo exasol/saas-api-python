@@ -308,8 +308,8 @@ class OpenApiAccess:
     def wait_until_deleted(
         self,
         database_id: str,
-        timeout: timedelta = timedelta(seconds=1),
-        interval: timedelta = timedelta(minutes=1),
+        timeout: timedelta = timedelta(minutes=5),
+        interval: timedelta = timedelta(seconds=10),
     ):
         @interval_retry(interval, timeout)
         def verify_not_listed() -> bool:
@@ -421,16 +421,28 @@ class OpenApiAccess:
         self,
         database_id: str,
     ) -> openapi.models.DatabaseSettings | None:
-        resp = get_database_settings.sync(
-            self._account_id,
-            database_id,
-            client=self._client,
+        def is_retry(resp: ApiError) -> bool:
+            return resp.status == 404 and "User/Database not found" in resp.message
+
+        @interval_retry(
+            interval=timedelta(seconds=5),
+            timeout=timedelta(minutes=2),
         )
-        return ensure_type(
-            openapi.models.DatabaseSettings,
-            resp,
-            f"Failed to get settings of database {database_id}",
-        )
+        def retrieve_settings() -> openapi.models.DatabaseSettings:
+            resp = get_database_settings.sync(
+                self._account_id,
+                database_id,
+                client=self._client,
+            )
+            if isinstance(resp, ApiError) and is_retry(resp):
+                raise TryAgain
+            return ensure_type(
+                openapi.models.DatabaseSettings,
+                resp,
+                f"Failed to get settings of database {database_id}",
+            )
+
+        return retrieve_settings()
 
     def wait_until_running(
         self,
@@ -493,6 +505,34 @@ class OpenApiAccess:
         # actually list[openapi.models.AllowedIP]
         ips = ensure_type(list, resp, "Failed to retrieve the list of allowed ips")
         return (x.id for x in ips)
+
+    def wait_until_allowed_ip_listed(
+        self,
+        allowed_ip_id: str,
+        timeout: timedelta = timedelta(minutes=1),
+        interval: timedelta = timedelta(seconds=5),
+    ) -> None:
+        @interval_retry(interval, timeout)
+        def verify_listed() -> bool:
+            if allowed_ip_id not in self.list_allowed_ip_ids():
+                raise TryAgain
+            return True
+
+        verify_listed()
+
+    def wait_until_allowed_ip_deleted(
+        self,
+        allowed_ip_id: str,
+        timeout: timedelta = timedelta(minutes=1),
+        interval: timedelta = timedelta(seconds=5),
+    ) -> None:
+        @interval_retry(interval, timeout)
+        def verify_deleted() -> bool:
+            if allowed_ip_id in self.list_allowed_ip_ids():
+                raise TryAgain
+            return True
+
+        verify_deleted()
 
     def add_allowed_ip(
         self,
