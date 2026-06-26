@@ -15,6 +15,8 @@ Besides there are many formal and syntactic changes
 
 ## Summary
 
+* #147: Added `num_nodes` support to the handwritten database creation helpers.
+
 ## Refactorings
 
 * #160: Updated PTB to version 7.0.0
