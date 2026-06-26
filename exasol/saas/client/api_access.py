@@ -40,6 +40,7 @@ from exasol.saas.client.openapi.api.databases import (
     create_database,
     delete_database,
     get_database,
+    get_database_settings,
     list_databases,
 )
 from exasol.saas.client.openapi.api.security import (
@@ -261,6 +262,7 @@ class OpenApiAccess:
         cluster_size: str = "XS",
         region: str = "eu-central-1",
         idle_time: timedelta | None = None,
+        num_nodes: int | None = None,
     ) -> ExasolDatabase | None:
         def minutes(x: timedelta) -> int:
             return x.seconds // 60
@@ -275,16 +277,20 @@ class OpenApiAccess:
             ),
         )
         LOG.info("Creating database %s", name)
+        database_spec = openapi.models.CreateDatabase(
+            name=name,
+            initial_cluster=cluster_spec,
+            provider="aws",
+            region=region,
+            stream_type="innovation-release",
+        )
+        if num_nodes is not None:
+            database_spec.num_nodes = num_nodes
+
         resp = create_database.sync(
             self._account_id,
             client=self._client,
-            body=openapi.models.CreateDatabase(
-                name=name,
-                initial_cluster=cluster_spec,
-                provider="aws",
-                region=region,
-                stream_type="innovation-release",
-            ),
+            body=database_spec,
         )
         database = ensure_type(
             ExasolDatabase, resp, f"Failed to create database {name}"
@@ -378,10 +384,15 @@ class OpenApiAccess:
         keep: bool = False,
         ignore_delete_failure: bool = False,
         idle_time: timedelta | None = None,
+        num_nodes: int | None = None,
     ):
         db = None
         try:
-            db = self.create_database(name, idle_time=idle_time)
+            db = self.create_database(
+                name,
+                idle_time=idle_time,
+                num_nodes=num_nodes,
+            )
             yield db
         finally:
             db_repr = f"{db.name} with ID {db.id}" if db else None
@@ -404,6 +415,21 @@ class OpenApiAccess:
         )
         return ensure_type(
             ExasolDatabase, resp, f"Failed to get database {database_id}"
+        )
+
+    def get_database_settings(
+        self,
+        database_id: str,
+    ) -> openapi.models.DatabaseSettings | None:
+        resp = get_database_settings.sync(
+            self._account_id,
+            database_id,
+            client=self._client,
+        )
+        return ensure_type(
+            openapi.models.DatabaseSettings,
+            resp,
+            f"Failed to get settings of database {database_id}",
         )
 
     def wait_until_running(

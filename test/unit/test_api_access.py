@@ -1,4 +1,7 @@
-from datetime import timedelta
+from datetime import (
+    datetime,
+    timedelta,
+)
 from test.util import not_raises
 from unittest.mock import Mock
 
@@ -9,7 +12,13 @@ from exasol.saas.client.api_access import (
     OpenApiAccess,
     timestamp_name,
 )
+from exasol.saas.client.openapi.models.exasol_database import ExasolDatabase
+from exasol.saas.client.openapi.models.exasol_database_clusters import (
+    ExasolDatabaseClusters,
+)
 from exasol.saas.client.openapi.models.api_error import ApiError
+from exasol.saas.client.openapi.models.status import Status
+from exasol.saas.client.openapi.types import UNSET
 
 
 def response(status_code: int, message: str, spec=None):
@@ -37,6 +46,27 @@ def delete_mock(monkeypatch, side_effect) -> Mock:
     mock = Mock(side_effect=side_effect)
     monkeypatch.setattr(api, "sync", mock)
     return mock
+
+
+def create_database_mock(monkeypatch, side_effect) -> Mock:
+    from exasol.saas.client.api_access import create_database as api
+
+    mock = Mock(side_effect=side_effect)
+    monkeypatch.setattr(api, "sync", mock)
+    return mock
+
+
+def database_response(name: str = "db") -> ExasolDatabase:
+    return ExasolDatabase(
+        status=Status.CREATING,
+        id="db-id",
+        name=name,
+        clusters=ExasolDatabaseClusters(total=1, running=0),
+        provider="aws",
+        region="eu-central-1",
+        created_at=datetime(2026, 1, 1),
+        created_by="tester",
+    )
 
 
 @pytest.fixture
@@ -123,3 +153,41 @@ def test_timestamp_name() -> None:
     assert len(set(suffixes)) == 3
     # the provided tag should follow the hacky timestamp.
     assert all(tag == "TEST" for tag in tags)
+
+
+@pytest.mark.parametrize(
+    "num_nodes, expected_num_nodes",
+    [
+        pytest.param(None, UNSET, id="uses_backend_default"),
+        pytest.param(2, 2, id="forwards_explicit_value"),
+    ],
+)
+def test_create_database_num_nodes(
+    api_mock, monkeypatch, num_nodes, expected_num_nodes
+) -> None:
+    create = create_database_mock(
+        monkeypatch,
+        [database_response("db-with-nodes")],
+    )
+
+    result = api_mock.create_database("db-with-nodes", num_nodes=num_nodes)
+
+    assert result is not None
+    assert create.called
+    body = create.call_args.kwargs["body"]
+    assert body.num_nodes == expected_num_nodes
+
+
+def test_database_context_forwards_num_nodes(api_mock, monkeypatch) -> None:
+    create = Mock(return_value=database_response("db-with-context"))
+    delete = Mock()
+    monkeypatch.setattr(api_mock, "create_database", create)
+    monkeypatch.setattr(api_mock, "delete_database", delete)
+
+    with api_mock.database("db-with-context", num_nodes=2) as db:
+        assert db is not None
+        assert db.name == "db-with-context"
+
+    assert create.call_args.args == ("db-with-context",)
+    assert create.call_args.kwargs == {"idle_time": None, "num_nodes": 2}
+    delete.assert_called_once_with("db-id", False)
