@@ -4,22 +4,12 @@ on:
   workflow_call:
 
 jobs:
-  build-slow-matrix:
-    name: Build Slow Matrix
-    uses: ./.github/workflows/matrix-slow.yml
-    permissions:
-      contents: read
 
   run-integration-tests:
-    name: Run Integration Tests (${{ matrix.test-name }})
-    needs:
-      - build-slow-matrix
+    name: Run Integration Tests
     runs-on: "ubuntu-24.04"
     permissions:
       contents: read
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJSON(needs.build-slow-matrix.outputs.matrix) }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -36,10 +26,7 @@ jobs:
 
       - name: Run Integration Tests
         id: run-integration-tests
-        run: |
-          poetry run coverage run \
-            --rcfile=pyproject.toml \
-            -m pytest -v "${{ matrix.test-path }}"
+        run: poetry run -- nox -s test:integration -- --coverage
         env:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
           SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
@@ -51,6 +38,6 @@ jobs:
         id: upload-artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: coverage-python3.10-slow-${{ matrix.test-name }}
+          name: coverage-python3.10-slow
           path: .coverage
           include-hidden-files: true
