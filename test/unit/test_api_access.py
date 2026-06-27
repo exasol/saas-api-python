@@ -1,3 +1,4 @@
+import logging
 from datetime import (
     datetime,
     timedelta,
@@ -13,6 +14,7 @@ from exasol.saas.client.api_access import (
     DatabaseDeleteTimeout,
     OpenApiAccess,
     OpenApiError,
+    _log_api_output,
     ensure_type,
     timestamp_name,
 )
@@ -289,6 +291,25 @@ def test_get_database_settings_raises_non_retryable_error(
         api_mock.get_database_settings("db-id")
 
 
+def test_log_api_output_serializes_payloads(caplog) -> None:
+    caplog.set_level(logging.DEBUG, logger="exasol.saas.client.api_access")
+
+    _log_api_output(
+        "list_allowed_i_ps.sync",
+        [
+            allowed_ip_response("ip-1"),
+            ApiError.from_dict({"status": 404, "message": "not found"}),
+            None,
+        ],
+        account_id="A1",
+    )
+
+    assert "list_allowed_i_ps.sync response {'account_id': 'A1'}" in caplog.text
+    assert "'id': 'ip-1'" in caplog.text
+    assert "'status': 404" in caplog.text
+    assert "None" in caplog.text
+
+
 def test_wait_until_allowed_ip_listed_retries(api_mock, monkeypatch) -> None:
     list_allowed_ips_mock(
         monkeypatch,
@@ -313,6 +334,25 @@ def test_wait_until_allowed_ip_deleted_retries(api_mock, monkeypatch) -> None:
         timeout=timedelta(seconds=1),
         interval=timedelta(milliseconds=10),
     )
+
+
+def test_wait_until_allowed_ip_listed_logs_visible_ids(
+    api_mock, monkeypatch, caplog
+) -> None:
+    caplog.set_level(logging.DEBUG, logger="exasol.saas.client.api_access")
+    list_allowed_ips_mock(
+        monkeypatch,
+        [[allowed_ip_response("ip-1")]],
+    )
+
+    api_mock.wait_until_allowed_ip_listed(
+        "ip-1",
+        timeout=timedelta(seconds=1),
+        interval=timedelta(milliseconds=10),
+    )
+
+    assert "wait_until_allowed_ip_listed visible IDs" in caplog.text
+    assert "list_allowed_i_ps.sync response" in caplog.text
 
 
 def test_list_allowed_ip_ids_skips_deleted_entries(api_mock, monkeypatch) -> None:
@@ -412,6 +452,21 @@ def test_list_database_ids_skips_deleted_databases(api_mock, monkeypatch) -> Non
     )
 
     assert list(api_mock.list_database_ids()) == ["db-id"]
+
+
+def test_list_database_ids_logs_visible_ids(api_mock, monkeypatch, caplog) -> None:
+    from exasol.saas.client.api_access import list_databases as api
+
+    caplog.set_level(logging.DEBUG, logger="exasol.saas.client.api_access")
+    monkeypatch.setattr(
+        api,
+        "sync",
+        Mock(return_value=[database_response("active-db")]),
+    )
+
+    assert list(api_mock.list_database_ids()) == ["db-id"]
+    assert "list_databases.sync response" in caplog.text
+    assert "list_database_ids visible IDs: ['db-id']" in caplog.text
 
 
 def immediate_retry(*_args, **_kwargs):

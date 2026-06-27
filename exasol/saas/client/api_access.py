@@ -56,7 +56,6 @@ from exasol.saas.client.openapi.models import (
 from exasol.saas.client.openapi.types import UNSET
 
 LOG = logging.getLogger(__name__)
-LOG.setLevel(logging.INFO)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
@@ -129,6 +128,30 @@ def ensure_type(
     raise OpenApiError(message, api_error)
 
 
+def _serialize_api_output(response: Any) -> Any:
+    if isinstance(response, list):
+        return [_serialize_api_output(item) for item in response]
+
+    to_dict = getattr(response, "to_dict", None)
+    if callable(to_dict):
+        return to_dict()
+
+    return response
+
+
+def _log_api_output(operation: str, response: Any, **context: Any) -> None:
+    if not LOG.isEnabledFor(logging.DEBUG):
+        return
+
+    suffix = f" {context}" if context else ""
+    LOG.debug(
+        "%s response%s: %s",
+        operation,
+        suffix,
+        _serialize_api_output(response),
+    )
+
+
 class InternalError(Exception):
     """
     Internal error during delete with retry.
@@ -160,6 +183,12 @@ def _get_database_id(
     Finds the database id, given the database name.
     """
     dbs = list_databases.sync(account_id, client=client)
+    _log_api_output(
+        "list_databases.sync",
+        dbs,
+        account_id=account_id,
+        database_name=database_name,
+    )
     dbs = list(
         filter(
             lambda db: (db.name == database_name)  # type: ignore
@@ -229,11 +258,24 @@ def get_connection_params(
                 account_id, client, database_name=database_name
             )
         clusters = list_clusters.sync(account_id, database_id, client=client)
+        _log_api_output(
+            "list_clusters.sync",
+            clusters,
+            account_id=account_id,
+            database_id=database_id,
+        )
         cluster_id = next(
             filter(lambda cl: cl.main_cluster, clusters)  # type: ignore
         ).id
         resp = get_cluster_connection.sync(
             account_id, database_id, cluster_id, client=client
+        )
+        _log_api_output(
+            "get_cluster_connection.sync",
+            resp,
+            account_id=account_id,
+            database_id=database_id,
+            cluster_id=cluster_id,
         )
         connection = ensure_type(
             openapi.models.ClusterConnection,
@@ -296,6 +338,12 @@ class OpenApiAccess:
             client=self._client,
             body=database_spec,
         )
+        _log_api_output(
+            "create_database.sync",
+            resp,
+            account_id=self._account_id,
+            database_name=name,
+        )
         database = ensure_type(
             ExasolDatabase, resp, f"Failed to create database {name}"
         )
@@ -325,6 +373,12 @@ class OpenApiAccess:
                 database_id,
                 client=self._client,
             )
+            _log_api_output(
+                "get_database.sync",
+                resp,
+                account_id=self._account_id,
+                database_id=database_id,
+            )
             if isinstance(resp, ApiError):
                 if _is_not_found(resp):
                     return True
@@ -347,7 +401,13 @@ class OpenApiAccess:
                 LOG.info("- Database deletion status: %s ...", resp.status)
                 raise TryAgain
 
-            if database_id in self.list_database_ids():
+            visible_database_ids = list(self.list_database_ids())
+            LOG.debug(
+                "wait_until_deleted visible database IDs {'database_id': %s}: %s",
+                database_id,
+                visible_database_ids,
+            )
+            if database_id in visible_database_ids:
                 LOG.info("- Database deletion status: %s ...", resp.status)
                 raise TryAgain
 
@@ -388,6 +448,12 @@ class OpenApiAccess:
                 database_id,
                 client=self._client,
             )
+            _log_api_output(
+                "delete_database.sync",
+                resp,
+                account_id=self._account_id,
+                database_id=database_id,
+            )
             if not isinstance(resp, ApiError):
                 # success
                 return
@@ -409,11 +475,18 @@ class OpenApiAccess:
 
     def list_database_ids(self) -> Iterable[str]:
         resp = list_databases.sync(self._account_id, client=self._client) or []
+        _log_api_output(
+            "list_databases.sync",
+            resp,
+            account_id=self._account_id,
+        )
         # actually list[ExasolDatabase]
         dbs = ensure_type(list, resp, "Failed to list databases")
-        return (
+        active_database_ids = [
             db.id for db in dbs if db.deleted_at is UNSET and db.deleted_by is UNSET
-        )
+        ]
+        LOG.debug("list_database_ids visible IDs: %s", active_database_ids)
+        return iter(active_database_ids)
 
     @contextmanager
     def database(
@@ -451,6 +524,12 @@ class OpenApiAccess:
             database_id,
             client=self._client,
         )
+        _log_api_output(
+            "get_database.sync",
+            resp,
+            account_id=self._account_id,
+            database_id=database_id,
+        )
         return ensure_type(
             ExasolDatabase, resp, f"Failed to get database {database_id}"
         )
@@ -471,6 +550,12 @@ class OpenApiAccess:
                 self._account_id,
                 database_id,
                 client=self._client,
+            )
+            _log_api_output(
+                "get_database_settings.sync",
+                resp,
+                account_id=self._account_id,
+                database_id=database_id,
             )
             if isinstance(resp, ApiError) and is_retry(resp):
                 raise TryAgain
@@ -515,6 +600,12 @@ class OpenApiAccess:
             )
             or []
         )
+        _log_api_output(
+            "list_clusters.sync",
+            resp,
+            account_id=self._account_id,
+            database_id=database_id,
+        )
         # actually list[openapi.models.Cluster]
         return ensure_type(
             list, resp, f"Failed to list clusters of database {database_id}"
@@ -531,6 +622,13 @@ class OpenApiAccess:
             cluster_id,
             client=self._client,
         )
+        _log_api_output(
+            "get_cluster_connection.sync",
+            resp,
+            account_id=self._account_id,
+            database_id=database_id,
+            cluster_id=cluster_id,
+        )
         return ensure_type(
             openapi.models.ClusterConnection,
             resp,
@@ -540,11 +638,18 @@ class OpenApiAccess:
 
     def list_allowed_ip_ids(self) -> Iterable[str]:
         resp = list_allowed_i_ps.sync(self._account_id, client=self._client) or []
+        _log_api_output(
+            "list_allowed_i_ps.sync",
+            resp,
+            account_id=self._account_id,
+        )
         # actually list[openapi.models.AllowedIP]
         ips = ensure_type(list, resp, "Failed to retrieve the list of allowed ips")
-        return (
+        visible_allowed_ip_ids = [
             ip.id for ip in ips if ip.deleted_at is UNSET and ip.deleted_by is UNSET
-        )
+        ]
+        LOG.debug("list_allowed_ip_ids visible IDs: %s", visible_allowed_ip_ids)
+        return iter(visible_allowed_ip_ids)
 
     def wait_until_allowed_ip_listed(
         self,
@@ -554,7 +659,13 @@ class OpenApiAccess:
     ) -> None:
         @interval_retry(interval, timeout)
         def verify_listed() -> bool:
-            if allowed_ip_id not in self.list_allowed_ip_ids():
+            visible_allowed_ip_ids = list(self.list_allowed_ip_ids())
+            LOG.debug(
+                "wait_until_allowed_ip_listed visible IDs {'allowed_ip_id': %s}: %s",
+                allowed_ip_id,
+                visible_allowed_ip_ids,
+            )
+            if allowed_ip_id not in visible_allowed_ip_ids:
                 raise TryAgain
             return True
 
@@ -568,7 +679,13 @@ class OpenApiAccess:
     ) -> None:
         @interval_retry(interval, timeout)
         def verify_deleted() -> bool:
-            if allowed_ip_id in self.list_allowed_ip_ids():
+            visible_allowed_ip_ids = list(self.list_allowed_ip_ids())
+            LOG.debug(
+                "wait_until_allowed_ip_deleted visible IDs {'allowed_ip_id': %s}: %s",
+                allowed_ip_id,
+                visible_allowed_ip_ids,
+            )
+            if allowed_ip_id in visible_allowed_ip_ids:
                 raise TryAgain
             return True
 
@@ -593,6 +710,12 @@ class OpenApiAccess:
             client=self._client,
             body=rule,
         )
+        _log_api_output(
+            "add_allowed_ip.sync",
+            resp,
+            account_id=self._account_id,
+            cidr_ip=cidr_ip,
+        )
         return ensure_type(
             openapi.models.AllowedIP,
             resp,
@@ -601,7 +724,14 @@ class OpenApiAccess:
 
     def delete_allowed_ip(self, id: str, ignore_failures=False) -> Any | None:
         with self._ignore_failures(ignore_failures) as client:
-            return delete_allowed_ip.sync(self._account_id, id, client=client)
+            resp = delete_allowed_ip.sync(self._account_id, id, client=client)
+            _log_api_output(
+                "delete_allowed_ip.sync",
+                resp,
+                account_id=self._account_id,
+                allowed_ip_id=id,
+            )
+            return resp
 
     @contextmanager
     def allowed_ip(
