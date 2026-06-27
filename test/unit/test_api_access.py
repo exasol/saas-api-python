@@ -9,8 +9,8 @@ import pytest
 from tenacity import TryAgain
 
 from exasol.saas.client.api_access import (
-    DatabaseDeleteTimeout,
     DatabaseDeleteError,
+    DatabaseDeleteTimeout,
     OpenApiAccess,
     OpenApiError,
     ensure_type,
@@ -494,6 +494,26 @@ def test_wait_until_deleted_accepts_soft_deleted_database(
     )
 
     api_mock.wait_until_deleted("db-id")
+
+
+def test_wait_until_deleted_retries_when_get_database_returns_none(
+    api_mock, monkeypatch
+) -> None:
+    monkeypatch.setattr(
+        "exasol.saas.client.api_access.interval_retry",
+        immediate_retry,
+    )
+    get_database = get_database_mock(
+        monkeypatch,
+        [
+            None,
+            api_error(404, "User/Database not found"),
+        ],
+    )
+
+    api_mock.wait_until_deleted("db-id")
+
+    assert get_database.call_count == 2
 
 
 def test_wait_until_deleted_times_out_for_active_database(

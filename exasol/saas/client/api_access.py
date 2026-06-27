@@ -333,6 +333,10 @@ class OpenApiAccess:
                     resp,
                 )
 
+            if resp is None:
+                LOG.info("- Database deletion status: unavailable ...")
+                raise TryAgain
+
             if resp.deleted_at is not UNSET or resp.deleted_by is not UNSET:
                 return True
 
@@ -539,9 +543,7 @@ class OpenApiAccess:
         # actually list[openapi.models.AllowedIP]
         ips = ensure_type(list, resp, "Failed to retrieve the list of allowed ips")
         return (
-            ip.id
-            for ip in ips
-            if ip.deleted_at is UNSET and ip.deleted_by is UNSET
+            ip.id for ip in ips if ip.deleted_at is UNSET and ip.deleted_by is UNSET
         )
 
     def wait_until_allowed_ip_listed(
