@@ -681,7 +681,7 @@ class OpenApiAccess:
     def wait_until_allowed_ip_listed(
         self,
         allowed_ip_id: str,
-        timeout: timedelta = timedelta(minutes=1),
+        timeout: timedelta = timedelta(minutes=20),
         interval: timedelta = timedelta(seconds=5),
     ) -> None:
         @interval_retry(interval, timeout)
@@ -751,7 +751,7 @@ class OpenApiAccess:
     def _resolve_allowed_ip(
         self,
         allowed_ip_id: str,
-        timeout: timedelta = timedelta(minutes=1),
+        timeout: timedelta = timedelta(minutes=20),
         interval: timedelta = timedelta(seconds=5),
     ) -> openapi.models.AllowedIP:
         @interval_retry(interval, timeout)
