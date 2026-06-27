@@ -361,7 +361,7 @@ class OpenApiAccess:
     def wait_until_deleted(
         self,
         database_id: str,
-        timeout: timedelta = timedelta(minutes=10),
+        timeout: timedelta = timedelta(minutes=20),
         interval: timedelta = timedelta(seconds=10),
     ):
         terminal = {Status.DELETED}
@@ -487,7 +487,11 @@ class OpenApiAccess:
         # actually list[ExasolDatabase]
         dbs = ensure_type(list, resp, "Failed to list databases")
         active_database_ids = [
-            db.id for db in dbs if db.deleted_at is UNSET and db.deleted_by is UNSET
+            db.id
+            for db in dbs
+            if db.deleted_at is UNSET
+            and db.deleted_by is UNSET
+            and db.status not in {Status.DELETING, Status.TODELETE}
         ]
         LOG.debug("list_database_ids visible IDs: %s", active_database_ids)
         return iter(active_database_ids)

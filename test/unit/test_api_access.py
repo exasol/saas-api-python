@@ -456,6 +456,16 @@ def test_list_database_ids_skips_deleted_databases(api_mock, monkeypatch) -> Non
                     deleted_at=datetime(2026, 1, 2),
                     deleted_by="tester",
                 ),
+                ExasolDatabase(
+                    status=Status.TODELETE,
+                    id="todelete-db-id",
+                    name="todelete-db",
+                    clusters=ExasolDatabaseClusters(total=1, running=0),
+                    provider="aws",
+                    region="eu-central-1",
+                    created_at=datetime(2026, 1, 1),
+                    created_by="tester",
+                ),
             ]
         ),
     )
@@ -558,6 +568,52 @@ def test_wait_until_deleted_accepts_stale_todelete_when_database_not_listed(
         api_mock,
         "list_database_ids",
         Mock(return_value=iter([])),
+    )
+
+    api_mock.wait_until_deleted("db-id")
+
+
+def test_wait_until_deleted_accepts_todelete_when_helper_list_filters_it(
+    api_mock, monkeypatch
+) -> None:
+    monkeypatch.setattr(
+        "exasol.saas.client.api_access.interval_retry",
+        immediate_retry,
+    )
+    get_database_mock(
+        monkeypatch,
+        [
+            ExasolDatabase(
+                status=Status.TODELETE,
+                id="db-id",
+                name="db-active",
+                clusters=ExasolDatabaseClusters(total=1, running=0),
+                provider="aws",
+                region="eu-central-1",
+                created_at=datetime(2026, 1, 1),
+                created_by="tester",
+            )
+        ],
+    )
+    from exasol.saas.client.api_access import list_databases as api
+
+    monkeypatch.setattr(
+        api,
+        "sync",
+        Mock(
+            return_value=[
+                ExasolDatabase(
+                    status=Status.TODELETE,
+                    id="db-id",
+                    name="db-active",
+                    clusters=ExasolDatabaseClusters(total=1, running=0),
+                    provider="aws",
+                    region="eu-central-1",
+                    created_at=datetime(2026, 1, 1),
+                    created_by="tester",
+                )
+            ]
+        ),
     )
 
     api_mock.wait_until_deleted("db-id")
