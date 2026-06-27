@@ -17,9 +17,8 @@ def test_lifecycle(api_access):
     testee = api_access
     with testee.allowed_ip(
         cidr_ip=_test_only_allowed_ip_cidr(),
-        ignore_delete_failure=True,
+        keep=True,
     ) as ip:
-        testee.wait_until_allowed_ip_listed(ip.id)
         assert testee.get_allowed_ip(ip.id) is not None
 
         # delete allowed ip and verify it is not listed anymore

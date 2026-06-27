@@ -580,7 +580,7 @@ class OpenApiAccess:
     def wait_until_running(
         self,
         database_id: str,
-        timeout: timedelta = timedelta(minutes=30),
+        timeout: timedelta = timedelta(minutes=45),
         interval: timedelta = timedelta(minutes=2),
     ):
         success = [Status.RUNNING]
@@ -681,21 +681,10 @@ class OpenApiAccess:
     def wait_until_allowed_ip_listed(
         self,
         allowed_ip_id: str,
-        timeout: timedelta = timedelta(minutes=20),
+        timeout: timedelta = timedelta(minutes=6),
         interval: timedelta = timedelta(seconds=5),
     ) -> None:
-        @interval_retry(interval, timeout)
-        def verify_listed() -> bool:
-            LOG.debug(
-                "wait_until_allowed_ip_listed state {'allowed_ip_id': %s}",
-                allowed_ip_id,
-            )
-            allowed_ip = self.get_allowed_ip(allowed_ip_id)
-            if not self._is_active_allowed_ip(allowed_ip):
-                raise TryAgain
-            return True
-
-        verify_listed()
+        self._get_active_allowed_ip(allowed_ip_id, timeout, interval)
 
     def wait_until_allowed_ip_deleted(
         self,
@@ -746,16 +735,20 @@ class OpenApiAccess:
             resp,
             f"Failed to add allowed IP address {cidr_ip}",
         )
-        return self._resolve_allowed_ip(created_ip.id)
+        return self._get_active_allowed_ip(created_ip.id)
 
-    def _resolve_allowed_ip(
+    def _get_active_allowed_ip(
         self,
         allowed_ip_id: str,
-        timeout: timedelta = timedelta(minutes=20),
+        timeout: timedelta = timedelta(minutes=6),
         interval: timedelta = timedelta(seconds=5),
     ) -> openapi.models.AllowedIP:
         @interval_retry(interval, timeout)
         def resolve() -> openapi.models.AllowedIP:
+            LOG.debug(
+                "wait_until_allowed_ip_listed state {'allowed_ip_id': %s}",
+                allowed_ip_id,
+            )
             allowed_ip = self.get_allowed_ip(allowed_ip_id)
             if self._is_active_allowed_ip(allowed_ip):
                 return cast(openapi.models.AllowedIP, allowed_ip)
