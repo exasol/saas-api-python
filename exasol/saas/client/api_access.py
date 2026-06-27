@@ -40,7 +40,6 @@ from exasol.saas.client.openapi.api.databases import (
     create_database,
     delete_database,
     get_database,
-    get_database_settings,
     list_databases,
 )
 from exasol.saas.client.openapi.api.security import (
@@ -537,39 +536,6 @@ class OpenApiAccess:
         return ensure_type(
             ExasolDatabase, resp, f"Failed to get database {database_id}"
         )
-
-    def get_database_settings(
-        self,
-        database_id: str,
-    ) -> openapi.models.DatabaseSettings | None:
-        def is_retry(resp: ApiError) -> bool:
-            return _is_not_found(resp)
-
-        @interval_retry(
-            interval=timedelta(seconds=5),
-            timeout=timedelta(minutes=2),
-        )
-        def retrieve_settings() -> openapi.models.DatabaseSettings:
-            resp = get_database_settings.sync(
-                self._account_id,
-                database_id,
-                client=self._client,
-            )
-            _log_api_output(
-                "get_database_settings.sync",
-                resp,
-                account_id=self._account_id,
-                database_id=database_id,
-            )
-            if isinstance(resp, ApiError) and is_retry(resp):
-                raise TryAgain
-            return ensure_type(
-                openapi.models.DatabaseSettings,
-                resp,
-                f"Failed to get settings of database {database_id}",
-            )
-
-        return retrieve_settings()
 
     def wait_until_running(
         self,
