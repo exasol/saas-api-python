@@ -49,7 +49,7 @@ def api_mock():
 
 
 def delete_mock(monkeypatch, side_effect) -> Mock:
-    from exasol.saas.client.api_access import delete_database as api
+    from exasol.saas.client._api_access.database_lifecycle import delete_database as api
 
     mock = Mock(side_effect=side_effect)
     monkeypatch.setattr(api, "sync", mock)
@@ -57,7 +57,7 @@ def delete_mock(monkeypatch, side_effect) -> Mock:
 
 
 def create_database_mock(monkeypatch, side_effect) -> Mock:
-    from exasol.saas.client.api_access import create_database as api
+    from exasol.saas.client._api_access.database_lifecycle import create_database as api
 
     mock = Mock(side_effect=side_effect)
     monkeypatch.setattr(api, "sync", mock)
@@ -65,7 +65,9 @@ def create_database_mock(monkeypatch, side_effect) -> Mock:
 
 
 def get_database_settings_mock(monkeypatch, side_effect) -> Mock:
-    from exasol.saas.client.api_access import get_database_settings as api
+    from exasol.saas.client._api_access.database_lifecycle import (
+        get_database_settings as api,
+    )
 
     mock = Mock(side_effect=side_effect)
     monkeypatch.setattr(api, "sync", mock)
@@ -73,7 +75,9 @@ def get_database_settings_mock(monkeypatch, side_effect) -> Mock:
 
 
 def list_allowed_ips_mock(monkeypatch, side_effect) -> Mock:
-    from exasol.saas.client.api_access import list_allowed_i_ps as api
+    from exasol.saas.client._api_access.allowed_ip_lifecycle import (
+        list_allowed_i_ps as api,
+    )
 
     mock = Mock(side_effect=side_effect)
     monkeypatch.setattr(api, "sync", mock)
@@ -81,7 +85,7 @@ def list_allowed_ips_mock(monkeypatch, side_effect) -> Mock:
 
 
 def get_allowed_ip_mock(monkeypatch, side_effect) -> Mock:
-    from exasol.saas.client.api_access import get_allowed_ip_api as api
+    from exasol.saas.client._api_access.access import get_allowed_ip_api as api
 
     mock = Mock(side_effect=side_effect)
     monkeypatch.setattr(api, "sync", mock)
@@ -89,7 +93,7 @@ def get_allowed_ip_mock(monkeypatch, side_effect) -> Mock:
 
 
 def get_database_mock(monkeypatch, side_effect) -> Mock:
-    from exasol.saas.client.api_access import get_database as api
+    from exasol.saas.client._api_access.database_lifecycle import get_database as api
 
     mock = Mock(side_effect=side_effect)
     monkeypatch.setattr(api, "sync", mock)
@@ -265,7 +269,7 @@ def test_get_database_settings_retries_transient_not_found(
     api_mock, monkeypatch
 ) -> None:
     monkeypatch.setattr(
-        "exasol.saas.client.api_access.interval_retry",
+        "exasol.saas.client._api_access.database_lifecycle.interval_retry",
         immediate_retry,
     )
     get_settings = get_database_settings_mock(
@@ -287,7 +291,7 @@ def test_get_database_settings_raises_non_retryable_error(
     api_mock, monkeypatch
 ) -> None:
     monkeypatch.setattr(
-        "exasol.saas.client.api_access.interval_retry",
+        "exasol.saas.client._api_access.database_lifecycle.interval_retry",
         lambda *_args, **_kwargs: (lambda func: func),
     )
     get_database_settings_mock(
@@ -404,7 +408,9 @@ def test_wait_until_allowed_ip_deleted_ignores_soft_deleted_entries(
 
 
 def test_add_allowed_ip_resolves_visible_rule_by_id(api_mock, monkeypatch) -> None:
-    from exasol.saas.client.api_access import add_allowed_ip as add_api
+    from exasol.saas.client._api_access.allowed_ip_lifecycle import (
+        add_allowed_ip as add_api,
+    )
 
     monkeypatch.setattr(
         add_api,
@@ -473,7 +479,7 @@ def test_ensure_type_raises_open_api_error_for_malformed_error_payload() -> None
 
 
 def test_list_database_ids_skips_deleted_databases(api_mock, monkeypatch) -> None:
-    from exasol.saas.client.api_access import list_databases as api
+    from exasol.saas.client._api_access.database_lifecycle import list_databases as api
 
     monkeypatch.setattr(
         api,
@@ -511,7 +517,7 @@ def test_list_database_ids_skips_deleted_databases(api_mock, monkeypatch) -> Non
 
 
 def test_list_database_ids_logs_visible_ids(api_mock, monkeypatch, caplog) -> None:
-    from exasol.saas.client.api_access import list_databases as api
+    from exasol.saas.client._api_access.database_lifecycle import list_databases as api
 
     caplog.set_level(logging.DEBUG, logger="exasol.saas.client.api_access")
     monkeypatch.setattr(
@@ -546,7 +552,7 @@ def test_wait_until_deleted_uses_get_database_until_not_found(
     api_mock, monkeypatch
 ) -> None:
     monkeypatch.setattr(
-        "exasol.saas.client.api_access.interval_retry",
+        "exasol.saas.client._api_access.database_lifecycle.interval_retry",
         immediate_retry,
     )
     get_database_mock(
@@ -572,7 +578,9 @@ def test_wait_until_deleted_uses_get_database_until_not_found(
             [],
         ]
     )
-    from exasol.saas.client.api_access import list_databases as list_api
+    from exasol.saas.client._api_access.database_lifecycle import (
+        list_databases as list_api,
+    )
 
     monkeypatch.setattr(list_api, "sync", list_databases_mock)
 
@@ -583,7 +591,7 @@ def test_wait_until_deleted_accepts_stale_todelete_when_database_not_listed(
     api_mock, monkeypatch
 ) -> None:
     monkeypatch.setattr(
-        "exasol.saas.client.api_access.interval_retry",
+        "exasol.saas.client._api_access.database_lifecycle.interval_retry",
         immediate_retry,
     )
     get_database_mock(
@@ -614,7 +622,7 @@ def test_wait_until_deleted_accepts_todelete_when_helper_list_filters_it(
     api_mock, monkeypatch
 ) -> None:
     monkeypatch.setattr(
-        "exasol.saas.client.api_access.interval_retry",
+        "exasol.saas.client._api_access.database_lifecycle.interval_retry",
         immediate_retry,
     )
     get_database_mock(
@@ -632,7 +640,7 @@ def test_wait_until_deleted_accepts_todelete_when_helper_list_filters_it(
             )
         ],
     )
-    from exasol.saas.client.api_access import list_databases as api
+    from exasol.saas.client._api_access.database_lifecycle import list_databases as api
 
     monkeypatch.setattr(
         api,
@@ -660,7 +668,7 @@ def test_wait_until_deleted_accepts_soft_deleted_database(
     api_mock, monkeypatch
 ) -> None:
     monkeypatch.setattr(
-        "exasol.saas.client.api_access.interval_retry",
+        "exasol.saas.client._api_access.database_lifecycle.interval_retry",
         immediate_retry,
     )
     get_database_mock(
@@ -688,7 +696,7 @@ def test_wait_until_deleted_retries_when_get_database_returns_none(
     api_mock, monkeypatch
 ) -> None:
     monkeypatch.setattr(
-        "exasol.saas.client.api_access.interval_retry",
+        "exasol.saas.client._api_access.database_lifecycle.interval_retry",
         immediate_retry,
     )
     get_database = get_database_mock(
@@ -708,7 +716,7 @@ def test_wait_until_deleted_times_out_for_active_database(
     api_mock, monkeypatch
 ) -> None:
     monkeypatch.setattr(
-        "exasol.saas.client.api_access.interval_retry",
+        "exasol.saas.client._api_access.database_lifecycle.interval_retry",
         lambda *_args, **_kwargs: (lambda func: func),
     )
     monkeypatch.setattr(
