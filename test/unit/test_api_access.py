@@ -80,14 +80,6 @@ def list_allowed_ips_mock(monkeypatch, side_effect) -> Mock:
     return mock
 
 
-def get_allowed_ip_mock(monkeypatch, side_effect) -> Mock:
-    from exasol.saas.client.api_access import get_allowed_ip as api
-
-    mock = Mock(side_effect=side_effect)
-    monkeypatch.setattr(api, "sync", mock)
-    return mock
-
-
 def get_database_mock(monkeypatch, side_effect) -> Mock:
     from exasol.saas.client.api_access import get_database as api
 
