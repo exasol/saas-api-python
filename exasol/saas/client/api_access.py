@@ -667,25 +667,13 @@ class OpenApiAccess:
     ) -> None:
         @interval_retry(interval, timeout)
         def verify_listed() -> bool:
-            resp = get_allowed_ip.sync(
-                self._account_id,
-                allowed_ip_id,
-                client=self._client,
-            )
-            _log_api_output(
-                "get_allowed_ip.sync",
-                resp,
-                account_id=self._account_id,
-                allowed_ip_id=allowed_ip_id,
-            )
+            visible_allowed_ip_ids = list(self.list_allowed_ip_ids())
             LOG.debug(
-                "wait_until_allowed_ip_listed get result {'allowed_ip_id': %s}: %s",
+                "wait_until_allowed_ip_listed visible IDs {'allowed_ip_id': %s}: %s",
                 allowed_ip_id,
-                _serialize_api_output(resp),
+                visible_allowed_ip_ids,
             )
-            if isinstance(resp, ApiError):
-                raise TryAgain
-            if resp is None:
+            if allowed_ip_id not in visible_allowed_ip_ids:
                 raise TryAgain
             return True
 
@@ -699,34 +687,13 @@ class OpenApiAccess:
     ) -> None:
         @interval_retry(interval, timeout)
         def verify_deleted() -> bool:
-            resp = get_allowed_ip.sync(
-                self._account_id,
-                allowed_ip_id,
-                client=self._client,
-            )
-            _log_api_output(
-                "get_allowed_ip.sync",
-                resp,
-                account_id=self._account_id,
-                allowed_ip_id=allowed_ip_id,
-            )
+            visible_allowed_ip_ids = list(self.list_allowed_ip_ids())
             LOG.debug(
-                "wait_until_allowed_ip_deleted get result {'allowed_ip_id': %s}: %s",
+                "wait_until_allowed_ip_deleted visible IDs {'allowed_ip_id': %s}: %s",
                 allowed_ip_id,
-                _serialize_api_output(resp),
+                visible_allowed_ip_ids,
             )
-            if isinstance(resp, ApiError):
-                if resp.status == 404:
-                    return True
-                raise OpenApiError(
-                    f"Failed to get allowed IP {allowed_ip_id}",
-                    resp,
-                )
-            if resp is None:
-                raise TryAgain
-            if resp.deleted_at is not UNSET or resp.deleted_by is not UNSET:
-                return True
-            if resp.id == allowed_ip_id:
+            if allowed_ip_id in visible_allowed_ip_ids:
                 raise TryAgain
             return True
 
@@ -757,11 +724,38 @@ class OpenApiAccess:
             account_id=self._account_id,
             cidr_ip=cidr_ip,
         )
-        return ensure_type(
+        created_ip = ensure_type(
             openapi.models.AllowedIP,
             resp,
             f"Failed to add allowed IP address {cidr_ip}",
         )
+        return self._resolve_allowed_ip(created_ip)
+
+    def _resolve_allowed_ip(
+        self,
+        created_ip: openapi.models.AllowedIP,
+        timeout: timedelta = timedelta(minutes=1),
+        interval: timedelta = timedelta(seconds=5),
+    ) -> openapi.models.AllowedIP:
+        @interval_retry(interval, timeout)
+        def resolve() -> openapi.models.AllowedIP:
+            resp = list_allowed_i_ps.sync(self._account_id, client=self._client) or []
+            _log_api_output(
+                "list_allowed_i_ps.sync",
+                resp,
+                account_id=self._account_id,
+                allowed_ip_name=created_ip.name,
+                cidr_ip=created_ip.cidr_ip,
+            )
+            ips = ensure_type(list, resp, "Failed to retrieve the list of allowed ips")
+            for ip in ips:
+                if ip.deleted_at is not UNSET or ip.deleted_by is not UNSET:
+                    continue
+                if ip.name == created_ip.name and ip.cidr_ip == created_ip.cidr_ip:
+                    return ip
+            raise TryAgain
+
+        return resolve()
 
     def delete_allowed_ip(self, id: str, ignore_failures=False) -> Any | None:
         with self._ignore_failures(ignore_failures) as client:
