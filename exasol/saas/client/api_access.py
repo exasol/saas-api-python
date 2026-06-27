@@ -311,7 +311,6 @@ class OpenApiAccess:
         cluster_size: str = "XS",
         region: str = "eu-central-1",
         idle_time: timedelta | None = None,
-        num_nodes: int | None = None,
     ) -> ExasolDatabase | None:
         def minutes(x: timedelta) -> int:
             return x.seconds // 60
@@ -333,9 +332,6 @@ class OpenApiAccess:
             region=region,
             stream_type="innovation-release",
         )
-        if num_nodes is not None:
-            database_spec.num_nodes = num_nodes
-
         resp = create_database.sync(
             self._account_id,
             client=self._client,
@@ -505,14 +501,12 @@ class OpenApiAccess:
         keep: bool = False,
         ignore_delete_failure: bool = False,
         idle_time: timedelta | None = None,
-        num_nodes: int | None = None,
     ):
         db = None
         try:
             db = self.create_database(
                 name,
                 idle_time=idle_time,
-                num_nodes=num_nodes,
             )
             yield db
         finally:
