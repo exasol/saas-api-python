@@ -1,16 +1,10 @@
 import logging
-from datetime import (
-    datetime,
-    timedelta,
-)
+from datetime import timedelta
 
 import pytest
 from tenacity import RetryError
 
 from exasol.saas.client import PROMISING_STATES
-from exasol.saas.client.api_access import (
-    timestamp_name,
-)
 from exasol.saas.client.openapi.models.exasol_database import ExasolDatabase
 
 LOG = logging.getLogger(__name__)
@@ -18,15 +12,6 @@ logging.basicConfig(
     level=logging.INFO,
     format="[%(levelname)s] %(message)s",
 )
-
-
-@pytest.fixture
-def local_name(project_short_tag: str | None) -> str:
-    """
-    Other than global fixture database_name this fixture uses scope
-    "function" to generate an individual name for each test case in this file.
-    """
-    return timestamp_name(project_short_tag)
 
 
 def test_lifecycle(api_access, local_name):
@@ -52,20 +37,16 @@ def test_lifecycle(api_access, local_name):
         return api_access.get_connection(db.id, clusters[0].id)
 
     with api_access.database(local_name, ignore_delete_failure=True) as db:
-        start = datetime.now()
-        # verify state and clusters of created database
         assert db.status in PROMISING_STATES and db.clusters.total == 1
 
         with pytest.raises(RetryError):
             wait_until_running_too_short(db)
 
-        # verify database is listed
         assert db.id in api_access.list_database_ids()
 
         con = get_connection(db)
         assert con.db_username is not None and con.port == 8563
 
-        # delete database and verify database is not listed anymore
         api_access.delete_database(db.id)
         api_access.wait_until_deleted(db.id)
         assert db.id not in api_access.list_database_ids()
