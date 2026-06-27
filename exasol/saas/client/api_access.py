@@ -46,7 +46,6 @@ from exasol.saas.client.openapi.api.databases import (
 from exasol.saas.client.openapi.api.security import (
     add_allowed_ip,
     delete_allowed_ip,
-    get_allowed_ip,
     list_allowed_i_ps,
 )
 from exasol.saas.client.openapi.models import (
