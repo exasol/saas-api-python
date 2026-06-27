@@ -72,6 +72,8 @@ def get_database_settings_mock(monkeypatch, side_effect) -> Mock:
     mock = Mock(side_effect=side_effect)
     monkeypatch.setattr(api, "sync", mock)
     return mock
+
+
 def list_allowed_ips_mock(monkeypatch, side_effect) -> Mock:
     from exasol.saas.client._api_access.allowed_ip_lifecycle import (
         list_allowed_i_ps as api,
@@ -299,6 +301,8 @@ def test_get_database_settings_raises_non_retryable_error(
 
     with pytest.raises(OpenApiError, match="Failed to get settings of database db-id"):
         api_mock.get_database_settings("db-id")
+
+
 def test_log_api_output_serializes_payloads(caplog) -> None:
     caplog.set_level(logging.DEBUG, logger="exasol.saas.client.api_access")
 
