@@ -46,6 +46,7 @@ from exasol.saas.client.openapi.api.databases import (
 from exasol.saas.client.openapi.api.security import (
     add_allowed_ip,
     delete_allowed_ip,
+    get_allowed_ip,
     list_allowed_i_ps,
 )
 from exasol.saas.client.openapi.models import (
@@ -397,16 +398,19 @@ class OpenApiAccess:
             if resp.status in terminal:
                 return True
 
-            if resp.status in in_progress:
-                LOG.info("- Database deletion status: %s ...", resp.status)
-                raise TryAgain
-
             visible_database_ids = list(self.list_database_ids())
             LOG.debug(
                 "wait_until_deleted visible database IDs {'database_id': %s}: %s",
                 database_id,
                 visible_database_ids,
             )
+            if database_id not in visible_database_ids:
+                return True
+
+            if resp.status in in_progress:
+                LOG.info("- Database deletion status: %s ...", resp.status)
+                raise TryAgain
+
             if database_id in visible_database_ids:
                 LOG.info("- Database deletion status: %s ...", resp.status)
                 raise TryAgain
@@ -659,13 +663,25 @@ class OpenApiAccess:
     ) -> None:
         @interval_retry(interval, timeout)
         def verify_listed() -> bool:
-            visible_allowed_ip_ids = list(self.list_allowed_ip_ids())
-            LOG.debug(
-                "wait_until_allowed_ip_listed visible IDs {'allowed_ip_id': %s}: %s",
+            resp = get_allowed_ip.sync(
+                self._account_id,
                 allowed_ip_id,
-                visible_allowed_ip_ids,
+                client=self._client,
             )
-            if allowed_ip_id not in visible_allowed_ip_ids:
+            _log_api_output(
+                "get_allowed_ip.sync",
+                resp,
+                account_id=self._account_id,
+                allowed_ip_id=allowed_ip_id,
+            )
+            LOG.debug(
+                "wait_until_allowed_ip_listed get result {'allowed_ip_id': %s}: %s",
+                allowed_ip_id,
+                _serialize_api_output(resp),
+            )
+            if isinstance(resp, ApiError):
+                raise TryAgain
+            if resp is None:
                 raise TryAgain
             return True
 
@@ -679,13 +695,34 @@ class OpenApiAccess:
     ) -> None:
         @interval_retry(interval, timeout)
         def verify_deleted() -> bool:
-            visible_allowed_ip_ids = list(self.list_allowed_ip_ids())
-            LOG.debug(
-                "wait_until_allowed_ip_deleted visible IDs {'allowed_ip_id': %s}: %s",
+            resp = get_allowed_ip.sync(
+                self._account_id,
                 allowed_ip_id,
-                visible_allowed_ip_ids,
+                client=self._client,
             )
-            if allowed_ip_id in visible_allowed_ip_ids:
+            _log_api_output(
+                "get_allowed_ip.sync",
+                resp,
+                account_id=self._account_id,
+                allowed_ip_id=allowed_ip_id,
+            )
+            LOG.debug(
+                "wait_until_allowed_ip_deleted get result {'allowed_ip_id': %s}: %s",
+                allowed_ip_id,
+                _serialize_api_output(resp),
+            )
+            if isinstance(resp, ApiError):
+                if resp.status == 404:
+                    return True
+                raise OpenApiError(
+                    f"Failed to get allowed IP {allowed_ip_id}",
+                    resp,
+                )
+            if resp is None:
+                raise TryAgain
+            if resp.deleted_at is not UNSET or resp.deleted_by is not UNSET:
+                return True
+            if resp.id == allowed_ip_id:
                 raise TryAgain
             return True
 
