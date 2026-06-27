@@ -312,7 +312,7 @@ class OpenApiAccess:
     def wait_until_deleted(
         self,
         database_id: str,
-        timeout: timedelta = timedelta(minutes=5),
+        timeout: timedelta = timedelta(minutes=10),
         interval: timedelta = timedelta(seconds=10),
     ):
         terminal = {Status.DELETED}
@@ -362,7 +362,7 @@ class OpenApiAccess:
         self,
         database_id: str,
         ignore_failures: bool = False,
-        timeout: timedelta = timedelta(minutes=30),
+        timeout: timedelta = timedelta(minutes=45),
         min_interval: timedelta = timedelta(seconds=1),
         max_interval: timedelta = timedelta(minutes=2),
     ) -> None:
@@ -563,7 +563,7 @@ class OpenApiAccess:
     def wait_until_allowed_ip_deleted(
         self,
         allowed_ip_id: str,
-        timeout: timedelta = timedelta(minutes=1),
+        timeout: timedelta = timedelta(minutes=10),
         interval: timedelta = timedelta(seconds=5),
     ) -> None:
         @interval_retry(interval, timeout)
