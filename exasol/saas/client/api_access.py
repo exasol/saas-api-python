@@ -46,6 +46,9 @@ from exasol.saas.client.openapi.api.databases import (
 from exasol.saas.client.openapi.api.security import (
     add_allowed_ip,
     delete_allowed_ip,
+)
+from exasol.saas.client.openapi.api.security import get_allowed_ip as get_allowed_ip_api
+from exasol.saas.client.openapi.api.security import (
     list_allowed_i_ps,
 )
 from exasol.saas.client.openapi.models import (
@@ -658,6 +661,23 @@ class OpenApiAccess:
         LOG.debug("list_allowed_ip_ids visible IDs: %s", visible_allowed_ip_ids)
         return iter(visible_allowed_ip_ids)
 
+    def get_allowed_ip(
+        self,
+        allowed_ip_id: str,
+    ) -> openapi.models.AllowedIP | ApiError | None:
+        resp = get_allowed_ip_api.sync(
+            self._account_id,
+            allowed_ip_id,
+            client=self._client,
+        )
+        _log_api_output(
+            "get_allowed_ip.sync",
+            resp,
+            account_id=self._account_id,
+            allowed_ip_id=allowed_ip_id,
+        )
+        return resp
+
     def wait_until_allowed_ip_listed(
         self,
         allowed_ip_id: str,
@@ -666,13 +686,12 @@ class OpenApiAccess:
     ) -> None:
         @interval_retry(interval, timeout)
         def verify_listed() -> bool:
-            visible_allowed_ip_ids = list(self.list_allowed_ip_ids())
             LOG.debug(
-                "wait_until_allowed_ip_listed visible IDs {'allowed_ip_id': %s}: %s",
+                "wait_until_allowed_ip_listed state {'allowed_ip_id': %s}",
                 allowed_ip_id,
-                visible_allowed_ip_ids,
             )
-            if allowed_ip_id not in visible_allowed_ip_ids:
+            allowed_ip = self.get_allowed_ip(allowed_ip_id)
+            if not self._is_active_allowed_ip(allowed_ip):
                 raise TryAgain
             return True
 
@@ -686,13 +705,12 @@ class OpenApiAccess:
     ) -> None:
         @interval_retry(interval, timeout)
         def verify_deleted() -> bool:
-            visible_allowed_ip_ids = list(self.list_allowed_ip_ids())
             LOG.debug(
-                "wait_until_allowed_ip_deleted visible IDs {'allowed_ip_id': %s}: %s",
+                "wait_until_allowed_ip_deleted state {'allowed_ip_id': %s}",
                 allowed_ip_id,
-                visible_allowed_ip_ids,
             )
-            if allowed_ip_id in visible_allowed_ip_ids:
+            allowed_ip = self.get_allowed_ip(allowed_ip_id)
+            if self._is_active_allowed_ip(allowed_ip):
                 raise TryAgain
             return True
 
@@ -728,33 +746,30 @@ class OpenApiAccess:
             resp,
             f"Failed to add allowed IP address {cidr_ip}",
         )
-        return self._resolve_allowed_ip(created_ip)
+        return self._resolve_allowed_ip(created_ip.id)
 
     def _resolve_allowed_ip(
         self,
-        created_ip: openapi.models.AllowedIP,
+        allowed_ip_id: str,
         timeout: timedelta = timedelta(minutes=1),
         interval: timedelta = timedelta(seconds=5),
     ) -> openapi.models.AllowedIP:
         @interval_retry(interval, timeout)
         def resolve() -> openapi.models.AllowedIP:
-            resp = list_allowed_i_ps.sync(self._account_id, client=self._client) or []
-            _log_api_output(
-                "list_allowed_i_ps.sync",
-                resp,
-                account_id=self._account_id,
-                allowed_ip_name=created_ip.name,
-                cidr_ip=created_ip.cidr_ip,
-            )
-            ips = ensure_type(list, resp, "Failed to retrieve the list of allowed ips")
-            for ip in ips:
-                if ip.deleted_at is not UNSET or ip.deleted_by is not UNSET:
-                    continue
-                if ip.name == created_ip.name and ip.cidr_ip == created_ip.cidr_ip:
-                    return ip
+            allowed_ip = self.get_allowed_ip(allowed_ip_id)
+            if self._is_active_allowed_ip(allowed_ip):
+                return cast(openapi.models.AllowedIP, allowed_ip)
             raise TryAgain
 
         return resolve()
+
+    @staticmethod
+    def _is_active_allowed_ip(
+        allowed_ip: openapi.models.AllowedIP | ApiError | None,
+    ) -> bool:
+        if allowed_ip is None or isinstance(allowed_ip, ApiError):
+            return False
+        return allowed_ip.deleted_at is UNSET and allowed_ip.deleted_by is UNSET
 
     def delete_allowed_ip(self, id: str, ignore_failures=False) -> Any | None:
         with self._ignore_failures(ignore_failures) as client:

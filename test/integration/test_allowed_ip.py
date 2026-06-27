@@ -1,5 +1,7 @@
 from uuid import uuid4
 
+from exasol.saas.client.openapi.models.api_error import ApiError
+
 
 def _test_only_allowed_ip_cidr() -> str:
     # Avoid 0.0.0.0/0 here because the shared SaaS account accumulates old broad
@@ -18,10 +20,10 @@ def test_lifecycle(api_access):
         ignore_delete_failure=True,
     ) as ip:
         testee.wait_until_allowed_ip_listed(ip.id)
-        # verify allowed ip is listed
-        assert ip.id in testee.list_allowed_ip_ids()
+        assert testee.get_allowed_ip(ip.id) is not None
 
         # delete allowed ip and verify it is not listed anymore
         testee.delete_allowed_ip(ip.id)
         testee.wait_until_allowed_ip_deleted(ip.id)
-        assert ip.id not in testee.list_allowed_ip_ids()
+        deleted_ip = testee.get_allowed_ip(ip.id)
+        assert deleted_ip is None or isinstance(deleted_ip, ApiError)

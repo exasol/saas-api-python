@@ -80,6 +80,14 @@ def list_allowed_ips_mock(monkeypatch, side_effect) -> Mock:
     return mock
 
 
+def get_allowed_ip_mock(monkeypatch, side_effect) -> Mock:
+    from exasol.saas.client.api_access import get_allowed_ip_api as api
+
+    mock = Mock(side_effect=side_effect)
+    monkeypatch.setattr(api, "sync", mock)
+    return mock
+
+
 def get_database_mock(monkeypatch, side_effect) -> Mock:
     from exasol.saas.client.api_access import get_database as api
 
@@ -311,9 +319,9 @@ def test_log_api_output_serializes_payloads(caplog) -> None:
 
 
 def test_wait_until_allowed_ip_listed_retries(api_mock, monkeypatch) -> None:
-    list_allowed_ips_mock(
+    get_allowed_ip_mock(
         monkeypatch,
-        [[], [allowed_ip_response("ip-1")]],
+        [None, allowed_ip_response("ip-1")],
     )
 
     api_mock.wait_until_allowed_ip_listed(
@@ -324,9 +332,9 @@ def test_wait_until_allowed_ip_listed_retries(api_mock, monkeypatch) -> None:
 
 
 def test_wait_until_allowed_ip_deleted_retries(api_mock, monkeypatch) -> None:
-    list_allowed_ips_mock(
+    get_allowed_ip_mock(
         monkeypatch,
-        [[allowed_ip_response("ip-1")], []],
+        [allowed_ip_response("ip-1"), None],
     )
 
     api_mock.wait_until_allowed_ip_deleted(
@@ -340,9 +348,9 @@ def test_wait_until_allowed_ip_listed_logs_visible_ids(
     api_mock, monkeypatch, caplog
 ) -> None:
     caplog.set_level(logging.DEBUG, logger="exasol.saas.client.api_access")
-    list_allowed_ips_mock(
+    get_allowed_ip_mock(
         monkeypatch,
-        [[allowed_ip_response("ip-1")]],
+        [allowed_ip_response("ip-1")],
     )
 
     api_mock.wait_until_allowed_ip_listed(
@@ -351,8 +359,8 @@ def test_wait_until_allowed_ip_listed_logs_visible_ids(
         interval=timedelta(milliseconds=10),
     )
 
-    assert "wait_until_allowed_ip_listed visible IDs" in caplog.text
-    assert "list_allowed_i_ps.sync response" in caplog.text
+    assert "wait_until_allowed_ip_listed state" in caplog.text
+    assert "get_allowed_ip.sync response" in caplog.text
 
 
 def test_list_allowed_ip_ids_skips_deleted_entries(api_mock, monkeypatch) -> None:
@@ -376,17 +384,15 @@ def test_list_allowed_ip_ids_skips_deleted_entries(api_mock, monkeypatch) -> Non
 def test_wait_until_allowed_ip_deleted_ignores_soft_deleted_entries(
     api_mock, monkeypatch
 ) -> None:
-    list_allowed_ips_mock(
+    get_allowed_ip_mock(
         monkeypatch,
         [
-            [allowed_ip_response("ip-1")],
-            [
-                allowed_ip_response(
-                    "ip-1",
-                    deleted_at=datetime(2026, 1, 2),
-                    deleted_by="tester",
-                )
-            ],
+            allowed_ip_response("ip-1"),
+            allowed_ip_response(
+                "ip-1",
+                deleted_at=datetime(2026, 1, 2),
+                deleted_by="tester",
+            ),
         ],
     )
 
@@ -397,7 +403,7 @@ def test_wait_until_allowed_ip_deleted_ignores_soft_deleted_entries(
     )
 
 
-def test_add_allowed_ip_resolves_visible_rule_from_list(api_mock, monkeypatch) -> None:
+def test_add_allowed_ip_resolves_visible_rule_by_id(api_mock, monkeypatch) -> None:
     from exasol.saas.client.api_access import add_allowed_ip as add_api
 
     monkeypatch.setattr(
@@ -405,11 +411,11 @@ def test_add_allowed_ip_resolves_visible_rule_from_list(api_mock, monkeypatch) -
         "sync",
         Mock(return_value=allowed_ip_response("raw-ip")),
     )
-    list_allowed_ips_mock(
+    get_allowed_ip_mock(
         monkeypatch,
         [
-            [],
-            [allowed_ip_response("resolved-ip")],
+            None,
+            allowed_ip_response("resolved-ip"),
         ],
     )
 
@@ -417,6 +423,24 @@ def test_add_allowed_ip_resolves_visible_rule_from_list(api_mock, monkeypatch) -
 
     assert result is not None
     assert result.id == "resolved-ip"
+
+
+def test_wait_until_allowed_ip_deleted_treats_api_error_as_deleted(
+    api_mock, monkeypatch
+) -> None:
+    get_allowed_ip_mock(
+        monkeypatch,
+        [
+            allowed_ip_response("ip-1"),
+            ApiError.from_dict({"status": 404, "message": "not found"}),
+        ],
+    )
+
+    api_mock.wait_until_allowed_ip_deleted(
+        "ip-1",
+        timeout=timedelta(seconds=1),
+        interval=timedelta(milliseconds=10),
+    )
 
 
 def test_api_error_from_dict_tolerates_missing_fields() -> None:
