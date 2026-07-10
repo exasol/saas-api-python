@@ -27,9 +27,11 @@ jobs:
     steps:
       - name: SCM Checkout
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Setup Python & Poetry Environment
-        uses: exasol/python-toolbox/.github/actions/python-environment@v5
+        uses: exasol/python-toolbox/.github/actions/python-environment@v10
         with:
           python-version: "3.10"
           poetry-version: "2.3.0"
@@ -39,7 +41,7 @@ jobs:
 
       - name: Report Failure Status to Slack Channel
         if: ${{ failure() && github.event_name == 'schedule' }}
-        uses: ravsamhq/notify-slack-action@v2
+        uses: ravsamhq/notify-slack-action@be814b201e233b2dc673608aa46e5447c8ab13f2 # 2.5.0
         with:
           status: ${{ job.status }}
           token: ${{ github.token }}

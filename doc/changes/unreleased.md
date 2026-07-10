@@ -17,4 +17,5 @@ Besides there are many formal and syntactic changes
 
 ## Refactorings
 
-* #160: Updated PTB to version 7.0.0
+* #160: Updated exasol-toolbox to version 7.0.0
+* #175: Updated exasol-toolbox to version 10.2.1

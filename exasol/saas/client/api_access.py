@@ -302,8 +302,8 @@ class OpenApiAccess:
     def wait_until_deleted(
         self,
         database_id: str,
-        timeout: timedelta = timedelta(seconds=1),
-        interval: timedelta = timedelta(minutes=1),
+        timeout: timedelta = timedelta(minutes=1),
+        interval: timedelta = timedelta(seconds=1),
     ):
         @interval_retry(interval, timeout)
         def verify_not_listed() -> bool:
