@@ -1,3 +1,14 @@
+{# 
+    This file has been copied from 
+    https://github.com/openapi-generators/openapi-python-client/blob/v0.29.0/openapi_python_client/templates/model.py.jinja
+    
+    See also https://github.com/openapi-generators/openapi-python-client#using-custom-templates.
+    
+    Custom instructions have been added for processing ApiError, 
+    changes are highlighted by comments below.
+    
+    ``noxfile.py`` passes this file to API generator via CLI option ``--custom-template-path``.
+#}
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -180,6 +191,7 @@ return field_dict
         d = dict(src_dict)
 {% for property in model.required_properties + model.optional_properties %}
     {% if property.required %}
+        {# Begin of custom instructions #}
         {% if class_name == "ApiError" %}
             {% if property.name == "status" %}
         {% set property_source = 'd.pop("status", 0)' %}
@@ -200,6 +212,7 @@ return field_dict
             {% else %}
         {% set property_source = 'd.pop("' + property.name + '")' %}
             {% endif %}
+        {# End of custom instructions #}
         {% else %}
         {% set property_source = 'd.pop("' + property.name + '")' %}
         {% endif %}
