@@ -430,7 +430,6 @@ class OpenApiAccess:
                 database_id,
                 self.list_database_ids(),
             )
-            return
 
         try:
             return verify_deleted_with_retry()
