@@ -687,7 +687,14 @@ class OpenApiAccess:
                 allowed_ip_id,
             )
             allowed_ip = self.get_allowed_ip(allowed_ip_id)
-            if self._is_active_allowed_ip(allowed_ip):
+            if isinstance(allowed_ip, ApiError):
+                if allowed_ip.status == 404:
+                    return True
+                raise OpenApiError(
+                    f"Failed to get allowed IP {allowed_ip_id}",
+                    allowed_ip,
+                )
+            if allowed_ip is None or self._is_active_allowed_ip(allowed_ip):
                 raise TryAgain
             return True
 
@@ -723,7 +730,17 @@ class OpenApiAccess:
             resp,
             f"Failed to add allowed IP address {cidr_ip}",
         )
-        return self._resolve_allowed_ip(created_ip.id)
+        try:
+            return self._resolve_allowed_ip(created_ip.id)
+        except Exception:
+            try:
+                self.delete_allowed_ip(created_ip.id, ignore_failures=True)
+            except Exception:
+                LOG.exception(
+                    "Failed to clean up allowed IP %s after visibility resolution failed",
+                    created_ip.id,
+                )
+            raise
 
     def _resolve_allowed_ip(
         self,

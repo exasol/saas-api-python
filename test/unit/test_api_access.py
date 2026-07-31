@@ -257,7 +257,15 @@ def test_wait_until_allowed_ip_listed_retries(api_mock, monkeypatch) -> None:
 def test_wait_until_allowed_ip_deleted_retries(api_mock, monkeypatch) -> None:
     get_allowed_ip_mock(
         monkeypatch,
-        [allowed_ip_response("ip-1"), None],
+        [
+            allowed_ip_response("ip-1"),
+            None,
+            allowed_ip_response(
+                "ip-1",
+                deleted_at=datetime(2026, 1, 2),
+                deleted_by="tester",
+            ),
+        ],
     )
 
     api_mock.wait_until_allowed_ip_deleted(
@@ -348,7 +356,7 @@ def test_add_allowed_ip_resolves_visible_rule_by_id(api_mock, monkeypatch) -> No
     assert result.id == "resolved-ip"
 
 
-def test_wait_until_allowed_ip_deleted_treats_api_error_as_deleted(
+def test_wait_until_allowed_ip_deleted_treats_not_found_as_deleted(
     api_mock, monkeypatch
 ) -> None:
     get_allowed_ip_mock(
@@ -363,6 +371,48 @@ def test_wait_until_allowed_ip_deleted_treats_api_error_as_deleted(
         "ip-1",
         timeout=timedelta(seconds=1),
         interval=timedelta(milliseconds=10),
+    )
+
+
+def test_wait_until_allowed_ip_deleted_rejects_unexpected_api_error(
+    api_mock, monkeypatch
+) -> None:
+    monkeypatch.setattr(
+        "exasol.saas.client.api_access.interval_retry",
+        immediate_retry,
+    )
+    get_allowed_ip_mock(
+        monkeypatch,
+        [parsed_api_error(500, "backend failed")],
+    )
+
+    with pytest.raises(OpenApiError, match="Failed to get allowed IP ip-1"):
+        api_mock.wait_until_allowed_ip_deleted("ip-1")
+
+
+def test_add_allowed_ip_deletes_rule_when_visibility_resolution_fails(
+    api_mock, monkeypatch
+) -> None:
+    from exasol.saas.client.api_access import add_allowed_ip as add_api
+    from exasol.saas.client.api_access import delete_allowed_ip as delete_api
+
+    created_ip = allowed_ip_response("created-ip")
+    monkeypatch.setattr(add_api, "sync", Mock(return_value=created_ip))
+    delete = Mock(return_value=None)
+    monkeypatch.setattr(delete_api, "sync", delete)
+    monkeypatch.setattr(
+        "exasol.saas.client.api_access.interval_retry",
+        immediate_retry,
+    )
+    get_allowed_ip_mock(monkeypatch, [RuntimeError("visibility failed")])
+
+    with pytest.raises(RuntimeError, match="visibility failed"):
+        api_mock.add_allowed_ip()
+
+    delete.assert_called_once_with(
+        "A1",
+        "created-ip",
+        client=api_mock._client,
     )
 
 
