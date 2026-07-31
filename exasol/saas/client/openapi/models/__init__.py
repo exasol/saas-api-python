@@ -83,6 +83,10 @@ from .keboola import Keboola
 from .keboola_result import KeboolaResult
 from .limits import Limits
 from .list_cluster_sizes_response_200_item import ListClusterSizesResponse200Item
+from .mcp_status import McpStatus
+from .mcp_status_config import McpStatusConfig
+from .mcp_status_config_tools import McpStatusConfigTools
+from .mcp_status_status import McpStatusStatus
 from .my_ip import MyIP
 from .patch_user import PatchUser
 from .patch_user_databases import PatchUserDatabases
@@ -108,6 +112,8 @@ from .status import Status
 from .status_event_integration import StatusEventIntegration
 from .stream import Stream
 from .support import Support
+from .toggle_mcp_action import ToggleMcpAction
+from .toggle_mcp_action_action import ToggleMcpActionAction
 from .tracking import Tracking
 from .trial import Trial
 from .type_ import Type
@@ -220,6 +226,10 @@ __all__ = (
     "KeboolaResult",
     "Limits",
     "ListClusterSizesResponse200Item",
+    "McpStatus",
+    "McpStatusConfig",
+    "McpStatusConfigTools",
+    "McpStatusStatus",
     "MyIP",
     "PatchUser",
     "PatchUserDatabases",
@@ -245,6 +255,8 @@ __all__ = (
     "StatusEventIntegration",
     "Stream",
     "Support",
+    "ToggleMcpAction",
+    "ToggleMcpActionAction",
     "Tracking",
     "Trial",
     "Type",

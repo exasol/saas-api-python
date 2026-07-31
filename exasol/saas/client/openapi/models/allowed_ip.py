@@ -27,6 +27,7 @@ class AllowedIP:
         cidr_ip (str):
         created_at (datetime.datetime):
         created_by (str):
+        status (str | Unset):
         deleted_by (str | Unset):
         deleted_at (datetime.datetime | Unset):
     """
@@ -36,6 +37,7 @@ class AllowedIP:
     cidr_ip: str
     created_at: datetime.datetime
     created_by: str
+    status: str | Unset = UNSET
     deleted_by: str | Unset = UNSET
     deleted_at: datetime.datetime | Unset = UNSET
 
@@ -49,6 +51,8 @@ class AllowedIP:
         created_at = self.created_at.isoformat()
 
         created_by = self.created_by
+
+        status = self.status
 
         deleted_by = self.deleted_by
 
@@ -67,6 +71,8 @@ class AllowedIP:
                 "createdBy": created_by,
             }
         )
+        if status is not UNSET:
+            field_dict["status"] = status
         if deleted_by is not UNSET:
             field_dict["deletedBy"] = deleted_by
         if deleted_at is not UNSET:
@@ -87,6 +93,8 @@ class AllowedIP:
 
         created_by = d.pop("createdBy")
 
+        status = d.pop("status", UNSET)
+
         deleted_by = d.pop("deletedBy", UNSET)
 
         _deleted_at = d.pop("deletedAt", UNSET)
@@ -102,6 +110,7 @@ class AllowedIP:
             cidr_ip=cidr_ip,
             created_at=created_at,
             created_by=created_by,
+            status=status,
             deleted_by=deleted_by,
             deleted_at=deleted_at,
         )

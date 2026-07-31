@@ -38,6 +38,19 @@ def api_error(status_code: int, message: str):
     return response(status_code, message, spec=ApiError)
 
 
+def parsed_api_error(status_code: int, message: str) -> ApiError:
+    return ApiError.from_dict(
+        {
+            "status": status_code,
+            "message": message,
+            "requestId": "",
+            "path": "",
+            "method": "",
+            "timestamp": "",
+        }
+    )
+
+
 RETRY = api_error(
     400,
     "Operation is not allowed:The cluster is not in a proper state!",
@@ -91,6 +104,7 @@ def database_response(name: str = "db") -> ExasolDatabase:
         region="eu-central-1",
         created_at=datetime(2026, 1, 1),
         created_by="tester",
+        mcp_status="disabled",
     )
 
 
@@ -212,10 +226,10 @@ def test_log_api_output_serializes_payloads(caplog) -> None:
     caplog.set_level(logging.DEBUG, logger="exasol.saas.client.api_access")
 
     _log_api_output(
-        "list_allowed_i_ps.sync",
+            "list_allowed_i_ps.sync",
         [
             allowed_ip_response("ip-1"),
-            ApiError.from_dict({"status": 404, "message": "not found"}),
+            parsed_api_error(404, "not found"),
             None,
         ],
         account_id="A1",
@@ -341,7 +355,7 @@ def test_wait_until_allowed_ip_deleted_treats_api_error_as_deleted(
         monkeypatch,
         [
             allowed_ip_response("ip-1"),
-            ApiError.from_dict({"status": 404, "message": "not found"}),
+            parsed_api_error(404, "not found"),
         ],
     )
 
@@ -352,27 +366,27 @@ def test_wait_until_allowed_ip_deleted_treats_api_error_as_deleted(
     )
 
 
-def test_api_error_from_dict_tolerates_missing_fields() -> None:
+def test_api_error_from_dict_accepts_optional_fields() -> None:
     error = ApiError.from_dict(
         {
             "status": 500,
             "message": "boom",
+            "requestId": "",
+            "path": "",
+            "method": "",
+            "timestamp": "",
         }
     )
 
     assert error.status == 500
     assert error.message == "boom"
-    assert error.request_id == ""
-    assert error.path == ""
-    assert error.method == ""
-    assert error.log_id == ""
-    assert error.handler == ""
-    assert error.timestamp == ""
+    assert error.log_id is UNSET
+    assert error.handler is UNSET
     assert error.causes is UNSET
 
 
 def test_ensure_type_raises_open_api_error_for_malformed_error_payload() -> None:
-    malformed_error = ApiError.from_dict({"message": "backend failed"})
+    malformed_error = parsed_api_error(500, "backend failed")
 
     with pytest.raises(
         OpenApiError,
@@ -399,6 +413,7 @@ def test_list_database_ids_skips_deleted_databases(api_mock, monkeypatch) -> Non
                     region="eu-central-1",
                     created_at=datetime(2026, 1, 1),
                     created_by="tester",
+                    mcp_status="disabled",
                     deleted_at=datetime(2026, 1, 2),
                     deleted_by="tester",
                 ),
@@ -411,6 +426,7 @@ def test_list_database_ids_skips_deleted_databases(api_mock, monkeypatch) -> Non
                     region="eu-central-1",
                     created_at=datetime(2026, 1, 1),
                     created_by="tester",
+                    mcp_status="disabled",
                 ),
             ]
         ),
@@ -471,6 +487,7 @@ def test_wait_until_deleted_uses_get_database_until_not_found(
                 region="eu-central-1",
                 created_at=datetime(2026, 1, 1),
                 created_by="tester",
+                mcp_status="disabled",
             ),
             api_error(404, "User/Database not found"),
         ],
@@ -507,6 +524,7 @@ def test_wait_until_deleted_accepts_stale_todelete_when_database_not_listed(
                 region="eu-central-1",
                 created_at=datetime(2026, 1, 1),
                 created_by="tester",
+                mcp_status="disabled",
             )
         ],
     )
@@ -538,6 +556,7 @@ def test_wait_until_deleted_accepts_todelete_when_helper_list_filters_it(
                 region="eu-central-1",
                 created_at=datetime(2026, 1, 1),
                 created_by="tester",
+                mcp_status="disabled",
             )
         ],
     )
@@ -557,6 +576,7 @@ def test_wait_until_deleted_accepts_todelete_when_helper_list_filters_it(
                     region="eu-central-1",
                     created_at=datetime(2026, 1, 1),
                     created_by="tester",
+                    mcp_status="disabled",
                 )
             ]
         ),
@@ -584,6 +604,7 @@ def test_wait_until_deleted_accepts_soft_deleted_database(
                 region="eu-central-1",
                 created_at=datetime(2026, 1, 1),
                 created_by="tester",
+                mcp_status="disabled",
                 deleted_at=datetime(2026, 1, 2),
                 deleted_by="tester",
             )

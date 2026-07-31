@@ -89,8 +89,6 @@ def generate_api(session: Session):
     by environment variable ``CI``, see
     https://docs.github.com/en/actions/learn-github-actions/variables.
     #default-environment-variables.
-    CLI option ``--custom-template-path`` is used to pass a custom template.
-    See the comments in file ``openapi_templates/model.py.jinja`` for details.
     """
     local_build = "CI" not in os.environ
     filename = _download_openapi_json()
@@ -102,8 +100,6 @@ def generate_api(session: Session):
         "--overwrite",
         "--config",
         "openapi_config.yml",
-        "--custom-template-path",
-        "openapi_templates",
         "--output-path",
         "tmp",
         silent=local_build,

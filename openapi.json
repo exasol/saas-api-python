@@ -6,7 +6,7 @@
         "version": "1.0",
         "download": {
             "source": "https://cloud.exasol.com/openapi.json",
-            "timestamp": "2026-06-15T07:10:15.261704+00:00"
+            "timestamp": "2026-07-31T10:13:00.322902+00:00"
         }
     },
     "servers": [
@@ -2427,6 +2427,107 @@
                 }
             }
         },
+        "/api/v1/accounts/{accountId}/databases/{databaseId}/mcp": {
+            "get": {
+                "summary": "",
+                "description": "",
+                "operationId": "GetMcpStatus",
+                "parameters": [
+                    {
+                        "name": "accountId",
+                        "in": "path",
+                        "description": "",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/accountId"
+                        }
+                    },
+                    {
+                        "name": "databaseId",
+                        "in": "path",
+                        "description": "",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/databaseId"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Databases"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "mcp status",
+                        "content": {}
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "",
+                "description": "",
+                "operationId": "ToggleMcp",
+                "parameters": [
+                    {
+                        "name": "accountId",
+                        "in": "path",
+                        "description": "",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/accountId"
+                        }
+                    },
+                    {
+                        "name": "databaseId",
+                        "in": "path",
+                        "description": "",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/databaseId"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Databases"
+                ],
+                "requestBody": {
+                    "description": "Request body",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ToggleMcpAction"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "MCP status updated",
+                        "content": {}
+                    },
+                    "default": {
+                        "description": "Default api error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/platforms": {
             "get": {
                 "summary": "",
@@ -3356,7 +3457,8 @@
                     "provider",
                     "region",
                     "createdAt",
-                    "createdBy"
+                    "createdBy",
+                    "mcpStatus"
                 ],
                 "properties": {
                     "status": {
@@ -3424,6 +3526,9 @@
                     "deletedAt": {
                         "type": "string",
                         "format": "date-time"
+                    },
+                    "mcpStatus": {
+                        "type": "string"
                     }
                 },
                 "type": "object"
@@ -3493,8 +3598,6 @@
                     "requestId",
                     "path",
                     "method",
-                    "logId",
-                    "handler",
                     "timestamp"
                 ],
                 "additionalProperties": false
@@ -3730,6 +3833,22 @@
             "actionId": {
                 "type": "string"
             },
+            "ToggleMcpAction": {
+                "required": [
+                    "action"
+                ],
+                "properties": {
+                    "action": {
+                        "enum": [
+                            "enable",
+                            "disable"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
             "CreateAllowedIP": {
                 "required": [
                     "name",
@@ -3769,6 +3888,9 @@
                         "format": "date-time"
                     },
                     "createdBy": {
+                        "type": "string"
+                    },
+                    "status": {
                         "type": "string"
                     },
                     "deletedBy": {
@@ -4961,6 +5083,70 @@
                 "additionalProperties": false,
                 "type": "object"
             },
+            "McpStatus": {
+                "required": [
+                    "status"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "disabled",
+                            "enabling",
+                            "enabled",
+                            "error",
+                            "disabling"
+                        ]
+                    },
+                    "executionArn": {
+                        "type": "string"
+                    },
+                    "lastModifiedAt": {
+                        "type": "string"
+                    },
+                    "connection": {
+                        "type": "string",
+                        "description": "MCP server connection string in the form 'https://mcp-<mainClusterDns>:8443/mcp'. The endpoint is HTTPS-only and listens on port 8443. Present only when the MCP server is enabled."
+                    },
+                    "config": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "tools",
+                            "writesEnabled"
+                        ],
+                        "properties": {
+                            "tools": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                    "read",
+                                    "write"
+                                ],
+                                "properties": {
+                                    "read": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "write": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            },
+                            "writesEnabled": {
+                                "type": "boolean"
+                            }
+                        }
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
             "AutoStop": {
                 "required": [
                     "enabled",
@@ -5948,6 +6134,18 @@
                 "additionalProperties": false,
                 "type": "object"
             }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
         }
-    }
+    },
+    "security": [
+        {
+            "bearerAuth": []
+        }
+    ]
 }

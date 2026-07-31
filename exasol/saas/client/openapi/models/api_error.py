@@ -25,10 +25,10 @@ class ApiError:
         request_id (str):
         path (str):
         method (str):
-        log_id (str):
-        handler (str):
         timestamp (str):
         causes (Any | Unset):
+        log_id (str | Unset):
+        handler (str | Unset):
     """
 
     status: float
@@ -36,10 +36,10 @@ class ApiError:
     request_id: str
     path: str
     method: str
-    log_id: str
-    handler: str
     timestamp: str
     causes: Any | Unset = UNSET
+    log_id: str | Unset = UNSET
+    handler: str | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         status = self.status
@@ -52,13 +52,13 @@ class ApiError:
 
         method = self.method
 
-        log_id = self.log_id
-
-        handler = self.handler
-
         timestamp = self.timestamp
 
         causes = self.causes
+
+        log_id = self.log_id
+
+        handler = self.handler
 
         field_dict: dict[str, Any] = {}
 
@@ -69,36 +69,38 @@ class ApiError:
                 "requestId": request_id,
                 "path": path,
                 "method": method,
-                "logId": log_id,
-                "handler": handler,
                 "timestamp": timestamp,
             }
         )
         if causes is not UNSET:
             field_dict["causes"] = causes
+        if log_id is not UNSET:
+            field_dict["logId"] = log_id
+        if handler is not UNSET:
+            field_dict["handler"] = handler
 
         return field_dict
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        status = d.pop("status", 0)
+        status = d.pop("status")
 
-        message = d.pop("message", "Unknown API error")
+        message = d.pop("message")
 
-        request_id = d.pop("requestId", "")
+        request_id = d.pop("requestId")
 
-        path = d.pop("path", "")
+        path = d.pop("path")
 
-        method = d.pop("method", "")
+        method = d.pop("method")
 
-        log_id = d.pop("logId", "")
-
-        handler = d.pop("handler", "")
-
-        timestamp = d.pop("timestamp", "")
+        timestamp = d.pop("timestamp")
 
         causes = d.pop("causes", UNSET)
+
+        log_id = d.pop("logId", UNSET)
+
+        handler = d.pop("handler", UNSET)
 
         api_error = cls(
             status=status,
@@ -106,10 +108,10 @@ class ApiError:
             request_id=request_id,
             path=path,
             method=method,
-            log_id=log_id,
-            handler=handler,
             timestamp=timestamp,
             causes=causes,
+            log_id=log_id,
+            handler=handler,
         )
 
         return api_error
