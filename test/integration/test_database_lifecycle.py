@@ -45,7 +45,8 @@ def test_lifecycle(api_access, local_name):
         assert db.id in api_access.list_database_ids()
 
         con = get_connection(db)
-        assert con.db_username is not None and con.port == 8563
+        assert con.db_username is not None
+        assert con.port == 8563
 
         api_access.delete_database(db.id)
         api_access.wait_until_deleted(db.id)
