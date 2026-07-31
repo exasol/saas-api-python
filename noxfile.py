@@ -26,6 +26,19 @@ nox.options.sessions = ["format:fix"]
 DEST_DIR = "exasol/saas/client/openapi"
 
 
+def _slow_test_matrix() -> dict[str, list[dict[str, str]]]:
+    files = sorted(Path("test/integration").glob("test_*.py"))
+    return {
+        "include": [
+            {
+                "test-name": path.stem.removeprefix("test_").replace("_", "-"),
+                "test-path": str(path),
+            }
+            for path in files
+        ]
+    }
+
+
 def _download_openapi_json() -> Path:
     url = f"{SAAS_HOST}/openapi.json"
     response = requests.get(url)
@@ -125,3 +138,9 @@ def check_api_outdated(session: Session):
     """
     generate_api(session)
     session.run("git", "diff", "--exit-code", DEST_DIR)
+
+
+@nox.session(name="matrix:slow", python=False)
+def slow_matrix(session: Session):
+    """Output the build matrix for slow integration tests as JSON."""
+    print(json.dumps(_slow_test_matrix()))
