@@ -17,6 +17,7 @@ from exasol.saas.client.api_access import (
     _log_api_output,
     ensure_type,
     timestamp_name,
+    verify_deleted,
 )
 from exasol.saas.client.openapi.models.allowed_ip import AllowedIP
 from exasol.saas.client.openapi.models.api_error import ApiError
@@ -631,3 +632,17 @@ def test_wait_until_deleted_times_out_for_active_database(
 
     with pytest.raises(DatabaseDeleteTimeout):
         api_mock.wait_until_deleted("db-id")
+
+
+def test_verify_deleted_accepts_not_found() -> None:
+    assert verify_deleted(api_error(404, "User/Database not found"), "db-id")
+
+
+def test_verify_deleted_retries_visible_database() -> None:
+    with pytest.raises(TryAgain):
+        verify_deleted(database_response("db-active"), "db-id", ["db-id"])
+
+
+def test_verify_deleted_raises_for_unexpected_api_error() -> None:
+    with pytest.raises(OpenApiError, match="Failed to get database db-id"):
+        verify_deleted(api_error(500, "boom"), "db-id")

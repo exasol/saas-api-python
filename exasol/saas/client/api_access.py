@@ -164,6 +164,47 @@ def _is_not_found(resp: ApiError, entity: str = "User/Database") -> bool:
     return resp.status == 404 and f"{entity} not found" in resp.message
 
 
+def verify_deleted(
+    resp: ExasolDatabase | ApiError | None,
+    database_id: str,
+    visible_database_ids: Iterable[str] = (),
+) -> bool:
+    """Evaluate one database deletion status response."""
+    if isinstance(resp, ApiError):
+        if _is_not_found(resp):
+            return True
+        raise OpenApiError(
+            f"Failed to get database {database_id}",
+            resp,
+        )
+
+    if resp is None:
+        LOG.info("- Database deletion status: unavailable ...")
+        raise TryAgain
+
+    if resp.deleted_at is not UNSET or resp.deleted_by is not UNSET:
+        return True
+
+    if resp.status is Status.DELETED:
+        return True
+
+    visible_database_ids = list(visible_database_ids)
+    LOG.debug(
+        "wait_until_deleted visible database IDs {'database_id': %s}: %s",
+        database_id,
+        visible_database_ids,
+    )
+    if database_id not in visible_database_ids:
+        return True
+
+    if resp.status in {Status.DELETING, Status.TODELETE}:
+        LOG.info("- Database deletion status: %s ...", resp.status)
+        raise TryAgain
+
+    LOG.info("- Database deletion status: %s ...", resp.status)
+    raise TryAgain
+
+
 def create_saas_client(
     host: str,
     pat: str,
@@ -361,11 +402,8 @@ class OpenApiAccess:
         timeout: timedelta = timedelta(minutes=20),
         interval: timedelta = timedelta(seconds=10),
     ):
-        terminal = {Status.DELETED}
-        in_progress = {Status.DELETING, Status.TODELETE}
-
         @interval_retry(interval, timeout)
-        def verify_deleted() -> bool:
+        def verify_deleted_with_retry() -> bool:
             resp = get_database.sync(
                 self._account_id,
                 database_id,
@@ -377,45 +415,23 @@ class OpenApiAccess:
                 account_id=self._account_id,
                 database_id=database_id,
             )
-            if isinstance(resp, ApiError):
-                if _is_not_found(resp):
-                    return True
-                raise OpenApiError(
-                    f"Failed to get database {database_id}",
-                    resp,
-                )
+            if (
+                isinstance(resp, ApiError)
+                or resp is None
+                or resp.deleted_at is not UNSET
+                or resp.deleted_by is not UNSET
+                or resp.status is Status.DELETED
+            ):
+                return verify_deleted(resp, database_id)
 
-            if resp is None:
-                LOG.info("- Database deletion status: unavailable ...")
-                raise TryAgain
-
-            if resp.deleted_at is not UNSET or resp.deleted_by is not UNSET:
-                return True
-
-            if resp.status in terminal:
-                return True
-
-            visible_database_ids = list(self.list_database_ids())
-            LOG.debug(
-                "wait_until_deleted visible database IDs {'database_id': %s}: %s",
+            return verify_deleted(
+                resp,
                 database_id,
-                visible_database_ids,
+                self.list_database_ids(),
             )
-            if database_id not in visible_database_ids:
-                return True
-
-            if resp.status in in_progress:
-                LOG.info("- Database deletion status: %s ...", resp.status)
-                raise TryAgain
-
-            if database_id in visible_database_ids:
-                LOG.info("- Database deletion status: %s ...", resp.status)
-                raise TryAgain
-
-            return True
 
         try:
-            return verify_deleted()
+            return verify_deleted_with_retry()
         except (TryAgain, RetryError) as ex:
             raise DatabaseDeleteTimeout from ex
 
@@ -664,7 +680,7 @@ class OpenApiAccess:
         interval: timedelta = timedelta(seconds=5),
     ) -> None:
         @interval_retry(interval, timeout)
-        def verify_deleted() -> bool:
+        def verify_allowed_ip_deleted() -> bool:
             LOG.debug(
                 "wait_until_allowed_ip_deleted state {'allowed_ip_id': %s}",
                 allowed_ip_id,
@@ -674,7 +690,7 @@ class OpenApiAccess:
                 raise TryAgain
             return True
 
-        verify_deleted()
+        verify_allowed_ip_deleted()
 
     def add_allowed_ip(
         self,
