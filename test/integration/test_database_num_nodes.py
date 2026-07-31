@@ -10,5 +10,4 @@ def test_create_database_with_two_nodes(api_access, local_name):
     ) as db:
         settings = api_access.get_database_settings(db.id)
 
-        assert settings is not None
         assert settings.num_nodes == 2

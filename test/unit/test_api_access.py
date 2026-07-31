@@ -293,7 +293,6 @@ def test_get_database_settings_retries_transient_not_found(
 
     result = api_mock.get_database_settings("db-id")
 
-    assert result is not None
     assert result.num_nodes == 2
     assert get_settings.call_count == 2
 

@@ -372,10 +372,9 @@ class OpenApiAccess:
             initial_cluster=cluster_spec,
             provider="aws",
             region=region,
+            num_nodes=num_nodes if num_nodes is not None else UNSET,
             stream_type="innovation-release",
         )
-        if num_nodes is not None:
-            database_spec.num_nodes = num_nodes
         resp = create_database.sync(
             self._account_id,
             client=self._client,
@@ -563,7 +562,7 @@ class OpenApiAccess:
     def get_database_settings(
         self,
         database_id: str,
-    ) -> openapi.models.DatabaseSettings | None:
+    ) -> openapi.models.DatabaseSettings:
         def is_retry(resp: ApiError) -> bool:
             return _is_not_found(resp)
 
