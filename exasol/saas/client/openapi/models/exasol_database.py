@@ -40,6 +40,7 @@ class ExasolDatabase:
         region (str):
         created_at (datetime.datetime):
         created_by (str):
+        mcp_status (str):
         integrations (list[ExasolDatabaseIntegrationsItem] | Unset):
         deleted_by (str | Unset):
         deleted_at (datetime.datetime | Unset):
@@ -53,6 +54,7 @@ class ExasolDatabase:
     region: str
     created_at: datetime.datetime
     created_by: str
+    mcp_status: str
     integrations: list[ExasolDatabaseIntegrationsItem] | Unset = UNSET
     deleted_by: str | Unset = UNSET
     deleted_at: datetime.datetime | Unset = UNSET
@@ -74,6 +76,8 @@ class ExasolDatabase:
         created_at = self.created_at.isoformat()
 
         created_by = self.created_by
+
+        mcp_status = self.mcp_status
 
         integrations: list[dict[str, Any]] | Unset = UNSET
         if not isinstance(self.integrations, Unset):
@@ -100,6 +104,7 @@ class ExasolDatabase:
                 "region": region,
                 "createdAt": created_at,
                 "createdBy": created_by,
+                "mcpStatus": mcp_status,
             }
         )
         if integrations is not UNSET:
@@ -135,6 +140,8 @@ class ExasolDatabase:
 
         created_by = d.pop("createdBy")
 
+        mcp_status = d.pop("mcpStatus")
+
         _integrations = d.pop("integrations", UNSET)
         integrations: list[ExasolDatabaseIntegrationsItem] | Unset = UNSET
         if _integrations is not UNSET:
@@ -164,6 +171,7 @@ class ExasolDatabase:
             region=region,
             created_at=created_at,
             created_by=created_by,
+            mcp_status=mcp_status,
             integrations=integrations,
             deleted_by=deleted_by,
             deleted_at=deleted_at,
