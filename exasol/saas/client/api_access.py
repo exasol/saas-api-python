@@ -681,22 +681,20 @@ class OpenApiAccess:
         interval: timedelta = timedelta(seconds=5),
     ) -> None:
         @interval_retry(interval, timeout)
-        def verify_allowed_ip_deleted() -> bool:
+        def verify_allowed_ip_deleted() -> None:
             LOG.debug(
                 "wait_until_allowed_ip_deleted state {'allowed_ip_id': %s}",
                 allowed_ip_id,
             )
             allowed_ip = self.get_allowed_ip(allowed_ip_id)
             if isinstance(allowed_ip, ApiError):
-                if allowed_ip.status == 404:
-                    return True
-                raise OpenApiError(
-                    f"Failed to get allowed IP {allowed_ip_id}",
-                    allowed_ip,
-                )
-            if allowed_ip is None or self._is_active_allowed_ip(allowed_ip):
+                if allowed_ip.status != 404:
+                    raise OpenApiError(
+                        f"Failed to get allowed IP {allowed_ip_id}",
+                        allowed_ip,
+                    )
+            elif allowed_ip is None or self._is_active_allowed_ip(allowed_ip):
                 raise TryAgain
-            return True
 
         verify_allowed_ip_deleted()
 
