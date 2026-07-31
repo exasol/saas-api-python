@@ -635,14 +635,19 @@ def test_wait_until_deleted_times_out_for_active_database(
 
 
 def test_verify_deleted_accepts_not_found() -> None:
-    assert verify_deleted(api_error(404, "User/Database not found"), "db-id")
+    response = api_error(404, "User/Database not found")
+    verify_deleted(response, "db-id")
 
 
 def test_verify_deleted_retries_visible_database() -> None:
+    response = database_response("db-active")
+
     with pytest.raises(TryAgain):
-        verify_deleted(database_response("db-active"), "db-id", ["db-id"])
+        verify_deleted(response, "db-id", ["db-id"])
 
 
 def test_verify_deleted_raises_for_unexpected_api_error() -> None:
+    response = api_error(500, "boom")
+
     with pytest.raises(OpenApiError, match="Failed to get database db-id"):
-        verify_deleted(api_error(500, "boom"), "db-id")
+        verify_deleted(response, "db-id")

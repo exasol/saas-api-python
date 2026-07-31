@@ -168,11 +168,11 @@ def verify_deleted(
     resp: ExasolDatabase | ApiError | None,
     database_id: str,
     visible_database_ids: Iterable[str] = (),
-) -> bool:
+) -> None:
     """Evaluate one database deletion status response."""
     if isinstance(resp, ApiError):
         if _is_not_found(resp):
-            return True
+            return
         raise OpenApiError(
             f"Failed to get database {database_id}",
             resp,
@@ -183,10 +183,10 @@ def verify_deleted(
         raise TryAgain
 
     if resp.deleted_at is not UNSET or resp.deleted_by is not UNSET:
-        return True
+        return
 
     if resp.status is Status.DELETED:
-        return True
+        return
 
     visible_database_ids = list(visible_database_ids)
     LOG.debug(
@@ -195,7 +195,7 @@ def verify_deleted(
         visible_database_ids,
     )
     if database_id not in visible_database_ids:
-        return True
+        return
 
     if resp.status in {Status.DELETING, Status.TODELETE}:
         LOG.info("- Database deletion status: %s ...", resp.status)
@@ -403,7 +403,7 @@ class OpenApiAccess:
         interval: timedelta = timedelta(seconds=10),
     ):
         @interval_retry(interval, timeout)
-        def verify_deleted_with_retry() -> bool:
+        def verify_deleted_with_retry() -> None:
             resp = get_database.sync(
                 self._account_id,
                 database_id,
@@ -422,13 +422,15 @@ class OpenApiAccess:
                 or resp.deleted_by is not UNSET
                 or resp.status is Status.DELETED
             ):
-                return verify_deleted(resp, database_id)
+                verify_deleted(resp, database_id)
+                return
 
-            return verify_deleted(
+            verify_deleted(
                 resp,
                 database_id,
                 self.list_database_ids(),
             )
+            return
 
         try:
             return verify_deleted_with_retry()
