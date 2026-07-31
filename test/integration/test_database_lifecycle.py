@@ -37,7 +37,8 @@ def test_lifecycle(api_access, local_name):
         return api_access.get_connection(db.id, clusters[0].id)
 
     with api_access.database(local_name, ignore_delete_failure=True) as db:
-        assert db.status in PROMISING_STATES and db.clusters.total == 1
+        assert db.status in PROMISING_STATES
+        assert db.clusters.total == 1
 
         with pytest.raises(RetryError):
             wait_until_running_too_short(db)
