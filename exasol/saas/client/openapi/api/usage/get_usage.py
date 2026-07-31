@@ -24,7 +24,6 @@ def _get_kwargs(
     year_month: str | Unset = UNSET,
     type_: Type | Unset = UNSET,
 ) -> dict[str, Any]:
-
     params: dict[str, Any] = {}
 
     params["yearMonth"] = year_month

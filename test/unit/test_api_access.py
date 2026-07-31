@@ -226,7 +226,7 @@ def test_log_api_output_serializes_payloads(caplog) -> None:
     caplog.set_level(logging.DEBUG, logger="exasol.saas.client.api_access")
 
     _log_api_output(
-            "list_allowed_i_ps.sync",
+        "list_allowed_i_ps.sync",
         [
             allowed_ip_response("ip-1"),
             parsed_api_error(404, "not found"),

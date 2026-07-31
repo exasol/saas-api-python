@@ -17,7 +17,6 @@ def _get_kwargs(
     account_id: str,
     user_id: str,
 ) -> dict[str, Any]:
-
     _kwargs: dict[str, Any] = {
         "method": "get",
         "url": "/api/v1/internal/accounts/{account_id}/users/{user_id}".format(

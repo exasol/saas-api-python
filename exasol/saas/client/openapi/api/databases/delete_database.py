@@ -19,7 +19,6 @@ def _get_kwargs(
     account_id: str,
     database_id: str,
 ) -> dict[str, Any]:
-
     _kwargs: dict[str, Any] = {
         "method": "delete",
         "url": "/api/v1/accounts/{account_id}/databases/{database_id}".format(

@@ -16,7 +16,6 @@ from ...types import Response
 def _get_kwargs(
     account_id: str,
 ) -> dict[str, Any]:
-
     _kwargs: dict[str, Any] = {
         "method": "get",
         "url": "/api/v1/accounts/{account_id}/security/allowlist_ip".format(

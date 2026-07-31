@@ -24,7 +24,6 @@ def _get_kwargs(
     next_: int | Unset = UNSET,
     limit: int | Unset = UNSET,
 ) -> dict[str, Any]:
-
     params: dict[str, Any] = {}
 
     params["filter"] = filter_

@@ -18,7 +18,6 @@ def _get_kwargs(
     database_id: str,
     key: str,
 ) -> dict[str, Any]:
-
     _kwargs: dict[str, Any] = {
         "method": "get",
         "url": "/api/v1/internal/accounts/{account_id}/databases/{database_id}/files/{key}".format(
