@@ -22,6 +22,7 @@ def _get_kwargs(
     extension_version: str,
     instance_id: str,
 ) -> dict[str, Any]:
+
     _kwargs: dict[str, Any] = {
         "method": "delete",
         "url": "/api/v1/accounts/{account_id}/databases/{database_id}/extensions/{extension_id}/{extension_version}/instances/{instance_id}".format(

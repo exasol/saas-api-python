@@ -21,6 +21,7 @@ def _get_kwargs(
     extension_id: str,
     extension_version: str,
 ) -> dict[str, Any]:
+
     _kwargs: dict[str, Any] = {
         "method": "put",
         "url": "/api/v1/accounts/{account_id}/databases/{database_id}/extensions/{extension_id}/{extension_version}/install".format(

@@ -19,6 +19,7 @@ def _get_kwargs(
     account_id: str,
     database_id: str,
 ) -> dict[str, Any]:
+
     _kwargs: dict[str, Any] = {
         "method": "post",
         "url": "/api/v1/accounts/{account_id}/databases/{database_id}/dlhc-activate".format(

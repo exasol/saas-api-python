@@ -27,6 +27,7 @@ def _get_kwargs(
     *,
     actor: Actor | Unset = UNSET,
 ) -> dict[str, Any]:
+
     params: dict[str, Any] = {}
 
     json_actor: str | Unset = UNSET
