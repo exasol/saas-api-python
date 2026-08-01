@@ -261,6 +261,20 @@ def test_create_database_num_nodes(
     assert body.num_nodes == expected_num_nodes
 
 
+def test_create_database_logs_database_spec(api_mock, monkeypatch, caplog) -> None:
+    create_database_mock(
+        monkeypatch,
+        [database_response("logged-db")],
+    )
+    caplog.set_level(logging.DEBUG, logger="exasol.saas.client.api_access")
+
+    api_mock.create_database("logged-db", num_nodes=2)
+
+    assert "create_database database spec" in caplog.text
+    assert "'name': 'logged-db'" in caplog.text
+    assert "'numNodes': 2" in caplog.text
+
+
 def test_database_context_forwards_num_nodes(api_mock, monkeypatch) -> None:
     create = Mock(return_value=database_response("db-with-context"))
     delete = Mock()

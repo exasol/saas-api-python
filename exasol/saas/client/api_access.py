@@ -375,6 +375,11 @@ class OpenApiAccess:
             num_nodes=num_nodes if num_nodes is not None else UNSET,
             stream_type="innovation-release",
         )
+        if LOG.isEnabledFor(logging.DEBUG):
+            LOG.debug(
+                "create_database database spec: %s",
+                _serialize_api_output(database_spec),
+            )
         resp = create_database.sync(
             self._account_id,
             client=self._client,
