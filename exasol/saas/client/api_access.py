@@ -574,8 +574,9 @@ class OpenApiAccess:
         )
         def wait_until_created() -> None:
             database = self.get_database(database_id)
-            if database.status is Status.TOCREATE:
-                LOG.info("- Database status: %s ...", database.status)
+            status = database.status if database else None
+            if status is None or status is Status.TOCREATE:
+                LOG.info("- Database status: %s ...", status)
                 raise TryAgain
 
         wait_until_created()
