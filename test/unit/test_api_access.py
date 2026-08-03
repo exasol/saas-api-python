@@ -301,7 +301,7 @@ def test_get_database_settings_retries_transient_not_found(
     )
     get_database = get_database_mock(
         monkeypatch,
-        [database_response()],
+        [database_response(status=Status.RUNNING)],
     )
     get_settings = get_database_settings_mock(
         monkeypatch,
@@ -318,7 +318,7 @@ def test_get_database_settings_retries_transient_not_found(
     assert get_settings.call_count == 2
 
 
-def test_get_database_settings_waits_until_database_is_created(
+def test_get_database_settings_waits_until_database_is_starting(
     api_mock, monkeypatch
 ) -> None:
     monkeypatch.setattr(
@@ -329,7 +329,8 @@ def test_get_database_settings_waits_until_database_is_created(
         monkeypatch,
         [
             database_response(status=Status.TOCREATE),
-            database_response(),
+            database_response(status=Status.CREATING),
+            database_response(status=Status.STARTING),
         ],
     )
     get_settings = get_database_settings_mock(
@@ -340,7 +341,7 @@ def test_get_database_settings_waits_until_database_is_created(
     result = api_mock.get_database_settings("db-id")
 
     assert result.num_nodes == 2
-    assert get_database.call_count == 2
+    assert get_database.call_count == 3
     assert get_settings.call_count == 1
 
 
@@ -353,7 +354,7 @@ def test_get_database_settings_raises_non_retryable_error(
     )
     get_database_mock(
         monkeypatch,
-        [database_response()],
+        [database_response(status=Status.RUNNING)],
     )
     get_database_settings_mock(
         monkeypatch,
