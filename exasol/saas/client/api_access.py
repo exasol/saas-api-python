@@ -568,6 +568,18 @@ class OpenApiAccess:
         self,
         database_id: str,
     ) -> openapi.models.DatabaseSettings:
+        @interval_retry(
+            interval=timedelta(seconds=5),
+            timeout=timedelta(minutes=10),
+        )
+        def wait_until_created() -> None:
+            database = self.get_database(database_id)
+            if database.status is Status.TOCREATE:
+                LOG.info("- Database status: %s ...", database.status)
+                raise TryAgain
+
+        wait_until_created()
+
         def is_retry(resp: ApiError) -> bool:
             return _is_not_found(resp)
 

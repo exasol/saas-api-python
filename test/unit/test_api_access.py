@@ -110,9 +110,11 @@ def get_database_mock(monkeypatch, side_effect) -> Mock:
     return mock
 
 
-def database_response(name: str = "db") -> ExasolDatabase:
+def database_response(
+    name: str = "db", status: Status = Status.CREATING
+) -> ExasolDatabase:
     return ExasolDatabase(
-        status=Status.CREATING,
+        status=status,
         id="db-id",
         name=name,
         clusters=ExasolDatabaseClusters(total=1, running=0),
@@ -297,6 +299,10 @@ def test_get_database_settings_retries_transient_not_found(
         "exasol.saas.client.api_access.interval_retry",
         immediate_retry,
     )
+    get_database = get_database_mock(
+        monkeypatch,
+        [database_response()],
+    )
     get_settings = get_database_settings_mock(
         monkeypatch,
         [
@@ -308,7 +314,34 @@ def test_get_database_settings_retries_transient_not_found(
     result = api_mock.get_database_settings("db-id")
 
     assert result.num_nodes == 2
+    assert get_database.call_count == 1
     assert get_settings.call_count == 2
+
+
+def test_get_database_settings_waits_until_database_is_created(
+    api_mock, monkeypatch
+) -> None:
+    monkeypatch.setattr(
+        "exasol.saas.client.api_access.interval_retry",
+        immediate_retry,
+    )
+    get_database = get_database_mock(
+        monkeypatch,
+        [
+            database_response(status=Status.TOCREATE),
+            database_response(),
+        ],
+    )
+    get_settings = get_database_settings_mock(
+        monkeypatch,
+        [database_settings_response()],
+    )
+
+    result = api_mock.get_database_settings("db-id")
+
+    assert result.num_nodes == 2
+    assert get_database.call_count == 2
+    assert get_settings.call_count == 1
 
 
 def test_get_database_settings_raises_non_retryable_error(
@@ -317,6 +350,10 @@ def test_get_database_settings_raises_non_retryable_error(
     monkeypatch.setattr(
         "exasol.saas.client.api_access.interval_retry",
         lambda *_args, **_kwargs: (lambda func: func),
+    )
+    get_database_mock(
+        monkeypatch,
+        [database_response()],
     )
     get_database_settings_mock(
         monkeypatch,
