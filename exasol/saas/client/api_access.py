@@ -572,14 +572,21 @@ class OpenApiAccess:
             interval=timedelta(seconds=5),
             timeout=timedelta(minutes=10),
         )
-        def wait_until_starting() -> None:
+        def wait_until_created() -> None:
             database = self.get_database(database_id)
-            status = database.status if database else None
-            if status not in {Status.STARTING, Status.RUNNING}:
-                LOG.info("- Database status: %s ...", status)
+            if database is None:
+                LOG.info("- Database status: unavailable ...")
+                raise TryAgain
+            if database.status is Status.TOCREATE:
+                LOG.info("- Database status: %s ...", database.status)
+                raise TryAgain
+            if database.created_at + timedelta(minutes=2) > datetime.now(
+                tz=database.created_at.tzinfo
+            ):
+                LOG.info("- Database was created less than two minutes ago ...")
                 raise TryAgain
 
-        wait_until_starting()
+        wait_until_created()
 
         def is_retry(resp: ApiError) -> bool:
             return _is_not_found(resp)
