@@ -111,7 +111,9 @@ def get_database_mock(monkeypatch, side_effect) -> Mock:
 
 
 def database_response(
-    name: str = "db", status: Status = Status.CREATING
+    name: str = "db",
+    status: Status = Status.CREATING,
+    created_at: datetime = datetime(2026, 1, 1),
 ) -> ExasolDatabase:
     return ExasolDatabase(
         status=status,
@@ -120,7 +122,7 @@ def database_response(
         clusters=ExasolDatabaseClusters(total=1, running=0),
         provider="aws",
         region="eu-central-1",
-        created_at=datetime(2026, 1, 1),
+        created_at=created_at,
         created_by="tester",
         mcp_status="disabled",
     )
@@ -318,7 +320,7 @@ def test_get_database_settings_retries_transient_not_found(
     assert get_settings.call_count == 2
 
 
-def test_get_database_settings_waits_until_database_is_starting(
+def test_get_database_settings_waits_until_database_is_created(
     api_mock, monkeypatch
 ) -> None:
     monkeypatch.setattr(
@@ -330,7 +332,6 @@ def test_get_database_settings_waits_until_database_is_starting(
         [
             database_response(status=Status.TOCREATE),
             database_response(status=Status.CREATING),
-            database_response(status=Status.STARTING),
         ],
     )
     get_settings = get_database_settings_mock(
@@ -341,7 +342,44 @@ def test_get_database_settings_waits_until_database_is_starting(
     result = api_mock.get_database_settings("db-id")
 
     assert result.num_nodes == 2
-    assert get_database.call_count == 3
+    assert get_database.call_count == 2
+    assert get_settings.call_count == 1
+
+
+def test_get_database_settings_waits_two_minutes_after_database_creation(
+    api_mock, monkeypatch
+) -> None:
+    from exasol.saas.client import api_access as api_access_module
+
+    monkeypatch.setattr(
+        "exasol.saas.client.api_access.interval_retry",
+        immediate_retry,
+    )
+    created_at = datetime(2026, 1, 1)
+    get_database = get_database_mock(
+        monkeypatch,
+        [
+            database_response(created_at=created_at),
+            database_response(created_at=created_at),
+        ],
+    )
+    get_settings = get_database_settings_mock(
+        monkeypatch,
+        [database_settings_response()],
+    )
+    now = Mock(
+        side_effect=[
+            created_at + timedelta(minutes=1),
+            created_at + timedelta(minutes=2),
+        ]
+    )
+    datetime_mock = Mock(now=now)
+    monkeypatch.setattr(api_access_module, "datetime", datetime_mock)
+
+    result = api_mock.get_database_settings("db-id")
+
+    assert result.num_nodes == 2
+    assert get_database.call_count == 2
     assert get_settings.call_count == 1
 
 
