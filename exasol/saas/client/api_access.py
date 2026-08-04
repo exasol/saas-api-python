@@ -21,7 +21,10 @@ from tenacity import (
     TryAgain,
     retry,
 )
-from tenacity.retry import retry_if_exception_type
+from tenacity.retry import (
+    retry_base,
+    retry_if_exception_type,
+)
 from tenacity.stop import stop_after_delay
 from tenacity.wait import (
     wait_exponential,
@@ -40,6 +43,11 @@ from exasol.saas.client.openapi.api.databases import (
     create_database,
     delete_database,
     get_database,
+)
+from exasol.saas.client.openapi.api.databases import (
+    get_database_settings as get_database_settings_api,
+)
+from exasol.saas.client.openapi.api.databases import (
     list_databases,
 )
 from exasol.saas.client.openapi.api.security import (
@@ -61,8 +69,16 @@ LOG = logging.getLogger(__name__)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
-def interval_retry(interval: timedelta, timeout: timedelta):
-    return tenacity.retry(wait=wait_fixed(interval), stop=stop_after_delay(timeout))
+def interval_retry(
+    interval: timedelta,
+    timeout: timedelta,
+    retry: retry_base = retry_if_exception_type(),
+):
+    return tenacity.retry(
+        wait=wait_fixed(interval),
+        stop=stop_after_delay(timeout),
+        retry=retry,
+    )
 
 
 def timestamp_name(project_short_tag: str | None = None) -> str:
@@ -351,6 +367,7 @@ class OpenApiAccess:
         cluster_size: str = "XS",
         region: str = "eu-central-1",
         idle_time: timedelta | None = None,
+        num_nodes: int | None = None,
     ) -> ExasolDatabase | None:
         def minutes(x: timedelta) -> int:
             return x.seconds // 60
@@ -370,8 +387,14 @@ class OpenApiAccess:
             initial_cluster=cluster_spec,
             provider="aws",
             region=region,
+            num_nodes=num_nodes if num_nodes is not None else UNSET,
             stream_type="innovation-release",
         )
+        if LOG.isEnabledFor(logging.DEBUG):
+            LOG.debug(
+                "create_database database spec: %s",
+                _serialize_api_output(database_spec),
+            )
         resp = create_database.sync(
             self._account_id,
             client=self._client,
@@ -517,12 +540,14 @@ class OpenApiAccess:
         keep: bool = False,
         ignore_delete_failure: bool = False,
         idle_time: timedelta | None = None,
+        num_nodes: int | None = None,
     ):
         db = None
         try:
             db = self.create_database(
                 name,
                 idle_time=idle_time,
+                num_nodes=num_nodes,
             )
             yield db
         finally:
@@ -553,6 +578,64 @@ class OpenApiAccess:
         return ensure_type(
             ExasolDatabase, resp, f"Failed to get database {database_id}"
         )
+
+    def _wait_until_database_settings_available(self, database_id: str) -> None:
+        @interval_retry(
+            interval=timedelta(seconds=5),
+            timeout=timedelta(minutes=10),
+        )
+        def check_database() -> None:
+            database = self.get_database(database_id)
+            if database is None:
+                LOG.info("- Database status: unavailable ...")
+                raise TryAgain
+            if database.status is Status.TOCREATE:
+                LOG.info("- Database status: %s ...", database.status)
+                raise TryAgain
+            # SaaS returns default settings until two minutes after creation.
+            if database.created_at + timedelta(minutes=2) > datetime.now(
+                tz=database.created_at.tzinfo
+            ):
+                LOG.info("- Database was created less than two minutes ago ...")
+                raise TryAgain
+
+        check_database()
+
+    def get_database_settings(
+        self,
+        database_id: str,
+    ) -> openapi.models.DatabaseSettings:
+        self._wait_until_database_settings_available(database_id)
+
+        def is_retry(resp: ApiError) -> bool:
+            return _is_not_found(resp)
+
+        @interval_retry(
+            interval=timedelta(seconds=5),
+            timeout=timedelta(minutes=2),
+            retry=retry_if_exception_type(TryAgain),
+        )
+        def retrieve_settings() -> openapi.models.DatabaseSettings:
+            resp = get_database_settings_api.sync(
+                self._account_id,
+                database_id,
+                client=self._client,
+            )
+            _log_api_output(
+                "get_database_settings.sync",
+                resp,
+                account_id=self._account_id,
+                database_id=database_id,
+            )
+            if isinstance(resp, ApiError) and is_retry(resp):
+                raise TryAgain
+            return ensure_type(
+                openapi.models.DatabaseSettings,
+                resp,
+                f"Failed to get settings of database {database_id}",
+            )
+
+        return retrieve_settings()
 
     def wait_until_running(
         self,
