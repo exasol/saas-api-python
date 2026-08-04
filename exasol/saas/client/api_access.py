@@ -564,15 +564,12 @@ class OpenApiAccess:
             ExasolDatabase, resp, f"Failed to get database {database_id}"
         )
 
-    def get_database_settings(
-        self,
-        database_id: str,
-    ) -> openapi.models.DatabaseSettings:
+    def _wait_until_database_settings_available(self, database_id: str) -> None:
         @interval_retry(
             interval=timedelta(seconds=5),
             timeout=timedelta(minutes=10),
         )
-        def wait_until_created() -> None:
+        def check_database() -> None:
             database = self.get_database(database_id)
             if database is None:
                 LOG.info("- Database status: unavailable ...")
@@ -586,7 +583,13 @@ class OpenApiAccess:
                 LOG.info("- Database was created less than two minutes ago ...")
                 raise TryAgain
 
-        wait_until_created()
+        check_database()
+
+    def get_database_settings(
+        self,
+        database_id: str,
+    ) -> openapi.models.DatabaseSettings:
+        self._wait_until_database_settings_available(database_id)
 
         def is_retry(resp: ApiError) -> bool:
             return _is_not_found(resp)
