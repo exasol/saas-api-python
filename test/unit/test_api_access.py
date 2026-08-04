@@ -79,7 +79,7 @@ def create_database_mock(monkeypatch, side_effect) -> Mock:
 
 
 def get_database_settings_mock(monkeypatch, side_effect) -> Mock:
-    from exasol.saas.client.api_access import get_database_settings as api
+    from exasol.saas.client.api_access import get_database_settings_api as api
 
     mock = Mock(side_effect=side_effect)
     monkeypatch.setattr(api, "sync", mock)
@@ -386,21 +386,19 @@ def test_get_database_settings_waits_two_minutes_after_database_creation(
 def test_get_database_settings_raises_non_retryable_error(
     api_mock, monkeypatch
 ) -> None:
-    monkeypatch.setattr(
-        "exasol.saas.client.api_access.interval_retry",
-        lambda *_args, **_kwargs: (lambda func: func),
-    )
     get_database_mock(
         monkeypatch,
         [database_response(status=Status.RUNNING)],
     )
-    get_database_settings_mock(
+    get_settings = get_database_settings_mock(
         monkeypatch,
         [api_error(500, "boom")],
     )
 
     with pytest.raises(OpenApiError, match="Failed to get settings of database db-id"):
         api_mock.get_database_settings("db-id")
+
+    assert get_settings.call_count == 1
 
 
 def test_log_api_output_serializes_payloads(caplog) -> None:

@@ -21,7 +21,10 @@ from tenacity import (
     TryAgain,
     retry,
 )
-from tenacity.retry import retry_if_exception_type
+from tenacity.retry import (
+    retry_base,
+    retry_if_exception_type,
+)
 from tenacity.stop import stop_after_delay
 from tenacity.wait import (
     wait_exponential,
@@ -40,7 +43,11 @@ from exasol.saas.client.openapi.api.databases import (
     create_database,
     delete_database,
     get_database,
-    get_database_settings,
+)
+from exasol.saas.client.openapi.api.databases import (
+    get_database_settings as get_database_settings_api,
+)
+from exasol.saas.client.openapi.api.databases import (
     list_databases,
 )
 from exasol.saas.client.openapi.api.security import (
@@ -62,8 +69,16 @@ LOG = logging.getLogger(__name__)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
-def interval_retry(interval: timedelta, timeout: timedelta):
-    return tenacity.retry(wait=wait_fixed(interval), stop=stop_after_delay(timeout))
+def interval_retry(
+    interval: timedelta,
+    timeout: timedelta,
+    retry: retry_base = retry_if_exception_type(),
+):
+    return tenacity.retry(
+        wait=wait_fixed(interval),
+        stop=stop_after_delay(timeout),
+        retry=retry,
+    )
 
 
 def timestamp_name(project_short_tag: str | None = None) -> str:
@@ -577,6 +592,7 @@ class OpenApiAccess:
             if database.status is Status.TOCREATE:
                 LOG.info("- Database status: %s ...", database.status)
                 raise TryAgain
+            # SaaS returns default settings until two minutes after creation.
             if database.created_at + timedelta(minutes=2) > datetime.now(
                 tz=database.created_at.tzinfo
             ):
@@ -597,9 +613,10 @@ class OpenApiAccess:
         @interval_retry(
             interval=timedelta(seconds=5),
             timeout=timedelta(minutes=2),
+            retry=retry_if_exception_type(TryAgain),
         )
         def retrieve_settings() -> openapi.models.DatabaseSettings:
-            resp = get_database_settings.sync(
+            resp = get_database_settings_api.sync(
                 self._account_id,
                 database_id,
                 client=self._client,
