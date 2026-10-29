@@ -67,6 +67,15 @@ def database_name(project_short_tag) -> str:
     return timestamp_name(project_short_tag)
 
 
+@pytest.fixture
+def local_name(project_short_tag: str | None) -> str:
+    """
+    Other than global fixture database_name this fixture uses scope
+    "function" to generate an individual name for each test case.
+    """
+    return timestamp_name(project_short_tag)
+
+
 @pytest.fixture(scope="session")
 def allow_connection(api_access) -> None:
     """
