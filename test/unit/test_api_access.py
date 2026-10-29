@@ -358,29 +358,24 @@ def test_get_database_settings_waits_two_minutes_after_database_creation(
     created_at = datetime(2026, 1, 1)
     get_database = get_database_mock(
         monkeypatch,
-        [
-            database_response(created_at=created_at),
-            database_response(created_at=created_at),
-        ],
+        [database_response(created_at=created_at)],
     )
     get_settings = get_database_settings_mock(
         monkeypatch,
         [database_settings_response()],
     )
-    now = Mock(
-        side_effect=[
-            created_at + timedelta(minutes=1),
-            created_at + timedelta(minutes=2),
-        ]
-    )
+    now = Mock(return_value=created_at + timedelta(minutes=1))
     datetime_mock = Mock(now=now)
     monkeypatch.setattr(api_access_module, "datetime", datetime_mock)
+    sleep = Mock()
+    monkeypatch.setattr(api_access_module.time, "sleep", sleep)
 
     result = api_mock.get_database_settings("db-id")
 
     assert result.num_nodes == 2
-    assert get_database.call_count == 2
+    assert get_database.call_count == 1
     assert get_settings.call_count == 1
+    sleep.assert_called_once_with(60.0)
 
 
 def test_get_database_settings_raises_non_retryable_error(

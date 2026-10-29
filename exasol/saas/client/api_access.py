@@ -593,11 +593,13 @@ class OpenApiAccess:
                 LOG.info("- Database status: %s ...", database.status)
                 raise TryAgain
             # SaaS returns default settings until two minutes after creation.
-            if database.created_at + timedelta(minutes=2) > datetime.now(
-                tz=database.created_at.tzinfo
-            ):
-                LOG.info("- Database was created less than two minutes ago ...")
-                raise TryAgain
+            available_at = database.created_at + timedelta(minutes=2)
+            remaining_time = available_at - datetime.now(tz=database.created_at.tzinfo)
+            if remaining_time > timedelta():
+                LOG.info(
+                    "- Database settings will be available in %s ...", remaining_time
+                )
+                time.sleep(remaining_time.total_seconds())
 
         check_database()
 
