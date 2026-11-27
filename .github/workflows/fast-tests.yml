@@ -1,5 +1,5 @@
 # Generated and maintained by the exasol-toolbox.
-# Last generated with exasol-toolbox version 10.2.1.
+# Last generated with exasol-toolbox version 11.0.0.
 name: Fast-Tests
 
 on:
@@ -14,18 +14,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-versions: ["3.10", "3.11", "3.12", "3.13"]
+        python-versions: ["3.11", "3.12", "3.13"]
 
     steps:
       - name: Check out Repository
         id: check-out-repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 
       - name: Set up Python & Poetry Environment
         id: set-up-python-and-poetry-environment
-        uses: exasol/python-toolbox/.github/actions/python-environment@v10
+        uses: exasol/python-toolbox/.github/actions/python-environment@v11
         with:
           python-version: ${{ matrix.python-versions }}
           poetry-version: "2.3.0"

@@ -1,5 +1,7 @@
 # Unreleased
 
+This release drops the support for Python 3.10.
+
 This release updates the Python API generated from file `openapi.json`.
 
 * For endpoint `/api/v1/accounts/{accountId}/databases/{databaseId}/clusters/{clusterId}/stop`, method "put", parameter `actor` has been added.
@@ -18,4 +20,4 @@ Besides there are many formal and syntactic changes
 ## Refactorings
 
 * #160: Updated exasol-toolbox to version 7.0.0
-* #175: Updated exasol-toolbox to version 10.2.1
+* #175: Updated exasol-toolbox to version 12
