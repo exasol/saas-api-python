@@ -15,7 +15,7 @@ from ..types import (
 )
 
 if TYPE_CHECKING:
-    from ..models.worksheet_connection import WorksheetConnection
+    from ..models.accept_invitation_databases_item import AcceptInvitationDatabasesItem
 
 
 T = TypeVar("T", bound="AcceptInvitation")
@@ -29,7 +29,7 @@ class AcceptInvitation:
         role_id (str):
         db_username (str):
         user_id (str):
-        databases (list[WorksheetConnection] | Unset):
+        databases (list[AcceptInvitationDatabasesItem] | Unset):
         migrated_user_id (str | Unset):
     """
 
@@ -37,7 +37,7 @@ class AcceptInvitation:
     role_id: str
     db_username: str
     user_id: str
-    databases: list[WorksheetConnection] | Unset = UNSET
+    databases: list[AcceptInvitationDatabasesItem] | Unset = UNSET
     migrated_user_id: str | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
@@ -77,7 +77,9 @@ class AcceptInvitation:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.worksheet_connection import WorksheetConnection
+        from ..models.accept_invitation_databases_item import (
+            AcceptInvitationDatabasesItem,
+        )
 
         d = dict(src_dict)
         email = d.pop("email")
@@ -89,11 +91,13 @@ class AcceptInvitation:
         user_id = d.pop("userID")
 
         _databases = d.pop("databases", UNSET)
-        databases: list[WorksheetConnection] | Unset = UNSET
+        databases: list[AcceptInvitationDatabasesItem] | Unset = UNSET
         if _databases is not UNSET:
             databases = []
             for databases_item_data in _databases:
-                databases_item = WorksheetConnection.from_dict(databases_item_data)
+                databases_item = AcceptInvitationDatabasesItem.from_dict(
+                    databases_item_data
+                )
 
                 databases.append(databases_item)
 

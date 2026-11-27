@@ -1,3 +1,4 @@
+import datetime
 from http import HTTPStatus
 from typing import Any
 from urllib.parse import quote
@@ -22,12 +23,24 @@ def _get_kwargs(
     account_id: str,
     *,
     year_month: str | Unset = UNSET,
+    from_: datetime.date | Unset = UNSET,
+    to: datetime.date | Unset = UNSET,
     type_: Type | Unset = UNSET,
 ) -> dict[str, Any]:
 
     params: dict[str, Any] = {}
 
     params["yearMonth"] = year_month
+
+    json_from_: str | Unset = UNSET
+    if not isinstance(from_, Unset):
+        json_from_ = from_.isoformat()
+    params["from"] = json_from_
+
+    json_to: str | Unset = UNSET
+    if not isinstance(to, Unset):
+        json_to = to.isoformat()
+    params["to"] = json_to
 
     json_type_: str | Unset = UNSET
     if not isinstance(type_, Unset):
@@ -77,12 +90,16 @@ def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
     year_month: str | Unset = UNSET,
+    from_: datetime.date | Unset = UNSET,
+    to: datetime.date | Unset = UNSET,
     type_: Type | Unset = UNSET,
 ) -> Response[ApiError | Usage]:
     """
     Args:
         account_id (str):
         year_month (str | Unset):
+        from_ (datetime.date | Unset):
+        to (datetime.date | Unset):
         type_ (Type | Unset):
 
     Raises:
@@ -96,6 +113,8 @@ def sync_detailed(
     kwargs = _get_kwargs(
         account_id=account_id,
         year_month=year_month,
+        from_=from_,
+        to=to,
         type_=type_,
     )
 
@@ -111,12 +130,16 @@ def sync(
     *,
     client: AuthenticatedClient | Client,
     year_month: str | Unset = UNSET,
+    from_: datetime.date | Unset = UNSET,
+    to: datetime.date | Unset = UNSET,
     type_: Type | Unset = UNSET,
 ) -> ApiError | Usage | None:
     """
     Args:
         account_id (str):
         year_month (str | Unset):
+        from_ (datetime.date | Unset):
+        to (datetime.date | Unset):
         type_ (Type | Unset):
 
     Raises:
@@ -131,6 +154,8 @@ def sync(
         account_id=account_id,
         client=client,
         year_month=year_month,
+        from_=from_,
+        to=to,
         type_=type_,
     ).parsed
 
@@ -140,12 +165,16 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
     year_month: str | Unset = UNSET,
+    from_: datetime.date | Unset = UNSET,
+    to: datetime.date | Unset = UNSET,
     type_: Type | Unset = UNSET,
 ) -> Response[ApiError | Usage]:
     """
     Args:
         account_id (str):
         year_month (str | Unset):
+        from_ (datetime.date | Unset):
+        to (datetime.date | Unset):
         type_ (Type | Unset):
 
     Raises:
@@ -159,6 +188,8 @@ async def asyncio_detailed(
     kwargs = _get_kwargs(
         account_id=account_id,
         year_month=year_month,
+        from_=from_,
+        to=to,
         type_=type_,
     )
 
@@ -172,12 +203,16 @@ async def asyncio(
     *,
     client: AuthenticatedClient | Client,
     year_month: str | Unset = UNSET,
+    from_: datetime.date | Unset = UNSET,
+    to: datetime.date | Unset = UNSET,
     type_: Type | Unset = UNSET,
 ) -> ApiError | Usage | None:
     """
     Args:
         account_id (str):
         year_month (str | Unset):
+        from_ (datetime.date | Unset):
+        to (datetime.date | Unset):
         type_ (Type | Unset):
 
     Raises:
@@ -193,6 +228,8 @@ async def asyncio(
             account_id=account_id,
             client=client,
             year_month=year_month,
+            from_=from_,
+            to=to,
             type_=type_,
         )
     ).parsed

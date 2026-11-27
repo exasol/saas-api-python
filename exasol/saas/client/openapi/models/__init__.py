@@ -1,6 +1,10 @@
 """Contains all the data models used in inputs/outputs"""
 
 from .accept_invitation import AcceptInvitation
+from .accept_invitation_databases_item import AcceptInvitationDatabasesItem
+from .accept_invitation_databases_item_permission import (
+    AcceptInvitationDatabasesItemPermission,
+)
 from .account import Account
 from .account_edition import AccountEdition
 from .account_mode import AccountMode
@@ -44,6 +48,10 @@ from .create_extension_instance import CreateExtensionInstance
 from .create_extension_instance_request import CreateExtensionInstanceRequest
 from .create_extension_instance_response import CreateExtensionInstanceResponse
 from .create_invitation import CreateInvitation
+from .create_invitation_databases_item import CreateInvitationDatabasesItem
+from .create_invitation_databases_item_permission import (
+    CreateInvitationDatabasesItemPermission,
+)
 from .create_schedule import CreateSchedule
 from .create_schedule_payload import CreateSchedulePayload
 from .create_support_case import CreateSupportCase
@@ -90,10 +98,20 @@ from .mcp_status_status import McpStatusStatus
 from .my_ip import MyIP
 from .patch_user import PatchUser
 from .patch_user_databases import PatchUserDatabases
+from .patch_user_databases_add_item_type_1 import PatchUserDatabasesAddItemType1
+from .patch_user_databases_add_item_type_1_permission import (
+    PatchUserDatabasesAddItemType1Permission,
+)
+from .patch_user_databases_update_item import PatchUserDatabasesUpdateItem
+from .patch_user_databases_update_item_permission import (
+    PatchUserDatabasesUpdateItemPermission,
+)
 from .payment_attempt import PaymentAttempt
 from .payment_intent import PaymentIntent
 from .platform import Platform
 from .proxy import Proxy
+from .recover_account_name import RecoverAccountName
+from .recover_account_name_result import RecoverAccountNameResult
 from .region import Region
 from .register import Register
 from .register_result import RegisterResult
@@ -130,6 +148,7 @@ from .usage_cluster import UsageCluster
 from .usage_database import UsageDatabase
 from .user import User
 from .user_database import UserDatabase
+from .user_database_permission import UserDatabasePermission
 from .user_role import UserRole
 from .user_status import UserStatus
 from .version import Version
@@ -144,6 +163,8 @@ from .worksheet_item_database import WorksheetItemDatabase
 
 __all__ = (
     "AcceptInvitation",
+    "AcceptInvitationDatabasesItem",
+    "AcceptInvitationDatabasesItemPermission",
     "Account",
     "AccountEdition",
     "AccountMode",
@@ -187,6 +208,8 @@ __all__ = (
     "CreateExtensionInstanceRequest",
     "CreateExtensionInstanceResponse",
     "CreateInvitation",
+    "CreateInvitationDatabasesItem",
+    "CreateInvitationDatabasesItemPermission",
     "CreateSchedule",
     "CreateSchedulePayload",
     "CreateSupportCase",
@@ -233,10 +256,16 @@ __all__ = (
     "MyIP",
     "PatchUser",
     "PatchUserDatabases",
+    "PatchUserDatabasesAddItemType1",
+    "PatchUserDatabasesAddItemType1Permission",
+    "PatchUserDatabasesUpdateItem",
+    "PatchUserDatabasesUpdateItemPermission",
     "PaymentAttempt",
     "PaymentIntent",
     "Platform",
     "Proxy",
+    "RecoverAccountName",
+    "RecoverAccountNameResult",
     "Region",
     "Register",
     "RegisterResult",
@@ -273,6 +302,7 @@ __all__ = (
     "UsageDatabase",
     "User",
     "UserDatabase",
+    "UserDatabasePermission",
     "UserRole",
     "UserStatus",
     "Version",

@@ -19,6 +19,7 @@ from ..types import (
 if TYPE_CHECKING:
     from ..models.invitation_invitee import InvitationInvitee
     from ..models.invitation_inviter import InvitationInviter
+    from ..models.user_database import UserDatabase
     from ..models.worksheet_connection import WorksheetConnection
 
 
@@ -38,7 +39,7 @@ class Invitation:
         expires_at (str):
         roles (list[WorksheetConnection]):
         db_username (str):
-        databases (list[WorksheetConnection] | Unset):
+        databases (list[UserDatabase] | Unset):
     """
 
     id: str
@@ -50,7 +51,7 @@ class Invitation:
     expires_at: str
     roles: list[WorksheetConnection]
     db_username: str
-    databases: list[WorksheetConnection] | Unset = UNSET
+    databases: list[UserDatabase] | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         id = self.id
@@ -105,6 +106,7 @@ class Invitation:
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.invitation_invitee import InvitationInvitee
         from ..models.invitation_inviter import InvitationInviter
+        from ..models.user_database import UserDatabase
         from ..models.worksheet_connection import WorksheetConnection
 
         d = dict(src_dict)
@@ -132,11 +134,11 @@ class Invitation:
         db_username = d.pop("dbUsername")
 
         _databases = d.pop("databases", UNSET)
-        databases: list[WorksheetConnection] | Unset = UNSET
+        databases: list[UserDatabase] | Unset = UNSET
         if _databases is not UNSET:
             databases = []
             for databases_item_data in _databases:
-                databases_item = WorksheetConnection.from_dict(databases_item_data)
+                databases_item = UserDatabase.from_dict(databases_item_data)
 
                 databases.append(databases_item)
 

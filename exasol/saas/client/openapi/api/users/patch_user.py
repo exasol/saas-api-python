@@ -70,7 +70,10 @@ def sync_detailed(
     client: AuthenticatedClient | Client,
     body: PatchUser,
 ) -> Response[Any | ApiError]:
-    """
+    """Changes a user's databases, database username or role. Callers patching their own user can only
+    change their database username; changing their own database permission or role, or adding or
+    removing their own databases, returns 403.
+
     Args:
         account_id (str):
         user_id (str):
@@ -104,7 +107,10 @@ def sync(
     client: AuthenticatedClient | Client,
     body: PatchUser,
 ) -> Any | ApiError | None:
-    """
+    """Changes a user's databases, database username or role. Callers patching their own user can only
+    change their database username; changing their own database permission or role, or adding or
+    removing their own databases, returns 403.
+
     Args:
         account_id (str):
         user_id (str):
@@ -133,7 +139,10 @@ async def asyncio_detailed(
     client: AuthenticatedClient | Client,
     body: PatchUser,
 ) -> Response[Any | ApiError]:
-    """
+    """Changes a user's databases, database username or role. Callers patching their own user can only
+    change their database username; changing their own database permission or role, or adding or
+    removing their own databases, returns 403.
+
     Args:
         account_id (str):
         user_id (str):
@@ -165,7 +174,10 @@ async def asyncio(
     client: AuthenticatedClient | Client,
     body: PatchUser,
 ) -> Any | ApiError | None:
-    """
+    """Changes a user's databases, database username or role. Callers patching their own user can only
+    change their database username; changing their own database permission or role, or adding or
+    removing their own databases, returns 403.
+
     Args:
         account_id (str):
         user_id (str):

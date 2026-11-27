@@ -6,7 +6,7 @@
         "version": "1.0",
         "download": {
             "source": "https://cloud.exasol.com/openapi.json",
-            "timestamp": "2026-07-31T10:28:37.484705+00:00"
+            "timestamp": "2026-11-27T08:18:27.448670+00:00"
         }
     },
     "servers": [
@@ -55,10 +55,28 @@
                     {
                         "name": "yearMonth",
                         "in": "query",
-                        "description": "YYYY-MM",
+                        "description": "YYYY-MM. Kept during the rollout of from/to: equals from = first day and to = last day of that month. Defaults to the current month when neither yearMonth nor from/to is given. Months before 2026-07 are served by the ported confd query (compute from CUR, as those months were billed), later months by the query over clusters_status_transitions.",
                         "required": false,
                         "schema": {
                             "$ref": "#/components/schemas/yearMonth"
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "description": "YYYY-MM-DD, inclusive. First day of the range; must be given together with to and not with yearMonth. A range may span the switch of the compute source on 2026-07-01: earlier days are reported as they were billed (CUR-based), later days from the cluster lifecycle.",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/components/schemas/from"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "description": "YYYY-MM-DD, inclusive. Last day of the range: not before from, not in the future (today is the current date in UTC, so a local today east of UTC is rejected until that date has begun in UTC), and less than 12 months after from.",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/components/schemas/to"
                         }
                     },
                     {
@@ -1631,6 +1649,16 @@
                         "description": "No content",
                         "content": {}
                     },
+                    "409": {
+                        "description": "The database is already in running status, no operation will be performed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
+                    },
                     "default": {
                         "description": "Default api error",
                         "content": {
@@ -1676,6 +1704,16 @@
                     "204": {
                         "description": "No content",
                         "content": {}
+                    },
+                    "409": {
+                        "description": "The database is already in stopped status, no operation will be performed.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApiError"
+                                }
+                            }
+                        }
                     },
                     "default": {
                         "description": "Default api error",
@@ -3022,7 +3060,7 @@
             },
             "patch": {
                 "summary": "",
-                "description": "",
+                "description": "Changes a user's databases, database username or role. Callers patching their own user can only change their database username; changing their own database permission or role, or adding or removing their own databases, returns 403.",
                 "operationId": "PatchUser",
                 "parameters": [
                     {
@@ -3209,6 +3247,14 @@
             },
             "yearMonth": {
                 "type": "string"
+            },
+            "from": {
+                "type": "string",
+                "format": "date"
+            },
+            "to": {
+                "type": "string",
+                "format": "date"
             },
             "type": {
                 "type": "string",
@@ -3580,12 +3626,6 @@
                         "type": "string"
                     },
                     "method": {
-                        "type": "string"
-                    },
-                    "logId": {
-                        "type": "string"
-                    },
-                    "handler": {
                         "type": "string"
                     },
                     "timestamp": {
@@ -3983,7 +4023,7 @@
                     },
                     "databases": {
                         "items": {
-                            "$ref": "#/components/schemas/WorksheetConnection"
+                            "$ref": "#/components/schemas/UserDatabase"
                         },
                         "type": "array"
                     },
@@ -4107,6 +4147,30 @@
                 "additionalProperties": false,
                 "type": "object"
             },
+            "RecoverAccountName": {
+                "required": [
+                    "email"
+                ],
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
+            "RecoverAccountNameResult": {
+                "required": [
+                    "message"
+                ],
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false,
+                "type": "object"
+            },
             "Register": {
                 "required": [
                     "identifier",
@@ -4144,14 +4208,10 @@
             },
             "RegisterResult": {
                 "required": [
-                    "accountId",
-                    "invitationUrl"
+                    "accountId"
                 ],
                 "properties": {
                     "accountId": {
-                        "type": "string"
-                    },
-                    "invitationUrl": {
                         "type": "string"
                     }
                 },
@@ -4706,17 +4766,46 @@
                     "name": {
                         "type": "string"
                     },
+                    "mainCluster": {
+                        "type": "boolean",
+                        "description": "true for the main cluster, false for a worker. Absent when unknown, and while usage is served by the legacy usage service (rollback mode), which does not return it; absent does not mean worker."
+                    },
+                    "family": {
+                        "type": "string",
+                        "description": "Instance family the cluster ran on, e.g. r5d or r6id. A cluster resized across families within a day appears once per (size, family). Absent when unknown, and while usage is served by the legacy usage service (rollback mode), which does not return it."
+                    },
                     "compute": {
-                        "type": "number"
+                        "type": "number",
+                        "description": "Wall-clock hours the cluster spent in a billable state that day, independent of its size and node count. See computeVcpuHours for the billed figure."
+                    },
+                    "computeVcpuHours": {
+                        "type": "number",
+                        "description": "Billed vCPU-hours of the cluster that day: running hours \u00d7 number of nodes \u00d7 vCPUs per node, the figure the invoice's compute line is based on. Absent for a day before 2026-07 on which a compute row of the cluster was priced without an instance family (the pre-family price): its hours are derived with the legacy factor and no vCPU figure is known. Also absent while usage is served by the legacy usage service (rollback mode), which does not return it."
+                    },
+                    "computeCredits": {
+                        "type": "number",
+                        "description": "Credits of the cluster's compute that day: computeVcpuHours \u00d7 the per-vCPU-hour price of its instance family and region. Credits are the unit of /billing/credits (saas.prices.price_per_unit), computed, for days from 2026-07, with the price current at request time (the compute source carries no price and saas.prices keeps no history), and for earlier days at the price the usage was attributed at. Present whenever compute is present, 0 when the product is free, absent when the price could not be resolved. Absent while usage is served by the legacy usage service (rollback mode), which does not return it."
                     },
                     "outSameRegion": {
                         "type": "number"
                     },
+                    "outSameRegionCredits": {
+                        "type": "number",
+                        "description": "Credits of outSameRegion that day: GB \u00d7 the price of the same-region traffic sub product (0 while that traffic is free). Credits are the unit of /billing/credits (saas.prices.price_per_unit), computed at the price the usage was attributed at, the price in force on the usage's day. Present whenever outSameRegion is present, 0 when the product is free, absent when the price could not be resolved. Absent while usage is served by the legacy usage service (rollback mode), which does not return it."
+                    },
                     "outDifferentRegion": {
                         "type": "number"
                     },
+                    "outDifferentRegionCredits": {
+                        "type": "number",
+                        "description": "Credits of outDifferentRegion that day: GB \u00d7 the price of the cross-region traffic sub product. Credits are the unit of /billing/credits (saas.prices.price_per_unit), computed at the price the usage was attributed at, the price in force on the usage's day. Present whenever outDifferentRegion is present, 0 when the product is free, absent when the price could not be resolved. Absent while usage is served by the legacy usage service (rollback mode), which does not return it."
+                    },
                     "outInternet": {
                         "type": "number"
+                    },
+                    "outInternetCredits": {
+                        "type": "number",
+                        "description": "Credits of outInternet that day: GB \u00d7 the price of the internet egress sub product. Credits are the unit of /billing/credits (saas.prices.price_per_unit), computed at the price the usage was attributed at, the price in force on the usage's day. Present whenever outInternet is present, 0 when the product is free, absent when the price could not be resolved. Absent while usage is served by the legacy usage service (rollback mode), which does not return it."
                     }
                 },
                 "additionalProperties": false,
@@ -4735,8 +4824,16 @@
                     "name": {
                         "type": "string"
                     },
+                    "region": {
+                        "type": "string",
+                        "description": "Region the database runs in. Absent when unknown, and while usage is served by the legacy usage service (rollback mode), which does not return it."
+                    },
                     "usedStorage": {
                         "type": "number"
+                    },
+                    "storageCredits": {
+                        "type": "number",
+                        "description": "Credits of the database's storage that day: its GB-month share of the day \u00d7 the per-GB-month storage price, computed the way the invoice's storage line is. Credits are the unit of /billing/credits (saas.prices.price_per_unit), computed at the price the usage was attributed at, the price in force on the usage's day. Present whenever usedStorage is present, 0 when the product is free, absent when the price could not be resolved. Absent while usage is served by the legacy usage service (rollback mode), which does not return it."
                     },
                     "clusters": {
                         "items": {
@@ -5709,7 +5806,28 @@
                     },
                     "databases": {
                         "items": {
-                            "$ref": "#/components/schemas/WorksheetConnection"
+                            "required": [
+                                "id",
+                                "name"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "permission": {
+                                    "description": "Access level on this database. Defaults to admin when omitted.",
+                                    "enum": [
+                                        "admin",
+                                        "readonly"
+                                    ],
+                                    "type": "string"
+                                }
+                            },
+                            "additionalProperties": false,
+                            "type": "object"
                         },
                         "type": "array"
                     },
@@ -5738,7 +5856,28 @@
                     },
                     "databases": {
                         "items": {
-                            "$ref": "#/components/schemas/WorksheetConnection"
+                            "required": [
+                                "id",
+                                "name"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "permission": {
+                                    "description": "Access level on this database. Defaults to admin when omitted.",
+                                    "enum": [
+                                        "admin",
+                                        "readonly"
+                                    ],
+                                    "type": "string"
+                                }
+                            },
+                            "additionalProperties": false,
+                            "type": "object"
                         },
                         "type": "array"
                     },
@@ -5810,7 +5949,7 @@
                     },
                     "databases": {
                         "items": {
-                            "$ref": "#/components/schemas/WorksheetConnection"
+                            "$ref": "#/components/schemas/UserDatabase"
                         },
                         "type": "array"
                     },
@@ -5822,10 +5961,6 @@
                 "type": "object"
             },
             "PatchUserDatabases": {
-                "required": [
-                    "delete",
-                    "add"
-                ],
                 "properties": {
                     "delete": {
                         "items": {
@@ -5835,7 +5970,57 @@
                     },
                     "add": {
                         "items": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "description": "Database id. The user gets admin access.",
+                                    "type": "string"
+                                },
+                                {
+                                    "required": [
+                                        "id"
+                                    ],
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "permission": {
+                                            "description": "Access level on this database. Defaults to admin when omitted.",
+                                            "enum": [
+                                                "admin",
+                                                "readonly"
+                                            ],
+                                            "type": "string"
+                                        }
+                                    },
+                                    "additionalProperties": false,
+                                    "type": "object"
+                                }
+                            ]
+                        },
+                        "type": "array"
+                    },
+                    "update": {
+                        "description": "Changes the user's permission on databases already assigned to them.",
+                        "items": {
+                            "required": [
+                                "id",
+                                "permission"
+                            ],
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "permission": {
+                                    "description": "New access level on this database.",
+                                    "enum": [
+                                        "admin",
+                                        "readonly"
+                                    ],
+                                    "type": "string"
+                                }
+                            },
+                            "additionalProperties": false,
+                            "type": "object"
                         },
                         "type": "array"
                     }
@@ -5917,13 +6102,22 @@
             "UserDatabase": {
                 "required": [
                     "id",
-                    "name"
+                    "name",
+                    "permission"
                 ],
                 "properties": {
                     "id": {
                         "type": "string"
                     },
                     "name": {
+                        "type": "string"
+                    },
+                    "permission": {
+                        "description": "The user's access level on this database.",
+                        "enum": [
+                            "admin",
+                            "readonly"
+                        ],
                         "type": "string"
                     }
                 },

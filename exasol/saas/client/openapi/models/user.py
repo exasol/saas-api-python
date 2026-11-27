@@ -18,6 +18,7 @@ from ..types import (
 )
 
 if TYPE_CHECKING:
+    from ..models.user_database import UserDatabase
     from ..models.worksheet_connection import WorksheetConnection
 
 
@@ -37,7 +38,7 @@ class User:
         is_deletable (bool):
         first_name (str | Unset):
         last_name (str | Unset):
-        databases (list[WorksheetConnection] | Unset):
+        databases (list[UserDatabase] | Unset):
         db_username (str | Unset):
     """
 
@@ -50,7 +51,7 @@ class User:
     is_deletable: bool
     first_name: str | Unset = UNSET
     last_name: str | Unset = UNSET
-    databases: list[WorksheetConnection] | Unset = UNSET
+    databases: list[UserDatabase] | Unset = UNSET
     db_username: str | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
@@ -110,6 +111,7 @@ class User:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        from ..models.user_database import UserDatabase
         from ..models.worksheet_connection import WorksheetConnection
 
         d = dict(src_dict)
@@ -137,11 +139,11 @@ class User:
         last_name = d.pop("lastName", UNSET)
 
         _databases = d.pop("databases", UNSET)
-        databases: list[WorksheetConnection] | Unset = UNSET
+        databases: list[UserDatabase] | Unset = UNSET
         if _databases is not UNSET:
             databases = []
             for databases_item_data in _databases:
-                databases_item = WorksheetConnection.from_dict(databases_item_data)
+                databases_item = UserDatabase.from_dict(databases_item_data)
 
                 databases.append(databases_item)
 
