@@ -2,10 +2,12 @@
 
 ## Summary
 
-This release enables configurable database node counts in the handwritten
+This release drops the support for Python 3.10.
+
+The release also enables configurable database node counts in the handwritten
 database helpers, updates the project tooling to version 7.0.0, and
-parallelizes slow integration checks with a generated workflow matrix. It
-also includes the generated OpenAPI updates described below.
+parallelizes slow integration checks with a generated workflow matrix. It also
+includes the generated OpenAPI updates described below.
 
 Since version 2.10.0, the generated Python API client has been updated from
 a newer SaaS API specification. The update adds database MCP status and
@@ -40,3 +42,4 @@ Besides there are many formal and syntactic changes
 
 * #160: Updated PTB to version 7.0.0
 * #173: Parallelized slow integration checks with a generated workflow matrix.
+* #175: Updated dependencies incl. PTB v12

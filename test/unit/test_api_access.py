@@ -3,7 +3,6 @@ from datetime import (
     datetime,
     timedelta,
 )
-from test.util import not_raises
 from unittest.mock import Mock
 
 import pytest
@@ -28,6 +27,7 @@ from exasol.saas.client.openapi.models.exasol_database_clusters import (
 )
 from exasol.saas.client.openapi.models.status import Status
 from exasol.saas.client.openapi.types import UNSET
+from test.util import not_raises
 
 
 def response(status_code: int, message: str, spec=None):
