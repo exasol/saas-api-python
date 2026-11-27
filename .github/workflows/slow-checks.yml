@@ -2,6 +2,13 @@ name: Slow-Checks
 
 on:
   workflow_call:
+    secrets:
+      SAAS_HOST:
+        required: true
+      SAAS_ACCOUNT_ID:
+        required: true
+      SAAS_PAT:
+        required: true
 
 jobs:
   build-slow-matrix:

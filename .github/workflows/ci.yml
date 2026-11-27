@@ -10,6 +10,9 @@ jobs:
     name: Merge Gate
     uses: $/.github/workflows/merge-gate.yml
     secrets:
+      SAAS_ACCOUNT_ID: ${{ secrets.SAAS_ACCOUNT_ID }}
+      SAAS_HOST: ${{ secrets.SAAS_HOST }}
+      SAAS_PAT: ${{ secrets.SAAS_PAT }}
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     permissions:
       contents: read

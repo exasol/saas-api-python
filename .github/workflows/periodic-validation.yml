@@ -45,6 +45,10 @@ jobs:
     uses: $/.github/workflows/slow-checks.yml
     needs:
       - restrict-to-default-branch
+    secrets:
+      SAAS_ACCOUNT_ID: ${{ secrets.SAAS_ACCOUNT_ID }}
+      SAAS_HOST: ${{ secrets.SAAS_HOST }}
+      SAAS_PAT: ${{ secrets.SAAS_PAT }}
     permissions:
       contents: read
 
