@@ -6,7 +6,7 @@ on:
 jobs:
   build-slow-matrix:
     name: Build Slow Matrix
-    uses: ./.github/workflows/matrix-slow.yml
+    uses: $/.github/workflows/matrix-slow.yml
     permissions:
       contents: read
 
