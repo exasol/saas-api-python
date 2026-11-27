@@ -46,9 +46,9 @@ jobs:
     needs:
       - restrict-to-default-branch
     secrets:
-      SAAS_ACCOUNT_ID: ${{ secrets.SAAS_ACCOUNT_ID }}
-      SAAS_HOST: ${{ secrets.SAAS_HOST }}
-      SAAS_PAT: ${{ secrets.SAAS_PAT }}
+      INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
+      INTEGRATION_TEAM_SAAS_STAGING_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
+      INTEGRATION_TEAM_SAAS_STAGING_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
     permissions:
       contents: read
 
