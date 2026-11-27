@@ -4,16 +4,9 @@
 
 This release drops the support for Python 3.10.
 
-The release also enables configurable database node counts in the handwritten
-database helpers, updates the project tooling to version 7.0.0, and
-parallelizes slow integration checks with a generated workflow matrix. It also
-includes the generated OpenAPI updates described below.
+The release also enables configurable database node counts in the handwritten database helpers, updates the project tooling to version 7.0.0, and parallelizes slow integration checks with a generated workflow matrix. It also includes the generated OpenAPI updates described below.
 
-Since version 2.10.0, the generated Python API client has been updated from
-a newer SaaS API specification. The update adds database MCP status and
-toggle operations, expands the generated model coverage for account,
-billing, worksheet, support, invitation, health, and related resources, and
-improves endpoint parameter and response schema definitions.
+Since version 2.10.0, the generated Python API client has been updated from a newer SaaS API specification. The update adds database MCP status and toggle operations, expands the generated model coverage for account, billing, worksheet, support, invitation, health, and related resources, and improves endpoint parameter and response schema definitions.
 
 The semantic API changes include:
 
