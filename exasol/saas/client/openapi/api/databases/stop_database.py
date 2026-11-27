@@ -38,6 +38,11 @@ def _parse_response(
         response_204 = cast(Any, None)
         return response_204
 
+    if response.status_code == 409:
+        response_409 = ApiError.from_dict(response.json())
+
+        return response_409
+
     response_default = ApiError.from_dict(response.json())
 
     return response_default

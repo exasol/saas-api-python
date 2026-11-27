@@ -1,4 +1,3 @@
-from test.util import not_raises
 from unittest.mock import Mock
 
 import pytest
@@ -8,6 +7,7 @@ from exasol.saas.client.api_access import (
     ensure_type,
 )
 from exasol.saas.client.openapi.models.api_error import ApiError
+from test.util import not_raises
 
 
 class MyClass:

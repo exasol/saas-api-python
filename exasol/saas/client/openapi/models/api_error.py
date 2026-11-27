@@ -27,8 +27,6 @@ class ApiError:
         method (str):
         timestamp (str):
         causes (Any | Unset):
-        log_id (str | Unset):
-        handler (str | Unset):
     """
 
     status: float
@@ -38,8 +36,6 @@ class ApiError:
     method: str
     timestamp: str
     causes: Any | Unset = UNSET
-    log_id: str | Unset = UNSET
-    handler: str | Unset = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         status = self.status
@@ -56,10 +52,6 @@ class ApiError:
 
         causes = self.causes
 
-        log_id = self.log_id
-
-        handler = self.handler
-
         field_dict: dict[str, Any] = {}
 
         field_dict.update(
@@ -74,10 +66,6 @@ class ApiError:
         )
         if causes is not UNSET:
             field_dict["causes"] = causes
-        if log_id is not UNSET:
-            field_dict["logId"] = log_id
-        if handler is not UNSET:
-            field_dict["handler"] = handler
 
         return field_dict
 
@@ -98,10 +86,6 @@ class ApiError:
 
         causes = d.pop("causes", UNSET)
 
-        log_id = d.pop("logId", UNSET)
-
-        handler = d.pop("handler", UNSET)
-
         api_error = cls(
             status=status,
             message=message,
@@ -110,8 +94,6 @@ class ApiError:
             method=method,
             timestamp=timestamp,
             causes=causes,
-            log_id=log_id,
-            handler=handler,
         )
 
         return api_error

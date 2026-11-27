@@ -7,3 +7,6 @@ __pycache__
 /.coverage
 TAGS
 .sonar
+
+# Claude
+/.serena

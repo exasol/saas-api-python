@@ -1,3 +1,4 @@
+# Generated and maintained by the exasol-toolbox.
 name: CD
 
 on:
@@ -5,11 +6,12 @@ on:
     tags:
       - '**'
       - '!v*'
+      - '!latest'
 
 jobs:
   check-release-tag:
     name: Check Release Tag
-    uses: ./.github/workflows/check-release-tag.yml
+    uses: $/.github/workflows/check-release-tag.yml
     permissions:
       contents: read
 
@@ -17,17 +19,18 @@ jobs:
     needs:
       - check-release-tag
     name: Build & Publish
-    uses: ./.github/workflows/build-and-publish.yml
+    uses: $/.github/workflows/build-and-publish.yml
     permissions:
       contents: write
     secrets:
       PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
 
+
   publish-docs:
     needs:
       - build-and-publish
     name: Publish Documentation
-    uses: ./.github/workflows/gh-pages.yml
+    uses: $/.github/workflows/gh-pages.yml
     permissions:
       contents: read
       pages: write
