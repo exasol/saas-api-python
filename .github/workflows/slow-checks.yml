@@ -25,7 +25,9 @@ jobs:
     steps:
       - name: Check out Repository
         id: check-out-repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up Python & Poetry Environment
         id: set-up-python-and-poetry-environment
@@ -37,10 +39,9 @@ jobs:
       - name: Run Integration Tests
         id: run-integration-tests
         run: |
-          poetry run coverage run \
-            --rcfile=pyproject.toml \
-            -m pytest -v "${{ matrix.test-path }}"
+          poetry run coverage run --rcfile=pyproject.toml -m pytest -v "$TEST_PATH"
         env:
+          TEST_PATH: ${{ matrix.test-path }}
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
           SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
           SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
