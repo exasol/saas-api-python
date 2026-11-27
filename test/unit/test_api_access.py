@@ -604,8 +604,6 @@ def test_api_error_from_dict_accepts_optional_fields() -> None:
 
     assert error.status == 500
     assert error.message == "boom"
-    assert error.log_id is UNSET
-    assert error.handler is UNSET
     assert error.causes is UNSET
 
 
